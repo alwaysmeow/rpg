@@ -15,15 +15,19 @@ class Unit:
         self.stats = Stats()
         self.effects = []
 
-    def hit(self, target):
+    def hit(self, target): # TODO: remove from Unit class to new system
         from entity.damage import Damage
         from entity.damage_type import PhysicalDamageType
 
         return Damage(self, target, PhysicalDamageType(), self.stats.damage)
 
+class UnitLogger:
+    def __init__(self, unit):
+        self.unit = unit
+    
     def log(self):
         print('--------')
-        print(self.name)
-        print(self.alive)
-        print(f'{self.stats.health} / {self.stats.max_health}')
+        print(self.unit.name)
+        print(self.unit.alive)
+        print(f'{self.unit.stats.health} / {self.unit.stats.max_health}')
         print('--------')

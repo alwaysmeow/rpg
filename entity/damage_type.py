@@ -1,9 +1,8 @@
-import abc
+from typing import Protocol
 from entity.unit import Unit
 
-class DamageType(abc.ABC):
-    @abc.abstractmethod
-    def reduce(self, value, target: Unit):
+class DamageType(Protocol):
+    def reduce(self, value: float, target: Unit) -> float:
         pass
 
 class PhysicalDamageType(DamageType):
