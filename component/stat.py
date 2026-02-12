@@ -10,8 +10,8 @@ class Stat:
     def effective_value(self):
         return apply_modifiers(self.base_value, self.modifiers)
 
-class ResourceBar:
-    def __init__(self, max_value = 1, regen = 0):
+class Meter:
+    def __init__(self, max_value = 0, regen = 0):
         self.base_max_value = max_value
         self.max_value_modifiers = []
 
