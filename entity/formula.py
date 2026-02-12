@@ -1,6 +1,6 @@
 from typing import Protocol
 from component.attributes import Agility, Intelligence, Strength
-from component.health import Health
+from component.stats import Health
 
 class Formula(Protocol):
     def calculate(self, world, entity_id):

@@ -2,8 +2,6 @@ from system.world import World
 from system.clock import Clock
 from game import GameLoop
 
-from system.damage_pipeline import *
-
 world = World()
 
 unit_id = world.unit_system.create_unit("flaneur")

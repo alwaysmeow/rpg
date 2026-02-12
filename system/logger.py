@@ -1,6 +1,5 @@
 from component.name import Name
-from component.health import Health
-from component.stats import Armor, MagicResist
+from component.stats import Armor, MagicResist, Health
 
 class Logger:
     def __init__(self, world):

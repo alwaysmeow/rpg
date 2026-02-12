@@ -1,5 +1,4 @@
-from component.health import Health
-from component.stats import Armor, MagicResist
+from component.stats import Armor, MagicResist, Health
 from component.name import Name
 
 class UnitSystem:
