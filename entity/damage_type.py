@@ -1,5 +1,4 @@
 from typing import Protocol
-from entity.unit import Unit
 
 class DamageType(Protocol):
     def reduce(self, value: float, target: Unit) -> float:

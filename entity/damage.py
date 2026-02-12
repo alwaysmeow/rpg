@@ -1,4 +1,3 @@
-from entity.unit import Unit
 from entity.damage_type import DamageType
 
 class Damage:
