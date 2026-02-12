@@ -1,7 +1,7 @@
 import heapq
-from event import Event
+from entity.event import Event
 
-class EventQueue:
+class EventSystem:
     def __init__(self):
         self._queue = []
 

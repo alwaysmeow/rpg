@@ -1,11 +1,35 @@
+from typing import Type, Any, Set, Dict
+from collections import defaultdict
+
 from system.time import TimeSystem
-from event_queue import EventQueue
+from system.event import EventSystem
+from system.unit import UnitSystem
 
 class World:
     def __init__(self):
         self.time = TimeSystem()
-        self.events = EventQueue()
+        self.events = EventSystem()
+        self.unit_system = UnitSystem()
+
+        self.components: Dict[Type, Dict[int, Any]] = defaultdict(dict)
+        self.entities: Set[int] = set()
+        self._next_entity_id = 0
 
     def update(self, delta):
         self.time.advance(delta)
         self.events.process(self.time.now)
+
+    def create_entity(self) -> int:
+        entity_id = self._next_entity_id
+        self._next_entity_id += 1
+        self.entities.add(entity_id)
+        return entity_id
+    
+    def add_component(self, entity: int, component_type: Type, data):
+        self.components[component_type][entity] = data
+    
+    def has_component(self, entity: int, component_type: Type) -> bool:
+        return entity in self.components[component_type]
+    
+    def get_component(self, entity: int, component_type: Type):
+        return self.components[component_type].get(entity)
