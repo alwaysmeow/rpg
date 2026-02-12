@@ -4,11 +4,13 @@ from collections import defaultdict
 from system.time import TimeSystem
 from system.event import EventSystem
 from system.unit import UnitSystem
+from system.logger import Logger
 
 class World:
     def __init__(self):
         self.time = TimeSystem()
         self.events = EventSystem()
+        self.logger = Logger(self)
         self.unit_system = UnitSystem(self)
 
         self.components: Dict[Type, Dict[int, Any]] = defaultdict(dict)

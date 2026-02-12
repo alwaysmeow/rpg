@@ -5,10 +5,9 @@ from game import GameLoop
 from system.damage_pipeline import *
 
 world = World()
-world.unit_system.create_unit("flaneur")
 
-print(world.entities)
-print(world.components)
+unit_id = world.unit_system.create_unit("flaneur")
+world.logger.log_unit(unit_id)
 
 clock = Clock()
 loop = GameLoop(world, clock)
