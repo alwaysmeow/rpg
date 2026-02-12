@@ -5,6 +5,11 @@ from game import GameLoop
 from system.damage_pipeline import *
 
 world = World()
+world.unit_system.create_unit()
+
+print(world.entities)
+print(world.components)
+
 clock = Clock()
 loop = GameLoop(world, clock)
 

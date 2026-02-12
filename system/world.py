@@ -9,7 +9,7 @@ class World:
     def __init__(self):
         self.time = TimeSystem()
         self.events = EventSystem()
-        self.unit_system = UnitSystem()
+        self.unit_system = UnitSystem(self)
 
         self.components: Dict[Type, Dict[int, Any]] = defaultdict(dict)
         self.entities: Set[int] = set()
@@ -25,8 +25,9 @@ class World:
         self.entities.add(entity_id)
         return entity_id
     
-    def add_component(self, entity: int, component_type: Type, data):
-        self.components[component_type][entity] = data
+    def add_component(self, entity: int, component_type: Type, *data):
+        component = component_type(*data)
+        self.components[component_type][entity] = component
     
     def has_component(self, entity: int, component_type: Type) -> bool:
         return entity in self.components[component_type]
