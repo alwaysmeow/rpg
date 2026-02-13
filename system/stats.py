@@ -6,8 +6,8 @@ class StatsSystem:
         self.world = world
 
         self.formulas = {
-            Armor: BaseArmorFormula,
-            MagicResist: BaseMagicResistFormula,
+            Armor: BaseArmorFormula(),
+            MagicResist: BaseMagicResistFormula(),
         }
     
     def update_modifiers(self, entity_id, stat_type): # TODO
