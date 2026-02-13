@@ -29,9 +29,8 @@ class World:
         self.entities.add(entity_id)
         return entity_id
     
-    def add_component(self, entity: int, component_type: Type, *data):
-        component = component_type(*data)
-        self.components[component_type][entity] = component
+    def add_component(self, entity: int, component: Any):
+        self.components[type(component)][entity] = component
     
     def has_component(self, entity: int, component_type: Type) -> bool:
         return entity in self.components[component_type]
