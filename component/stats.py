@@ -1,4 +1,5 @@
-from component.stat import Stat, Meter
+from component.stat import Stat
+from component.meter import Meter
 
 class Armor(Stat): pass
 class MagicResist(Stat): pass

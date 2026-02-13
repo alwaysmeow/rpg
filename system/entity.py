@@ -30,6 +30,6 @@ class EntitySystem:
 
         self.world.add_component(ability_id, AbilityEffect(effect))
         self.world.add_component(ability_id, Owner(owner))
-        self.world.add_component(ability_id, Cooldown(cooldown_duration))
+        self.world.add_component(ability_id, Cooldown(cooldown_duration, 1))
 
         return ability_id
