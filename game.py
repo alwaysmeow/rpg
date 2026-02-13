@@ -1,8 +1,13 @@
+from config_loader import load_config
+
 class GameLoop:
-    def __init__(self, world, clock, fixed_dt=1/60):
+    def __init__(self, world, clock, config_path = "config/engine.json"):
         self.world = world
         self.clock = clock
-        self.fixed_dt = fixed_dt
+
+        config = load_config(config_path)
+        self.fixed_dt = 1 / config["updates_per_second"]
+        self.max_steps = config["update_max_steps"]
 
         self.accumulator = 0.0
         self.time_scale = 1.0
@@ -13,9 +18,8 @@ class GameLoop:
         self.accumulator += real_delta * self.time_scale
 
         steps = 0
-        MAX_STEPS = 5
 
-        while self.accumulator >= self.fixed_dt and steps < MAX_STEPS:
+        while self.accumulator >= self.fixed_dt and steps < self.max_steps:
             self.world.update(self.fixed_dt)
             self.accumulator -= self.fixed_dt
             steps += 1
