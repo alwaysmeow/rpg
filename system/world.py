@@ -3,7 +3,7 @@ from collections import defaultdict
 
 from system.time import TimeSystem
 from system.event import EventSystem
-from system.unit import UnitSystem
+from system.entity import EntitySystem
 from system.logger import Logger
 
 class World:
@@ -11,7 +11,7 @@ class World:
         self.time = TimeSystem()
         self.events = EventSystem()
         self.logger = Logger(self)
-        self.unit_system = UnitSystem(self)
+        self.entity_system = EntitySystem(self)
 
         self.components: Dict[Type, Dict[int, Any]] = defaultdict(dict)
         self.entities: Set[int] = set()

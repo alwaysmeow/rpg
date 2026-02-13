@@ -4,7 +4,7 @@ from game import GameLoop
 
 world = World()
 
-unit_id = world.unit_system.create_unit("flaneur")
+unit_id = world.entity_system.create_unit("flaneur")
 world.logger.log_unit(unit_id)
 
 clock = Clock()

@@ -1,7 +1,8 @@
 from component.stats import Armor, MagicResist, Health
 from component.name import Name
+from component.combat import CombatParticipants, CombatState
 
-class UnitSystem:
+class EntitySystem:
     def __init__(self, world):
         self.world = world
 
@@ -14,3 +15,11 @@ class UnitSystem:
         self.world.add_component(unit_id, MagicResist)
 
         return unit_id
+    
+    def create_combat(self, team1, team2):
+        combat_id = self.world.create_entity()
+
+        self.world.add_component(combat_id, CombatState)
+        self.world.add_component(combat_id, CombatParticipants, team1, team2)
+
+        return combat_id
