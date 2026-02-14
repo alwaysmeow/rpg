@@ -6,6 +6,7 @@ from system.event import EventSystem
 from system.entity import EntitySystem
 from system.combat import CombatSystem
 from system.logger import Logger
+from component.tag import Tag
 
 class World:
     def __init__(self):
@@ -15,8 +16,9 @@ class World:
         self.entity_system = EntitySystem(self)
         self.combat_system = CombatSystem(self)
 
-        self.components: Dict[Type, Dict[int, Any]] = defaultdict(dict)
         self.entities: Set[int] = set()
+        self.components: Dict[Type, Dict[int, Any]] = defaultdict(dict)
+        self.tags: Dict[Type, Set[int]] = defaultdict(set)
         self._next_entity_id = 0
 
     def update(self, delta):
@@ -35,5 +37,17 @@ class World:
     def has_component(self, entity: int, component_type: Type) -> bool:
         return entity in self.components[component_type]
     
-    def get_component(self, entity: int, component_type: Type):
+    def get_component(self, entity: int, component_type: Type) -> Any:
         return self.components[component_type].get(entity)
+    
+    def add_tag(self, entity: int, tag: Type):
+        self.tags[tag].add(entity)
+    
+    def remove_tag(self, entity: int, tag: Type):
+        self.tags[tag].discard(entity)
+    
+    def has_tag(self, entity: int, tag: Type) -> bool:
+        return entity in self.tags[tag]
+    
+    def get_tags(self, entity: int) -> Set[Type]:
+        return {tag_type for tag_type, entities in self.tags.items() if entity in entities}
