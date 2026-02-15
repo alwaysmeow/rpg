@@ -1,3 +1,46 @@
+from component.ability import AbilityEffect, Owner, CastTime, Cooldown
+from component.target import Target
+from component.tag import Dead, TargetAbility
+
 class CombatSystem:
     def __init__(self, world):
         self.world = world
+
+    # Maybe should be in other system
+    def cast(self, ability_id):
+        ability_tags = self.world.get_tags(ability_id)
+
+        # Is ability ready
+        cooldown = self.world.get_component(ability_id, Cooldown)
+        if cooldown and cooldown.value != 1:
+            return False
+
+        caster_id = None
+        caster = self.world.get_component(ability_id, Owner)
+        if caster:
+            caster_id = caster.unit_id
+
+        # Is caster alive
+        if caster_id and self.world.has_tag(caster_id, Dead):
+            return False
+
+        target_id = None
+        target = self.world.get_component(caster_id, Target)
+        if target:
+            target_id = target.unit_id
+
+        # Has target if it's target ability
+        if TargetAbility in ability_tags and not target_id:
+            return False
+
+        ability_effect = self.world.get_component(ability_id, AbilityEffect).handler
+
+        cast_time = self.world.get_component(ability_id, CastTime)
+        cast_time = cast_time.value if cast_time else 0
+
+        def handler():
+            ability_effect(self.world, caster_id, target_id)
+            if cooldown:
+                cooldown.value = 0
+
+        self.world.events.schedule(self.world.time.now + cast_time, handler)
