@@ -5,9 +5,9 @@ from component.tag import Dead
 from entity.damage_type import DamageType
 
 class Damage:
-    def __init__(self, source, target, type: DamageType, amount: int):
-        self.source = source
-        self.target = target
+    def __init__(self, source_id, target_id, type: DamageType, amount: int):
+        self.source_id = source_id
+        self.target_id = target_id
         self.type = type
         self.amount = amount
 
@@ -17,14 +17,18 @@ class DamageSystem:
         self._damage_queue = Queue()
     
     def queue_damage(self, source_id, target_id, damage_type, base_amount):
-        self._damage_queue.append(Damage(source_id, target_id, damage_type, base_amount))
+        self._damage_queue.put(Damage(source_id, target_id, damage_type, base_amount))
     
     def process_damage_queue(self):
-        while self._damage_queue:
+        while not self._damage_queue.empty():
             damage = self._damage_queue.get()
             self._process_damage(damage)
     
     def _process_damage(self, damage):
+        health = self.world.get_component(damage.target_id, Health)
+        if not health:
+            return
+         
         amount = damage.amount
 
         amount = self._apply_modifiers(damage, amount)
@@ -33,8 +37,7 @@ class DamageSystem:
 
         if self._check_death(damage.target_id):
             self._on_death(damage.target_id)
-        else:
-            self._on_damage(damage.target_id, amount)
+        self._on_damage(damage, amount)
 
     def _apply_modifiers(self, damage, amount):
         # TODO: modifiers processing
@@ -66,6 +69,6 @@ class DamageSystem:
         # TODO: events triggered by death
         pass
 
-    def _on_damage(self, target_id, amount):
+    def _on_damage(self, damage, amount):
         # TODO: events triggered by damage
         pass
