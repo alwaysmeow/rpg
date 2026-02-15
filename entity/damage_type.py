@@ -1,3 +1,5 @@
+# Legacy
+
 from typing import Protocol
 
 class DamageType(Protocol):

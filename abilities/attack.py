@@ -1,4 +1,3 @@
-from entity.damage import Damage
 from entity.damage_type import PhysicalDamageType
 from component.stats import AttackDamage
 
@@ -7,7 +6,6 @@ def attack_handler(world, attacker_id, target_id):
     if not damage:
         return False
     
-    Damage(attacker_id, target_id, PhysicalDamageType(), damage.value)
-    # Process Damage
+    world.damage_system.queue_damage(attacker_id, target_id, PhysicalDamageType(), damage.value)
 
     return True

@@ -6,6 +6,8 @@ from system.event import EventSystem
 from system.entity import EntitySystem
 from system.combat import CombatSystem
 from system.logger import Logger
+from system.damage import DamageSystem
+
 from component.tag import Tag
 
 class World:
@@ -15,6 +17,7 @@ class World:
         self.logger = Logger(self)
         self.entity_system = EntitySystem(self)
         self.combat_system = CombatSystem(self)
+        self.damage_system = DamageSystem()
 
         self.entities: Set[int] = set()
         self.components: Dict[Type, Dict[int, Any]] = defaultdict(dict)

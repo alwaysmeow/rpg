@@ -1,3 +1,5 @@
+# Legacy
+
 from entity.damage import *
 from entity.unit import *
 
