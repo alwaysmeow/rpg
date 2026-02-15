@@ -35,8 +35,8 @@ class CombatSystem:
 
         ability_effect = self.world.get_component(ability_id, AbilityEffect).handler
 
-        cast_time = self.world.get_component(ability_id, CastTime)
-        cast_time = cast_time.value if cast_time else 0
+        cast_time_component = self.world.get_component(ability_id, CastTime)
+        cast_time = cast_time_component.value if cast_time_component else 0
 
         def handler():
             ability_effect(self.world, caster_id, target_id)
@@ -44,3 +44,4 @@ class CombatSystem:
                 cooldown.value = 0
 
         self.world.events.schedule(self.world.time.now + cast_time, handler)
+        return True
