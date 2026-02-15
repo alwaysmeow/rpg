@@ -44,4 +44,5 @@ class CombatSystem:
                 cooldown.value = 0
 
         self.world.events.schedule(self.world.time.now + cast_time, handler)
+
         return True

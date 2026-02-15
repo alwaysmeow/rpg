@@ -15,3 +15,7 @@ class CastTime:
 class Cooldown(Meter): 
     # value = 1 - ability is ready
     pass
+
+class Autocast:
+    def __init__(self, value = False):
+        self.value = value
