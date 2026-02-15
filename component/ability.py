@@ -10,7 +10,7 @@ class Owner:
 
 class CastTime:
     def __init__(self, value = 0):
-        self.unit_id = value
+        self.value = value
 
 class Cooldown(Meter): 
     # value = 1 - ability is ready

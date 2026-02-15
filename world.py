@@ -17,7 +17,7 @@ class World:
         self.logger = Logger(self)
         self.entity_system = EntitySystem(self)
         self.combat_system = CombatSystem(self)
-        self.damage_system = DamageSystem()
+        self.damage_system = DamageSystem(self)
 
         self.entities: Set[int] = set()
         self.components: Dict[Type, Dict[int, Any]] = defaultdict(dict)

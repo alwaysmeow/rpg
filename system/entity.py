@@ -2,7 +2,7 @@ from component.stats import Armor, MagicResist, Health
 from component.name import Name
 from component.combat import CombatParticipants, CombatState
 from component.ability import AbilityEffect, Owner, Cooldown, CastTime, Autocast
-from component.tag import Unit, Combat, Ability, Attack
+from component.tag import Unit, Combat, Ability, Attack, TargetAbility
 
 from abilities.attack import attack_handler
 
@@ -46,3 +46,6 @@ class EntitySystem:
     def create_autoattack(self, owner):
         ability_id = self.create_ability(owner, attack_handler, 0, 1, True)
         self.world.add_tag(ability_id, Attack)
+        self.world.add_tag(ability_id, TargetAbility)
+
+        return ability_id
