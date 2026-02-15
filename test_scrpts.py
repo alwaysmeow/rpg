@@ -20,6 +20,6 @@ def test_script(world):
     world.add_component(flaneur, Target(meowmeow))
     world.combat_system.cast(flaneur_attack)
 
-    world.logger.log_unit(meowmeow)
-
     world.update(0)
+
+    world.logger.log_unit(meowmeow)
