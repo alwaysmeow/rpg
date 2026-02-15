@@ -10,9 +10,9 @@ class CombatSystem:
     def cast(self, ability_id):
         ability_tags = self.world.get_tags(ability_id)
 
-        # Is ability ready
         cooldown = self.world.get_component(ability_id, Cooldown)
         if cooldown and cooldown.value != 1:
+            self.world.logger.error("Spell is not ready. Cast cancelled.")
             return False
 
         caster_id = None
@@ -20,8 +20,8 @@ class CombatSystem:
         if caster:
             caster_id = caster.unit_id
 
-        # Is caster alive
         if caster_id and self.world.has_tag(caster_id, Dead):
+            self.world.logger.error("Caster should be alive. Cast cancelled.")
             return False
 
         target_id = None
@@ -29,8 +29,8 @@ class CombatSystem:
         if target:
             target_id = target.unit_id
 
-        # Has target if it's target ability
         if TargetAbility in ability_tags and not target_id:
+            self.world.logger.error("Casting of this ability needs target. Cast cancelled.")
             return False
 
         ability_effect = self.world.get_component(ability_id, AbilityEffect).handler

@@ -10,3 +10,6 @@ class Logger:
         print(f"Health: {self.world.components[Health][unit_id].value} / {self.world.components[Health][unit_id].effective_max_value}")
         print(f"Armor: {self.world.components[Armor][unit_id].effective_value}")
         print(f"Magic Resist: {self.world.components[MagicResist][unit_id].effective_value}")
+    
+    def error(self, text):
+        print(f"\n- ERROR: {text}\n\n")

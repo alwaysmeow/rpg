@@ -27,6 +27,7 @@ class DamageSystem:
     def _process_damage(self, damage):
         health = self.world.get_component(damage.target_id, Health)
         if not health:
+            self.world.logger.error("Target has no health. Damage processing cancelled.")
             return
          
         amount = damage.amount
