@@ -21,3 +21,5 @@ def test_script(world):
     world.combat_system.cast(flaneur_attack)
 
     world.logger.log_unit(meowmeow)
+
+    world.update(0)
