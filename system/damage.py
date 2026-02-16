@@ -1,8 +1,14 @@
 from queue import Queue
+from enum import Enum
 
-from component.stats import Health
+from config_loader import load_config
+from component.stats import Health, MagicResist, Armor
 from component.tag import Dead
-from entity.damage_type import DamageType
+
+class DamageType(Enum):
+    Pure = 0
+    Physical = 1
+    Magic = 2
 
 class Damage:
     def __init__(self, source_id, target_id, type: DamageType, amount: int):
@@ -15,6 +21,9 @@ class DamageSystem:
     def __init__(self, world):
         self.world = world
         self._damage_queue = Queue()
+
+        config = load_config("config/game.json") # TODO: variable path
+        self.armor_coefficient = config["armor_coefficient"]
     
     def queue_damage(self, source_id, target_id, damage_type, base_amount):
         self._damage_queue.put(Damage(source_id, target_id, damage_type, base_amount))
@@ -38,14 +47,38 @@ class DamageSystem:
 
         if self._check_death(damage.target_id):
             self._on_death(damage.target_id)
-        self._on_damage(damage, amount)
+        
+        if amount:
+            self._on_damage(damage, amount)
 
     def _apply_modifiers(self, damage, amount):
         # TODO: modifiers processing
         return amount
     
+    def _reduced_physical_damage(self, amount, target_id):
+        armor = self.world.get_component(target_id, Armor)
+
+        if not armor:
+            return amount
+        else:
+            coefficient = self.armor_coefficient ** armor.effective_value # TODO: analyze formula
+            return amount * coefficient
+
+    def _reduced_magic_damage(self, amount, target_id):
+        magic_resist = self.world.get_component(target_id, MagicResist)
+
+        if not magic_resist:
+            return amount
+        else:
+            coefficient = 1 - magic_resist.effective_value
+            return amount * coefficient
+
     def _apply_resistance(self, damage, amount):
-        # TODO: resistance processing
+        match damage.type:
+            case DamageType.Physical:
+                return self._reduced_physical_damage(amount, damage.target_id)
+            case DamageType.Magic:
+                return self._reduced_magic_damage(amount, damage.target_id)
         return amount
     
     def _apply_for_unit(self, target_id, amount):

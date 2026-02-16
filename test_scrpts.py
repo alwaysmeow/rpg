@@ -1,9 +1,7 @@
 from component.target import Target
-from component.stats import AttackDamage
 
 def test_script(world):
     flaneur = world.entity_system.create_unit("flaneur")
-    world.add_component(flaneur, AttackDamage(10))
     world.logger.log_unit(flaneur)
 
     print()

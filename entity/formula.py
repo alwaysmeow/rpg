@@ -2,6 +2,8 @@ from typing import Protocol
 from component.attributes import Agility, Intelligence, Strength
 from component.stats import Health
 
+# TODO: full rework with fixes and abc
+
 class Formula(Protocol):
     def calculate(self, world, entity_id):
         pass

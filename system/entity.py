@@ -1,4 +1,4 @@
-from component.stats import Armor, MagicResist, Health
+from component.stats import Armor, MagicResist, Health, AttackDamage
 from component.name import Name
 from component.combat import CombatParticipants, CombatState
 from component.ability import AbilityEffect, Owner, Cooldown, CastTime, Autocast
@@ -15,8 +15,9 @@ class EntitySystem:
 
         self.world.add_component(unit_id, Name(name))
         self.world.add_component(unit_id, Health(100, 0))
-        self.world.add_component(unit_id, Armor())
+        self.world.add_component(unit_id, Armor(1))
         self.world.add_component(unit_id, MagicResist())
+        self.world.add_component(unit_id, AttackDamage(10))
         self.world.add_tag(unit_id, Unit)
 
         return unit_id
