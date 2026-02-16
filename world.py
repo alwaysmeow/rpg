@@ -8,6 +8,7 @@ from system.combat import CombatSystem
 from system.logger import Logger
 from system.damage import DamageSystem
 from system.cooldown import CooldownSystem
+from system.ability import AbilitySystem
 
 from component.tag import Tag
 
@@ -20,6 +21,7 @@ class World:
         self.combat_system = CombatSystem(self)
         self.damage_system = DamageSystem(self)
         self.cooldown_system = CooldownSystem(self)
+        self.ability_system = AbilitySystem(self)
 
         self.entities: Set[int] = set()
         self.components: Dict[Type, Dict[int, Any]] = defaultdict(dict)

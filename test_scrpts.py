@@ -10,7 +10,7 @@ def test_script(world):
     flaneur_attack = world.entity_system.create_autoattack(flaneur)
 
     world.add_component(flaneur, Target(meowmeow))
-    world.combat_system.cast(flaneur_attack)
+    world.ability_system.cast(flaneur_attack)
 
     world.update(0)
 
