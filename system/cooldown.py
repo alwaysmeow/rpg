@@ -15,4 +15,4 @@ class CooldownSystem:
             autocast = self.world.components[Autocast][ability_id]
             if autocast.value and cooldown.value == 1:
                 self.world.logger.log(f"Ability {ability_id} autocasted")
-                self.world.combat_system.cast(ability_id)
+                self.world.ability_system.cast(ability_id)
