@@ -7,6 +7,7 @@ from system.entity import EntitySystem
 from system.combat import CombatSystem
 from system.logger import Logger
 from system.damage import DamageSystem
+from system.cooldown import CooldownSystem
 
 from component.tag import Tag
 
@@ -18,6 +19,7 @@ class World:
         self.entity_system = EntitySystem(self)
         self.combat_system = CombatSystem(self)
         self.damage_system = DamageSystem(self)
+        self.cooldown_system = CooldownSystem(self)
 
         self.entities: Set[int] = set()
         self.components: Dict[Type, Dict[int, Any]] = defaultdict(dict)
@@ -28,6 +30,7 @@ class World:
         self.time.advance(delta)
         self.events.process(self.time.now)
         self.damage_system.process_damage_queue()
+        self.cooldown_system.update(delta)
 
     def create_entity(self) -> int:
         entity_id = self._next_entity_id
