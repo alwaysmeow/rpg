@@ -31,7 +31,8 @@ class EventSystem:
     def process(self, now):
         while self._queue and self._queue[0].time <= now:
             event = heapq.heappop(self._queue)
-            event.handler()
+            result = event.handler()
+            event.data["result"] = result
             if event.type:
                 self.emit(event.type, event.data)
     

@@ -5,7 +5,7 @@ from game import GameLoop
 from test_scrpts import *
 
 world = World()
-test_script2(world)
+test_script(world)
 
 clock = Clock()
 loop = GameLoop(world, clock)

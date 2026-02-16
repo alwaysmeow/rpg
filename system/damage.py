@@ -1,9 +1,9 @@
-from queue import Queue
 from enum import Enum
 
 from config_loader import load_config
 from component.stats import Health, MagicResist, Armor
 from component.tag import Dead
+from system.event import EventType
 
 class DamageType(Enum):
     Pure = 0
@@ -20,24 +20,30 @@ class Damage:
 class DamageSystem:
     def __init__(self, world):
         self.world = world
-        self._damage_queue = Queue()
 
         config = load_config("config/game.json") # TODO: variable path
         self.armor_coefficient = config["armor_coefficient"]
     
     def queue_damage(self, source_id, target_id, damage_type, base_amount):
-        self._damage_queue.put(Damage(source_id, target_id, damage_type, base_amount))
-    
-    def process_damage_queue(self):
-        while not self._damage_queue.empty():
-            damage = self._damage_queue.get()
-            self._process_damage(damage)
+        """Напрямую планируем обработку урона"""
+        damage = Damage(source_id, target_id, damage_type, base_amount)
+        
+        self.world.events.schedule(
+            self.world.time.now,
+            lambda d=damage: self._process_damage(d),
+            EventType.DAMAGE,
+            {
+                "source_id": source_id,
+                "target_id": target_id,
+                "damage_type": damage_type,
+            }
+        )
     
     def _process_damage(self, damage):
         health = self.world.get_component(damage.target_id, Health)
         if not health:
             self.world.logger.error("Target has no health. Damage processing cancelled.")
-            return
+            return 0
          
         amount = damage.amount
 
@@ -46,10 +52,16 @@ class DamageSystem:
         amount = self._apply_for_unit(damage.target_id, amount)
 
         if self._check_death(damage.target_id):
-            self._on_death(damage.target_id)
+            self.world.events.schedule(
+                self.world.time.now,
+                self._create_death_handler(damage.target_id),
+                EventType.DEATH,
+                {
+                    "unit_id": damage.target_id,
+                }
+            )
         
-        if amount:
-            self._on_damage(damage, amount)
+        return amount
 
     def _apply_modifiers(self, damage, amount):
         # TODO: modifiers processing
@@ -95,14 +107,12 @@ class DamageSystem:
     def _check_death(self, target_id):
         health = self.world.get_component(target_id, Health)
         if health and health.value <= 0:
-            self.world.add_tag(target_id, Dead)
             return True
         return False
     
-    def _on_death(self, target_id):
-        # TODO: events triggered by death
-        pass
+    def _create_death_handler(self, unit_id):
+        def death_handler():
+            self.world.add_tag(unit_id, Dead)
+            return unit_id
 
-    def _on_damage(self, damage, amount):
-        # TODO: events triggered by damage
-        pass
+        return death_handler

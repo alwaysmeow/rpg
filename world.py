@@ -31,7 +31,6 @@ class World:
     def update(self, delta):
         self.time.advance(delta)
         self.events.process(self.time.now)
-        self.damage_system.process_damage_queue()
         self.cooldown_system.update(delta)
 
     def create_entity(self) -> int:
