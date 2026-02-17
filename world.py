@@ -15,6 +15,7 @@ from component.tag import Tag
 
 class World:
     def __init__(self):
+        # TODO: systems in list
         self.time = TimeSystem()
         self.events = EventSystem(self)
         self.logger = Logger(self)
@@ -51,7 +52,7 @@ class World:
     def get_component(self, entity: int, component_type: Type) -> Any:
         return self.components[component_type].get(entity)
     
-    def query_by_component(
+    def query_by_component( # TODO: rework filters structure
         self, 
         component_type: Type, 
         include_filters: Dict[str, Any] | None = None, 
@@ -79,7 +80,7 @@ class World:
 
         return result
 
-    def query_by_components(
+    def query_by_components( # TODO: rework filters structure
         self,
         filters: Dict[Type, Any] | None = None,
     ) -> Set[int]:

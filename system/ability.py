@@ -59,7 +59,7 @@ class AbilitySystem:
         return True
 
     def _autocast_trigger(self, ability_id):
-        autocast = self.world.components[Autocast][ability_id]
+        autocast = self.world.get_component(ability_id, Autocast)
         if autocast and autocast.value:
             self.cast(ability_id)
     
