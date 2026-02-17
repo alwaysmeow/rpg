@@ -119,10 +119,7 @@ class CombatSystem:
     def _create_combat_end_handler(self, combat_id):
         def combat_end_handler():
             teams = self._get_teams(combat_id)
-            for team_index in range(len(teams)):
-                print(f"\nTeam {team_index + 1}:")
-                for unit_id in teams[team_index]:
-                    self.world.logger.log_unit(unit_id)
+            self.world.logger.log_combat(combat_id, teams)
             return CombatEventResult(combat_id, teams)
 
         return combat_end_handler

@@ -12,6 +12,12 @@ class Logger:
         print(f"Armor: {self.world.get_component(unit_id, Armor).effective_value}")
         print(f"Magic Resist: {self.world.get_component(unit_id, MagicResist).effective_value}")
     
+    def log_combat(self, combat_id, teams):
+        for team_index in range(len(teams)):
+            print(f"\nTeam {team_index + 1}:")
+            for unit_id in teams[team_index]:
+                self.log_unit(unit_id)
+
     def log_ability(self, ability_id):
         print(f"\nID: {ability_id}")
         print(f"Cooldown: {self.world.get_component(ability_id, Cooldown).value} / {self.world.get_component(ability_id, Cooldown).effective_max_value}")
