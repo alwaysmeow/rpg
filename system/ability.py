@@ -2,11 +2,16 @@ from component.ability import AbilityEffect, Owner, CastTime, Cooldown, Autocast
 from component.target import Target
 from component.tag import Dead, TargetAbility
 
-from system.event import CastEventResult, EventType
+from system.event import CastEventResult, CooldownEventResult, CombatEventResult
+
+from entity.event_type import EventType
 
 class AbilitySystem:
     def __init__(self, world):
         self.world = world
+
+        self.world.events.subscribe(EventType.COOLDOWN_END, self._on_cooldown_end)
+        self.world.events.subscribe(EventType.COMBAT_START, self._on_combat_start)
     
     def cast(self, ability_id):
         ability_tags = self.world.get_tags(ability_id)
@@ -57,3 +62,21 @@ class AbilitySystem:
         autocast = self.world.components[Autocast][ability_id]
         if autocast and autocast.value:
             self.cast(ability_id)
+    
+    def _on_cooldown_end(self, cooldown_event_result: CooldownEventResult):
+        self.autocast_trigger(cooldown_event_result.ability_id)
+    
+    def _on_combat_start(self, combat_start_event_result: CombatEventResult):
+        for team in combat_start_event_result.teams:
+            for unit_id in team:
+                abilities = self.world.query_by_components({
+                    Autocast: {
+                        "include": { "value": [True] },
+                    },
+                    Owner: {
+                        "include": { "unit_id": [unit_id] },
+                    },
+                })
+                
+                for ability_id in abilities:
+                    self.world.ability_system.autocast_trigger(ability_id)

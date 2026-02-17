@@ -21,6 +21,11 @@ class CooldownEventResult:
     ability_id: int
 
 @dataclass
+class CombatEventResult:
+    combat_id: int
+    teams: list[list[int]]
+
+@dataclass
 class DamageEventResult:
     source_id: int
     target_id: int

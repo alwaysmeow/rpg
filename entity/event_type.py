@@ -1,9 +1,11 @@
 from enum import Enum
 
 class EventType(Enum):
-    ATTACK = "on_attack"
-    CAST_START = "on_cast_start"
-    CAST_END = "on_cast_end"
-    COOLDOWN_END = "on_cooldown_end"
-    DAMAGE = "on_damage"
-    DEATH = "on_death"
+    ATTACK = "attack"
+    CAST_END = "cast_end"
+    CAST_START = "cast_start"
+    COMBAT_END = "combat_end"
+    COMBAT_START = "combat_start"
+    COOLDOWN_END = "cooldown_end"
+    DAMAGE = "damage"
+    DEATH = "death"

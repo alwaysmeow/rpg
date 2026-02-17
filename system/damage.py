@@ -22,7 +22,6 @@ class DamageSystem:
         self.armor_coefficient = config["armor_coefficient"]
     
     def queue_damage(self, source_id, target_id, damage_type, base_amount):
-        """Напрямую планируем обработку урона"""
         damage = Damage(source_id, target_id, damage_type, base_amount)
         
         self.world.events.schedule(
