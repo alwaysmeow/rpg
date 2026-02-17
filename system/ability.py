@@ -2,6 +2,8 @@ from component.ability import AbilityEffect, Owner, CastTime, Cooldown
 from component.target import Target
 from component.tag import Dead, TargetAbility
 
+from system.event import CastEventResult, EventType
+
 class AbilitySystem:
     def __init__(self, world):
         self.world = world
@@ -37,11 +39,16 @@ class AbilitySystem:
         cast_time_component = self.world.get_component(ability_id, CastTime)
         cast_time = cast_time_component.value if cast_time_component else 0
 
-        def handler():
+        def cast_start_handler():
+            return CastEventResult(caster_id, target_id, ability_id)
+
+        def cast_end_handler():
             ability_effect(self.world, caster_id, target_id)
             if cooldown:
                 cooldown.value = 0
+            return CastEventResult(caster_id, target_id, ability_id)
 
-        self.world.events.schedule(self.world.time.now + cast_time, handler)
+        self.world.events.schedule(self.world.time.now, cast_start_handler, EventType.CAST_START)
+        self.world.events.schedule(self.world.time.now + cast_time, cast_end_handler, EventType.CAST_END)
 
         return True

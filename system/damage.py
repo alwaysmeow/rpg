@@ -1,14 +1,11 @@
-from enum import Enum
-
 from config_loader import load_config
 from component.stats import Health, MagicResist, Armor
 from component.tag import Dead
-from system.event import EventType
 
-class DamageType(Enum):
-    Pure = 0
-    Physical = 1
-    Magic = 2
+from entity.event_type import EventType
+from entity.damage_type import DamageType
+
+from system.event import DamageEventResult, DeathEventResult
 
 class Damage:
     def __init__(self, source_id, target_id, type: DamageType, amount: int):
@@ -30,16 +27,11 @@ class DamageSystem:
         
         self.world.events.schedule(
             self.world.time.now,
-            lambda d=damage: self._process_damage(d),
-            EventType.DAMAGE,
-            {
-                "source_id": source_id,
-                "target_id": target_id,
-                "damage_type": damage_type,
-            }
+            self._create_damage_event_handler(damage),
+            EventType.DAMAGE
         )
     
-    def _process_damage(self, damage):
+    def _process_damage(self, damage: Damage):
         health = self.world.get_component(damage.target_id, Health)
         if not health:
             self.world.logger.error("Target has no health. Damage processing cancelled.")
@@ -54,11 +46,8 @@ class DamageSystem:
         if self._check_death(damage.target_id):
             self.world.events.schedule(
                 self.world.time.now,
-                self._create_death_handler(damage.target_id),
-                EventType.DEATH,
-                {
-                    "unit_id": damage.target_id,
-                }
+                self._create_death_event_handler(damage.target_id, damage.source_id),
+                EventType.DEATH
             )
         
         return amount
@@ -110,9 +99,14 @@ class DamageSystem:
             return True
         return False
     
-    def _create_death_handler(self, unit_id):
-        def death_handler():
-            self.world.add_tag(unit_id, Dead)
-            return unit_id
+    def _create_damage_event_handler(self, damage: Damage):
+        def damage_event_handler():
+            amount = self._process_damage(damage)
+            return DamageEventResult(damage.source_id, damage.target_id, amount, damage.type)
+        return damage_event_handler
 
-        return death_handler
+    def _create_death_event_handler(self, unit_id, killer_id):
+        def death_event_handler():
+            self.world.add_tag(unit_id, Dead)
+            return DeathEventResult(unit_id, killer_id)
+        return death_event_handler
