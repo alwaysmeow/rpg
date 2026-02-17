@@ -5,9 +5,7 @@ def test_script(world):
     meowmeow = world.entity_factory.create_unit("meowmeow")
     world.entity_factory.create_autoattack(meowmeow)
 
-    combat_id = world.combat_system.create_combat([
+    world.combat_system.create_combat([
         [flaneur],
         [meowmeow]
     ])
-
-    world.logger.log_combat(combat_id)
