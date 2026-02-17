@@ -9,19 +9,21 @@ from system.logger import Logger
 from system.damage import DamageSystem
 from system.cooldown import CooldownSystem
 from system.ability import AbilitySystem
+from system.regeneration import RegenerationSystem
 
 from component.tag import Tag
 
 class World:
     def __init__(self):
         self.time = TimeSystem()
-        self.events = EventSystem()
+        self.events = EventSystem(self)
         self.logger = Logger(self)
         self.entity_system = EntitySystem(self)
         self.combat_system = CombatSystem(self)
         self.damage_system = DamageSystem(self)
         self.cooldown_system = CooldownSystem(self)
         self.ability_system = AbilitySystem(self)
+        self.regeneration_system = RegenerationSystem(self)
 
         self.entities: Set[int] = set()
         self.components: Dict[Type, Dict[int, Any]] = defaultdict(dict)
@@ -30,8 +32,9 @@ class World:
 
     def update(self, delta):
         self.time.advance(delta)
-        self.events.process(self.time.now)
         self.cooldown_system.update(delta)
+        self.regeneration_system.update(delta)
+        self.events.process(self.time.now)
 
     def create_entity(self) -> int:
         entity_id = self._next_entity_id

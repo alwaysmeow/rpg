@@ -9,10 +9,9 @@ class CooldownSystem:
 
     def update(self, delta):
         for ability_id in self.world.components[Cooldown]:
-            cooldown = self.world.components[Cooldown][ability_id]
+            cooldown = self.world.get_component(ability_id, Cooldown)
             self._update_ability_cooldown(cooldown, delta)
 
             autocast = self.world.components[Autocast][ability_id]
             if autocast and autocast.value and cooldown.value == 1:
-                self.world.logger.log(f"Ability {ability_id} autocasted")
                 self.world.ability_system.cast(ability_id)
