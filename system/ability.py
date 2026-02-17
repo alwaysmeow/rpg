@@ -30,7 +30,7 @@ class AbilitySystem:
         if target:
             target_id = target.unit_id
 
-        if TargetAbility in ability_tags and not target_id:
+        if TargetAbility in ability_tags and target_id is None:
             self.world.logger.error("Casting of this ability needs target. Cast cancelled.")
             return False
 
