@@ -1,6 +1,7 @@
 from component.tag import Combat, Dead
 from component.target import Target
 from component.combat import CombatParticipation, CombatState
+from component.ability import Autocast, Owner
 
 from system.event import DeathEventResult
 
@@ -23,7 +24,10 @@ class CombatSystem:
 
         self.world.add_tag(combat_id, Combat)
 
+        # TODO: combat start event
+
         self._update_all_targets(combat_id)
+        self._trigger_autocast_abilities(combat_id)
 
         return combat_id
     
@@ -54,6 +58,22 @@ class CombatSystem:
                 if not self.world.has_tag(unit_id, Dead):
                     self.world.add_component(unit_id, Target(new_target_id))
 
+    def _trigger_autocast_abilities(self, combat_id):
+        teams = self._get_teams(combat_id)
+        
+        for team in teams:
+            for unit_id in team:
+                abilities = self.world.query_by_components({
+                    Autocast: {
+                        "include": { "value": [True] },
+                    },
+                    Owner: {
+                        "include": { "unit_id": [unit_id] },
+                    },
+                })
+                
+                for ability_id in abilities:
+                    self.world.ability_system.autocast_trigger(ability_id)
     
     def _get_teams(self, combat_id):
         # TODO: maybe create component for teams

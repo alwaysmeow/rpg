@@ -12,12 +12,7 @@ class CooldownSystem:
     def update(self, delta):
         for ability_id in self.world.components[Cooldown]:
             cooldown = self.world.get_component(ability_id, Cooldown)
-            self._update_ability_cooldown(cooldown, delta)
+            progress = self._update_ability_cooldown(cooldown, delta)
 
-            if cooldown.value >= 1:
-                self._autocast_trigger(ability_id)
-    
-    def _autocast_trigger(self, ability_id):
-        autocast = self.world.components[Autocast][ability_id]
-        if autocast and autocast.value:
-            self.world.ability_system.cast(ability_id)
+            if progress > 0 and cooldown.value >= 1:
+                self.world.ability_system.autocast_trigger(ability_id)

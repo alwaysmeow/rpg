@@ -1,4 +1,4 @@
-from component.ability import AbilityEffect, Owner, CastTime, Cooldown
+from component.ability import AbilityEffect, Owner, CastTime, Cooldown, Autocast
 from component.target import Target
 from component.tag import Dead, TargetAbility
 
@@ -52,3 +52,8 @@ class AbilitySystem:
         self.world.events.schedule(self.world.time.now + cast_time, cast_end_handler, EventType.CAST_END)
 
         return True
+
+    def autocast_trigger(self, ability_id):
+        autocast = self.world.components[Autocast][ability_id]
+        if autocast and autocast.value:
+            self.cast(ability_id)

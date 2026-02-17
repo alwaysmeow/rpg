@@ -79,6 +79,31 @@ class World:
 
         return result
 
+    def query_by_components(
+        self,
+        filters: Dict[Type, Any] | None = None,
+    ) -> Set[int]:
+        if not filters:
+            return self.entities.copy()
+
+        component_types = list(filters.keys())
+        first_type = component_types[0]
+
+        result = self.query_by_component(
+            first_type,
+            include_filters=filters[first_type].get("include"),
+            exclude_filters=filters[first_type].get("exclude")
+        )
+
+        for component_type in component_types[1:]:
+            result &= self.query_by_component(
+                component_type,
+                include_filters=filters[component_type].get("include"),
+                exclude_filters=filters[component_type].get("exclude")
+            )
+
+        return result
+
     def add_tag(self, entity: int, tag: Type):
         self.tags[tag].add(entity)
     
