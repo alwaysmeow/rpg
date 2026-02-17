@@ -1,8 +1,7 @@
 from component.stats import Armor, MagicResist, Health, AttackDamage, AttackSpeed
 from component.name import Name
-from component.combat import CombatParticipants, CombatState
 from component.ability import AbilityEffect, Owner, Cooldown, CastTime, Autocast
-from component.tag import Unit, Combat, Ability, Attack, TargetAbility
+from component.tag import Unit, Ability, Attack, TargetAbility
 
 from abilities.attack import attack_handler
 

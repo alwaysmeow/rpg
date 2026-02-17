@@ -17,11 +17,13 @@ class CombatSystem:
 
         self.world.add_component(combat_id, CombatState())
 
-        for team_index in range(teams):
+        for team_index in range(len(teams)):
             for unit_id in teams[team_index]:
                 self.world.add_component(unit_id, CombatParticipation(combat_id, team_index))
 
         self.world.add_tag(combat_id, Combat)
+
+        self._update_all_targets(combat_id)
 
         return combat_id
     
@@ -42,14 +44,26 @@ class CombatSystem:
                     enemies = self._get_enemies(teams, team_index)
                     new_target_id = self._find_new_target(enemies)
                     for unit_id in teams[team_index]:
-                        self.world.add_component(unit_id, Target(new_target_id))
+                        if not self.world.has_tag(unit_id, Dead):
+                            self.world.add_component(unit_id, Target(new_target_id))
+    
+    def _update_all_targets(self, combat_id):
+        teams = self._get_teams(combat_id)
+
+        for team_index in range(len(teams)):
+            enemies = self._get_enemies(teams, team_index)
+            new_target_id = self._find_new_target(enemies)
+            for unit_id in teams[team_index]:
+                if not self.world.has_tag(unit_id, Dead):
+                    self.world.add_component(unit_id, Target(new_target_id))
+
     
     def _get_teams(self, combat_id):
         # TODO: maybe create component for teams
         units_id = self.world.query_by_component(
             CombatParticipation,
             include_filters = {
-                "combat_id": combat_id,
+                "combat_id": [combat_id],
             },
         )
 

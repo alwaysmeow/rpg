@@ -60,21 +60,19 @@ class World:
         result = set()
 
         for entity_id, component in self.components[component_type].items():
-            if not include_filters and not exclude_filters:
-                result.add(entity_id)
-                continue
-
             match = True
 
-            for attr, expected_values in include_filters.items():
-                if not hasattr(component, attr) or not getattr(component, attr) in expected_values:
-                    match = False
-                    break
+            if not include_filters is None:
+                for attr, expected_values in include_filters.items():
+                    if not hasattr(component, attr) or not getattr(component, attr) in expected_values:
+                        match = False
+                        break
             
-            for attr, unexpected_values in exclude_filters.items():
-                if hasattr(component, attr) and getattr(component, attr) in unexpected_values:
-                    match = False
-                    break
+            if not exclude_filters is None:
+                for attr, unexpected_values in exclude_filters.items():
+                    if hasattr(component, attr) and getattr(component, attr) in unexpected_values:
+                        match = False
+                        break
 
             if match:
                 result.add(entity_id)
