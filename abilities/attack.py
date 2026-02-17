@@ -1,4 +1,4 @@
-from system.damage import DamageType
+from entity.damage_type import DamageType
 from component.stats import AttackDamage
 
 def attack_handler(world, attacker_id, target_id):

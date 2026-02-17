@@ -3,7 +3,7 @@ from collections import defaultdict
 
 from system.time import TimeSystem
 from system.event import EventSystem
-from system.entity import EntitySystem
+from system.entity import EntityFactory
 from system.combat import CombatSystem
 from system.logger import Logger
 from system.damage import DamageSystem
@@ -18,7 +18,7 @@ class World:
         self.time = TimeSystem()
         self.events = EventSystem(self)
         self.logger = Logger(self)
-        self.entity_system = EntitySystem(self)
+        self.entity_factory = EntityFactory(self)
         self.combat_system = CombatSystem(self)
         self.damage_system = DamageSystem(self)
         self.cooldown_system = CooldownSystem(self)

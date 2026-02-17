@@ -29,7 +29,7 @@ class DamageEventResult:
 
 @dataclass
 class DeathEventResult:
-    unit_id: int
+    victim_id: int
     killer_id: int
 
 class Event:

@@ -105,8 +105,8 @@ class DamageSystem:
             return DamageEventResult(damage.source_id, damage.target_id, amount, damage.type)
         return damage_event_handler
 
-    def _create_death_event_handler(self, unit_id, killer_id):
+    def _create_death_event_handler(self, victim_id, killer_id):
         def death_event_handler():
-            self.world.add_tag(unit_id, Dead)
-            return DeathEventResult(unit_id, killer_id)
+            self.world.add_tag(victim_id, Dead)
+            return DeathEventResult(victim_id, killer_id)
         return death_event_handler

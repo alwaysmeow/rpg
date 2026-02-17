@@ -5,7 +5,7 @@ from component.tag import Unit, Ability, Attack, TargetAbility
 
 from abilities.attack import attack_handler
 
-class EntitySystem:
+class EntityFactory:
     def __init__(self, world):
         self.world = world
 

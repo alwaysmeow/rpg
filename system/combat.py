@@ -122,7 +122,7 @@ class CombatSystem:
         return True
     
     def _on_participant_death(self, death_event_result: DeathEventResult):
-        victim_participation = self.world.get_component(death_event_result.unit_id, CombatParticipation)
+        victim_participation = self.world.get_component(death_event_result.victim_id, CombatParticipation)
         if victim_participation:
             self._update_targets_after_death(victim_participation)
-        self._check_combat_end(victim_participation.combat_id)
+            self._check_combat_end(victim_participation.combat_id)
