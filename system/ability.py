@@ -58,13 +58,13 @@ class AbilitySystem:
 
         return True
 
-    def autocast_trigger(self, ability_id):
+    def _autocast_trigger(self, ability_id):
         autocast = self.world.components[Autocast][ability_id]
         if autocast and autocast.value:
             self.cast(ability_id)
     
     def _on_cooldown_end(self, cooldown_event_result: CooldownEventResult):
-        self.autocast_trigger(cooldown_event_result.ability_id)
+        self._autocast_trigger(cooldown_event_result.ability_id)
     
     def _on_combat_start(self, combat_start_event_result: CombatEventResult):
         for team in combat_start_event_result.teams:
@@ -79,4 +79,4 @@ class AbilitySystem:
                 })
                 
                 for ability_id in abilities:
-                    self.world.ability_system.autocast_trigger(ability_id)
+                    self._autocast_trigger(ability_id)
