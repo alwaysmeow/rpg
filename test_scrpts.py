@@ -8,7 +8,9 @@ def test_script(world):
     world.entity_system.create_autoattack(flaneur)
     world.entity_system.create_autoattack(meowmeow)
 
-    world.combat_system.create_combat([
-        [flaneur],
-        [meowmeow]
-    ])
+    print(world.entities)
+
+    # world.combat_system.create_combat([
+    #     [flaneur],
+    #     [meowmeow]
+    # ])

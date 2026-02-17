@@ -10,7 +10,7 @@ class CombatSystem:
     def __init__(self, world):
         self.world = world
 
-        self.world.events.subscribe(EventType.DEATH, self._update_targets)
+        self.world.events.subscribe(EventType.DEATH, self._on_participant_death)
     
     def create_combat(self, teams):
         combat_id = self.world.create_entity()
@@ -33,19 +33,16 @@ class CombatSystem:
                 return enemy_id
         return None
     
-    def _update_targets(self, death_event_result: DeathEventResult):
-        victim_participation = self.world.get_component(death_event_result.unit_id, CombatParticipation)
+    def _update_targets_after_death(self, victim_participation: CombatParticipation):
+        teams = self._get_teams(victim_participation.combat_id)
 
-        if victim_participation:
-            teams = self._get_teams(victim_participation.combat_id)
-
-            for team_index in range(len(teams)):
-                if team_index != victim_participation.team_index:
-                    enemies = self._get_enemies(teams, team_index)
-                    new_target_id = self._find_new_target(enemies)
-                    for unit_id in teams[team_index]:
-                        if not self.world.has_tag(unit_id, Dead):
-                            self.world.add_component(unit_id, Target(new_target_id))
+        for team_index in range(len(teams)):
+            if team_index != victim_participation.team_index:
+                enemies = self._get_enemies(teams, team_index)
+                new_target_id = self._find_new_target(enemies)
+                for unit_id in teams[team_index]:
+                    if not self.world.has_tag(unit_id, Dead):
+                        self.world.add_component(unit_id, Target(new_target_id))
     
     def _update_all_targets(self, combat_id):
         teams = self._get_teams(combat_id)
@@ -79,3 +76,33 @@ class CombatSystem:
 
     def _get_enemies(self, teams, team_index):
         return [enemy for i, team in enumerate(teams) if i != team_index for enemy in team]
+    
+    def _check_combat_end(self, combat_id):
+        units_id = self.world.query_by_component(
+            CombatParticipation,
+            include_filters = {
+                "combat_id": [combat_id],
+            },
+        )
+
+        teams_alive = set()
+
+        for unit_id in units_id:
+            participation = self.world.get_component(unit_id, CombatParticipation)
+            if not self.world.has_tag(unit_id, Dead):
+                teams_alive.add(participation.team_index)
+            if len(teams_alive) > 1:
+                return False
+        
+        # TODO: combat end event
+
+        for unit_id in units_id:
+            self.world.logger.log_unit(unit_id)
+
+        return True
+    
+    def _on_participant_death(self, death_event_result: DeathEventResult):
+        victim_participation = self.world.get_component(death_event_result.unit_id, CombatParticipation)
+        if victim_participation:
+            self._update_targets_after_death(victim_participation)
+        self._check_combat_end(victim_participation.combat_id)
