@@ -51,6 +51,36 @@ class World:
     def get_component(self, entity: int, component_type: Type) -> Any:
         return self.components[component_type].get(entity)
     
+    def query_by_component(
+        self, 
+        component_type: Type, 
+        include_filters: Dict[str, Any] | None = None, 
+        exclude_filters: Dict[str, Any] | None = None
+    ) -> Set[int]:
+        result = set()
+
+        for entity_id, component in self.components[component_type].items():
+            if not include_filters and not exclude_filters:
+                result.add(entity_id)
+                continue
+
+            match = True
+
+            for attr, expected_values in include_filters.items():
+                if not hasattr(component, attr) or not getattr(component, attr) in expected_values:
+                    match = False
+                    break
+            
+            for attr, unexpected_values in exclude_filters.items():
+                if hasattr(component, attr) and getattr(component, attr) in unexpected_values:
+                    match = False
+                    break
+
+            if match:
+                result.add(entity_id)
+
+        return result
+
     def add_tag(self, entity: int, tag: Type):
         self.tags[tag].add(entity)
     
@@ -62,3 +92,6 @@ class World:
     
     def get_tags(self, entity: int) -> Set[Type]:
         return {tag_type for tag_type, entities in self.tags.items() if entity in entities}
+    
+    def query_by_tag(self, tag: Type) -> Set[int]:
+        return self.tags[tag].copy()

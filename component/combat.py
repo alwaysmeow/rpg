@@ -1,9 +1,7 @@
-from typing import List
-
-class CombatParticipants:
-    def __init__(self, team1: List[int], team2: List[int]):
-        self.team1 = team1
-        self.team2 = team2
+class CombatParticipation:
+    def __init__(self, combat_id, team_index):
+        self.combat_id = combat_id
+        self.team_index = team_index
 
 class CombatState:
     def __init__(self):

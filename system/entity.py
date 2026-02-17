@@ -23,15 +23,6 @@ class EntitySystem:
 
         return unit_id
     
-    def create_combat(self, team1, team2):
-        combat_id = self.world.create_entity()
-
-        self.world.add_component(combat_id, CombatState())
-        self.world.add_component(combat_id, CombatParticipants(team1, team2))
-        self.world.add_tag(combat_id, Combat)
-
-        return combat_id
-    
     def create_ability(self, owner, handler, cast_time, cooldown_duration, autocast):
         ability_id = self.world.create_entity()
 
