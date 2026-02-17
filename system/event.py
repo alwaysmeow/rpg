@@ -50,6 +50,7 @@ class EventSystem:
         heapq.heappush(self._queue, Event(time, handler, event_type))
 
     def process(self, now):
+        # TODO: max iterations
         while self._queue and self._queue[0].time <= now:
             event = heapq.heappop(self._queue)
             event_result = event.handler()

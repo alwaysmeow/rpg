@@ -13,6 +13,6 @@ class CooldownSystem:
             self._update_ability_cooldown(cooldown, delta)
 
             autocast = self.world.components[Autocast][ability_id]
-            if autocast.value and cooldown.value == 1:
+            if autocast and autocast.value and cooldown.value == 1:
                 self.world.logger.log(f"Ability {ability_id} autocasted")
                 self.world.ability_system.cast(ability_id)
