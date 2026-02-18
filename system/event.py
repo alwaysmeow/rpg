@@ -44,6 +44,8 @@ class Event:
         self.type = event_type
 
     def __lt__(self, other):
+        if self.time == other.time:
+            return self.type.priority > other.type.priority
         return self.time < other.time
 
 class EventSystem:

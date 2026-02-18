@@ -1,11 +1,15 @@
 from enum import Enum
 
 class EventType(Enum):
-    ATTACK = "attack"
-    CAST_END = "cast_end"
-    CAST_START = "cast_start"
-    COMBAT_END = "combat_end"
-    COMBAT_START = "combat_start"
-    COOLDOWN_END = "cooldown_end"
-    DAMAGE = "damage"
-    DEATH = "death"
+    ATTACK = ("attack", 5)
+    CAST_START = ("cast_start", 5)
+    CAST_END = ("cast_end", 5)
+    DAMAGE = ("damage", 5)
+    DEATH = ("death", 5)
+    COMBAT_START = ("combat_start", 5)
+    COMBAT_END = ("combat_end", 0)
+    COOLDOWN_END = ("cooldown_end", 5)
+
+    def __init__(self, value, priority):
+        self._value_ = value
+        self.priority = priority
