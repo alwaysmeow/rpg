@@ -1,3 +1,5 @@
+from random import random
+
 from config_loader import load_config
 from component.stats import Health, MagicResist, Armor
 from component.tag import Dead
@@ -40,6 +42,7 @@ class DamageSystem:
 
         amount = self._apply_modifiers(damage, amount)
         amount = self._apply_resistance(damage, amount)
+        amount = self._round_amount(amount)
         amount = self._apply_for_unit(damage.target_id, amount)
 
         if self._check_death(damage.target_id):
@@ -49,7 +52,7 @@ class DamageSystem:
                 EventType.DEATH
             )
         
-        return amount
+        return round(amount)
 
     def _apply_modifiers(self, damage, amount):
         # TODO: modifiers processing
@@ -81,6 +84,10 @@ class DamageSystem:
                 return self._reduced_magic_damage(amount, damage.target_id)
         return amount
     
+    def _round_amount(self, amount) -> int:
+        ceil = amount % 1 > random()
+        return int(amount) + int(ceil)
+
     def _apply_for_unit(self, target_id, amount):
         health = self.world.get_component(target_id, Health)
 
