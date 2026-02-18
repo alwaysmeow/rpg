@@ -58,7 +58,6 @@ class EventSystem:
 
     def schedule(self, time, handler, event_type = None, unique_key = None):
         if unique_key and unique_key in self._unique_keys:
-            self.world.logger.error(f"Can't schedule duplicate of {unique_key}")
             return None
         event = Event(time, handler, event_type, unique_key)
         heapq.heappush(self._queue, event)

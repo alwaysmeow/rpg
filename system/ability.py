@@ -1,6 +1,6 @@
 from component.ability import AbilityEffect, Owner, CastTime, Cooldown, Autocast
 from component.target import Target
-from component.tag import Dead, TargetAbility
+from component.tag import Dead, TargetAbility, Attack
 
 from system.event import CastEventResult, CooldownEventResult, CombatEventResult
 
@@ -50,11 +50,21 @@ class AbilitySystem:
         def cast_end_handler():
             ability_effect(self.world, caster_id, target_id)
             if cooldown:
-                cooldown.value = 0
+                cooldown.value = 0 # TODO: set cooldown event
             return CastEventResult(caster_id, target_id, ability_id)
 
-        self.world.events.schedule(self.world.time.now, cast_start_handler, EventType.CAST_START)
-        self.world.events.schedule(self.world.time.now + cast_time, cast_end_handler, EventType.CAST_END)
+        if cast_time:
+            self.world.events.schedule(
+                self.world.time.now, 
+                cast_start_handler, 
+                EventType.CAST_START
+            )
+        
+        self.world.events.schedule(
+            self.world.time.now + cast_time, 
+            cast_end_handler, 
+            self._event_type_on_cast(ability_id)
+        )
 
         return True
 
@@ -80,3 +90,9 @@ class AbilitySystem:
                 
                 for ability_id in abilities:
                     self._autocast_trigger(ability_id)
+    
+    def _event_type_on_cast(self, ability_id):
+        if self.world.has_tag(ability_id, Attack):
+            return EventType.ATTACK
+        else:
+            return EventType.CAST_END
