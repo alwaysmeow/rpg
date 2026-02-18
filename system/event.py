@@ -70,7 +70,7 @@ class EventSystem:
         while self._queue and self._queue[0].time <= now:
             event = heapq.heappop(self._queue)
             event_result = event.handler()
-            self.world.logger.log(f"Event occured: {event.type} with result = {event_result}")
+            self.world.logger.log_event_result(event_result)
             if event.type:
                 self.emit(event.type, event_result)
     
