@@ -1,7 +1,6 @@
 from component.tag import Combat, Dead
 from component.target import Target
 from component.combat import CombatParticipation, CombatState
-from component.ability import Autocast, Owner
 
 from system.event import DeathEventResult, CombatEventResult
 
@@ -106,7 +105,8 @@ class CombatSystem:
         self.world.events.schedule(
             self.world.time.now,
             self._create_combat_end_handler(combat_id),
-            EventType.COMBAT_END
+            EventType.COMBAT_END,
+            (EventType.COMBAT_END, combat_id)
         )
 
         return True

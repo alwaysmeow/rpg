@@ -38,10 +38,11 @@ class DeathEventResult:
     killer_id: int
 
 class Event:
-    def __init__(self, time, handler, event_type = None):
+    def __init__(self, time, handler, event_type = None, unique_key = None):
         self.time = time
         self.handler = handler
         self.type = event_type
+        self.unique_key = unique_key
 
     def __lt__(self, other):
         if self.time == other.time:
@@ -53,9 +54,17 @@ class EventSystem:
         self.world = world
         self._queue = []
         self._listeners: Dict[EventType, List[Callable]] = {}
+        self._unique_keys = set()
 
-    def schedule(self, time, handler, event_type = None):
-        heapq.heappush(self._queue, Event(time, handler, event_type))
+    def schedule(self, time, handler, event_type = None, unique_key = None):
+        if unique_key and unique_key in self._unique_keys:
+            self.world.logger.error(f"Can't schedule duplicate of {unique_key}")
+            return None
+        event = Event(time, handler, event_type, unique_key)
+        heapq.heappush(self._queue, event)
+        if unique_key:
+            self._unique_keys.add(unique_key)
+        return event
 
     def process(self, now):
         # TODO: max iterations
