@@ -1,15 +1,17 @@
 from typing import Type, Any, Set, Dict
 from collections import defaultdict
+from rich.console import Console
 
 from system.time import TimeSystem
 from system.event import EventSystem
 from system.entity import EntityFactory
 from system.combat import CombatSystem
-from system.logger import Logger
 from system.damage import DamageSystem
 from system.cooldown import CooldownSystem
 from system.ability import AbilitySystem
 from system.regeneration import RegenerationSystem
+
+from ui.logger import Logger
 
 from component.tag import Tag
 
@@ -18,13 +20,16 @@ class World:
         # TODO: systems in list
         self.time = TimeSystem()
         self.events = EventSystem(self)
-        self.logger = Logger(self)
         self.entity_factory = EntityFactory(self)
         self.combat_system = CombatSystem(self)
         self.damage_system = DamageSystem(self)
         self.cooldown_system = CooldownSystem(self)
         self.ability_system = AbilitySystem(self)
         self.regeneration_system = RegenerationSystem(self)
+
+        # TODO: move out
+        console = Console()
+        self.logger = Logger(self, console.print)
 
         self.entities: Set[int] = set()
         self.components: Dict[Type, Dict[int, Any]] = defaultdict(dict)
