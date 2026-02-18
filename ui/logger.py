@@ -68,12 +68,11 @@ class Logger:
             name = name_component.name
         else:
             entity_type = "Entity"
-            tags = self.world.get_tags(entity_id)
-            if Unit in tags:
+            if self.world.has_tag(entity_id, Unit):
                 entity_type = "Unit"
-            elif Ability in tags:
+            elif self.world.has_tag(entity_id, Ability):
                 entity_type = "Ability"
-            elif Combat in tags:
+            elif self.world.has_tag(entity_id, Combat):
                 entity_type = "Combat"
 
             name = f"{entity_type} {entity_id}"
