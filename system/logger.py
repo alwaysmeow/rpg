@@ -1,3 +1,5 @@
+from rich.console import Console
+
 from component.name import Name
 from component.stats import Armor, MagicResist, Health
 from component.ability import Cooldown
@@ -7,6 +9,8 @@ from system.event import AttackEventResult, CastEventResult, CombatEventResult, 
 class Logger:
     def __init__(self, world):
         self.world = world
+
+        self.console = Console()
     
     def log_unit(self, unit_id):
         print(f"\nName: {self.world.get_component(unit_id, Name).name}")
@@ -34,15 +38,15 @@ class Logger:
     def _log_damage_event_result(self, result: DamageEventResult):
         source_name = self._get_unit_name(result.source_id)
         target_name = self._get_unit_name(result.target_id)
-        print(f"- {source_name} deals {result.amount} {result.damage_type._value_} damage to {target_name}")
+        self.console.print(f"- [cyan]{source_name}[/cyan] deals [red]{result.amount}[/red] {result.damage_type._value_} damage to [cyan]{target_name}[/cyan]")
 
     def _log_death_event_result(self, result: DeathEventResult):
         killer_name = self._get_unit_name(result.killer_id)
         victim_name = self._get_unit_name(result.victim_id)
-        print(f"- {killer_name} killed {victim_name}")
+        self.console.print(f"- [cyan]{killer_name}[/cyan] [red]killed[/red] [cyan]{victim_name}[/cyan]")
 
     def error(self, text):
-        print(f"\n- ERROR: {text} - {self.world.time.now}\n")
+        self.console.print(f"- [bold red]ERROR:[/bold red] {text} - {self.world.time.now}")
 
     def log(self, text):
         print(f"\n- LOG: {text} - {self.world.time.now}\n")
