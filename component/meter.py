@@ -1,4 +1,4 @@
-from entity.modifier import apply_modifiers
+from shared.modifier import apply_modifiers
 from utils import clamp
 
 class Meter:

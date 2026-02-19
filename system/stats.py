@@ -1,5 +1,5 @@
 from component.stats import Armor, MagicResist
-from entity.formula import BaseArmorFormula, BaseMagicResistFormula
+from shared.formula import BaseArmorFormula, BaseMagicResistFormula
 
 class StatsSystem:
     def __init__(self, world):

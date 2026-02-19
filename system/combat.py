@@ -2,9 +2,8 @@ from component.tag import Combat, Dead
 from component.target import Target
 from component.combat import CombatParticipation, CombatState
 
-from system.event import DeathEventResult, CombatEventResult
-
-from entity.event_type import EventType
+from shared.event_type import EventType
+from shared.event_result import DeathEventResult, CombatEventResult
 
 class CombatSystem:
     def __init__(self, world):

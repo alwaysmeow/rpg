@@ -4,10 +4,9 @@ from config_loader import load_config
 from component.stats import Health, MagicResist, Armor
 from component.tag import Dead
 
-from entity.event_type import EventType
-from entity.damage_type import DamageType
-
-from system.event import DamageEventResult, DeathEventResult
+from shared.event_type import EventType
+from shared.damage_type import DamageType
+from shared.event_result import DamageEventResult, DeathEventResult
 
 class Damage:
     def __init__(self, source_id, target_id, type: DamageType, amount: int):

@@ -5,10 +5,9 @@ from component.stats import Armor, MagicResist, Health
 from component.ability import Cooldown
 from component.tag import *
 
-from system.event import AttackEventResult, CastEventResult, CombatEventResult, CooldownEventResult, DeathEventResult, DamageEventResult
-
-from entity.damage_type import DamageType
-from entity.event_type import EventType
+from shared.damage_type import DamageType
+from shared.event_type import EventType
+from shared.event_result import *
 
 class Logger:
     def __init__(self, world, sink=print, markup=True):

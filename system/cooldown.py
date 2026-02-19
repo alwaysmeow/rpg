@@ -1,8 +1,9 @@
 from component.ability import Cooldown, Owner
 from component.tag import Attack
 from component.stats import AttackSpeed
-from system.event import CooldownEventResult
-from entity.event_type import EventType
+
+from shared.event_type import EventType
+from shared.event_result import CooldownEventResult
 
 from config_loader import load_config
 

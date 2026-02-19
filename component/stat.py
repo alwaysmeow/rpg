@@ -1,4 +1,4 @@
-from entity.modifier import apply_modifiers
+from shared.modifier import apply_modifiers
 
 class Stat:
     def __init__(self, value = 0):

@@ -2,9 +2,8 @@ from component.ability import AbilityEffect, Owner, CastTime, Cooldown, Autocast
 from component.target import Target
 from component.tag import Dead, TargetAbility, Attack
 
-from system.event import CastEventResult, CooldownEventResult, CombatEventResult
-
-from entity.event_type import EventType
+from shared.event_type import EventType
+from shared.event_result import CastEventResult, CooldownEventResult, CombatEventResult
 
 class AbilitySystem:
     def __init__(self, world):
