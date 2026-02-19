@@ -8,7 +8,8 @@ class EventType(Enum):
     DEATH = ("death", 5)
     COMBAT_START = ("combat_start", 5)
     COMBAT_END = ("combat_end", 0)
-    COOLDOWN_END = ("cooldown_end", 5)
+    COOLDOWN_SET = ("cooldown_set", 5)
+    COOLDOWN_UNSET = ("cooldown_unset", 5)
 
     def __init__(self, value, priority):
         self._value_ = value

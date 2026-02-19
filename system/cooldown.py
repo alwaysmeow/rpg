@@ -13,6 +13,8 @@ class CooldownSystem:
 
         config = load_config(game_config_path)
         self.attack_speed_coefficient = config["attack_speed_coefficient"]
+
+        self.world.events.subscribe(EventType.COOLDOWN_SET, self._on_cooldown_set)
     
     def _update_ability_cooldown(self, cooldown, delta):
         old_value = cooldown.value
@@ -30,9 +32,9 @@ class CooldownSystem:
             cooldown = self.world.get_component(ability_id, Cooldown)
 
             if self.world.has_tag(ability_id, Attack):
-                owner_id = self.world.get_component(ability_id, Owner)
-                if owner_id:
-                    attack_speed = self.world.get_component(owner_id.unit_id, AttackSpeed)
+                owner = self.world.get_component(ability_id, Owner)
+                if owner:
+                    attack_speed = self.world.get_component(owner.unit_id, AttackSpeed)
                     if attack_speed:
                         progress = self._update_attack_cooldown(cooldown, attack_speed.effective_value, delta)
             else:
@@ -41,11 +43,20 @@ class CooldownSystem:
             if progress and progress > 0 and cooldown.value >= 1:
                 self.world.events.schedule(
                     self.world.time.now,
-                    self._create_cooldown_end_handler(ability_id),
-                    EventType.COOLDOWN_END
+                    self._create_cooldown_unset_handler(ability_id),
+                    EventType.COOLDOWN_UNSET
                 )
     
-    def _create_cooldown_end_handler(self, ability_id):
+    def _create_cooldown_unset_handler(self, ability_id):
         def cooldown_end_handler():
             return CooldownEventResult(ability_id)
         return cooldown_end_handler
+
+    def _on_cooldown_set(self, result: CooldownEventResult):
+        self._set_cooldown(
+            self.world.get_component(result.ability_id, Cooldown)
+        )
+    
+    def _set_cooldown(self, cooldown: Cooldown):
+        if cooldown:
+            cooldown.value = 0

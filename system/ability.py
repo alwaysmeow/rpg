@@ -9,7 +9,7 @@ class AbilitySystem:
     def __init__(self, world):
         self.world = world
 
-        self.world.events.subscribe(EventType.COOLDOWN_END, self._on_cooldown_end)
+        self.world.events.subscribe(EventType.COOLDOWN_UNSET, self._on_cooldown_unset)
         self.world.events.subscribe(EventType.COMBAT_START, self._on_combat_start)
     
     def cast(self, ability_id):
@@ -49,7 +49,11 @@ class AbilitySystem:
         def cast_end_handler():
             ability_effect(self.world, caster_id, target_id)
             if cooldown:
-                cooldown.value = 0 # TODO: set cooldown event
+                self.world.events.schedule(
+                    self.world.time.now, 
+                    lambda: CooldownEventResult(ability_id), 
+                    EventType.COOLDOWN_SET
+                )
             return CastEventResult(caster_id, target_id, ability_id)
 
         if cast_time:
@@ -72,7 +76,7 @@ class AbilitySystem:
         if autocast and autocast.value:
             self.cast(ability_id)
     
-    def _on_cooldown_end(self, cooldown_event_result: CooldownEventResult):
+    def _on_cooldown_unset(self, cooldown_event_result: CooldownEventResult):
         self._autocast_trigger(cooldown_event_result.ability_id)
     
     def _on_combat_start(self, combat_start_event_result: CombatEventResult):
