@@ -1,6 +1,6 @@
 from random import random
 
-from config_loader import load_config
+from utils import load_config
 from component.stats import Health, MagicResist, Armor
 from component.tag import Dead
 
