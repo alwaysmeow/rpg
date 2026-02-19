@@ -25,7 +25,7 @@ class EventSystem:
         self._unique_keys = set()
 
         config = load_config(game_config_path)
-        self.max_events_per_tick = config["max_events_per_tick"]
+        self.events_per_tick_limit = config["events_per_tick_limit"]
 
 
     def schedule(self, time, handler, event_type = None, unique_key = None):
@@ -39,12 +39,12 @@ class EventSystem:
 
     def process(self, now):
         iterations = 0
-        while self._queue and self._queue[0].time <= now and iterations < self.max_events_per_tick:
+        while self._queue and self._queue[0].time <= now and iterations < self.events_per_tick_limit:
             event = heapq.heappop(self._queue)
             event_result = event.handler()
             if event.type:
                 self.emit(event.type, event_result)
-            iterations += 0
+            iterations += 1
     
     def subscribe(self, event_type, callback):
         if event_type not in self._listeners:
