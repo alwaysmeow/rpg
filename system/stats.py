@@ -4,18 +4,25 @@ from shared.formula import BaseArmorFormula, BaseMagicResistFormula
 class StatsSystem:
     def __init__(self, world):
         self.world = world
-
-        self.formulas = {
-            Armor: BaseArmorFormula(),
-            MagicResist: BaseMagicResistFormula(),
-        }
     
     def update_modifiers(self, entity_id, stat_type): # TODO
         self.world.get_component(entity_id, stat_type).modifiers = []
-    
-    def update_base_values(self, entity_id):
-        for stat_type in self.formulas:
-            self.formulas[stat_type].calculate(self.world, entity_id)
+
+    def update_stat(self, entity_id, component_type, value_name):
+        component = self.world.get_component(entity_id, component_type)
+
+        if component is None:
+            self.world.logger.error(f"Entity {entity_id} has no {component_type.__name__}")
+            return
+
+        formula_attr_name = f"{value_name}_formula"
+        formula = getattr(component, formula_attr_name)
+
+        setattr(
+            component, 
+            value_name, 
+            self._calculate_formula(entity_id, formula)
+        )
 
     def _calculate_formula(self, unit_id, formula):
         kwargs = {}
