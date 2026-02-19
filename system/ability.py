@@ -94,3 +94,9 @@ class AbilitySystem:
             return EventType.ATTACK
         else:
             return EventType.CAST_END
+    
+    def _switch_autocast(self, ability_id):
+        if self.world.has_tag(ability_id, Autocast):
+            self.world.remove_tag(ability_id, Autocast)
+        else:
+            self.world.add_tag(ability_id, Autocast)
