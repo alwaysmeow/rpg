@@ -20,7 +20,7 @@ class CooldownSystem:
 
     def _update_attack_cooldown(self, cooldown, attack_speed, delta):
         old_value = cooldown.value
-        cooldown_regen = attack_speed ** self.attack_speed_coefficient # TODO: analize formula
+        cooldown_regen = attack_speed * self.attack_speed_coefficient # TODO: analize formula
         cooldown.value += cooldown_regen * delta
         return cooldown.value - old_value
 

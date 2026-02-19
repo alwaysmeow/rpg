@@ -17,7 +17,7 @@ class EntityFactory:
         self.world.add_component(unit_id, Armor(1))
         self.world.add_component(unit_id, MagicResist())
         self.world.add_component(unit_id, AttackDamage(10))
-        self.world.add_component(unit_id, AttackSpeed(10))
+        self.world.add_component(unit_id, AttackSpeed(50))
         self.world.add_tag(unit_id, Unit)
 
         return unit_id
