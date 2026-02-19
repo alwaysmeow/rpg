@@ -12,8 +12,8 @@ class Health(FormulaMeter): pass
 class Mana(FormulaMeter): pass
 
 class Stats:
-    def __init__(self, set = {}):
-        self.set: Set[type] = set()
+    def __init__(self, stats: Set[type] | None = None):
+        self.set: Set[type] = stats if stats is not None else set()
     
     def add(self, stat: type):
         self.set.add(stat)
