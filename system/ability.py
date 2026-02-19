@@ -3,7 +3,7 @@ from component.target import Target
 from component.tag import Dead, TargetAbility, Attack, Autocast
 
 from shared.event_type import EventType
-from shared.event_result import CastEventResult, CooldownEventResult, CombatEventResult
+from shared.event_result import CastEventResult, CooldownEventResult, CombatEventResult, AttackEventResult
 
 class AbilitySystem:
     def __init__(self, world):
@@ -38,22 +38,10 @@ class AbilitySystem:
             self.world.logger.error("Casting of this ability needs target. Cast cancelled.")
             return False
 
-        ability_effect = self.world.get_component(ability_id, AbilityEffect).handler
-
         cast_time_component = self.world.get_component(ability_id, CastTime)
         cast_time = cast_time_component.value if cast_time_component else 0
 
         def cast_start_handler():
-            return CastEventResult(caster_id, target_id, ability_id)
-
-        def cast_end_handler():
-            ability_effect(self.world, caster_id, target_id)
-            if cooldown:
-                self.world.events.schedule(
-                    self.world.time.now, 
-                    lambda: CooldownEventResult(ability_id), 
-                    EventType.COOLDOWN_SET
-                )
             return CastEventResult(caster_id, target_id, ability_id)
 
         if cast_time:
@@ -65,7 +53,7 @@ class AbilitySystem:
         
         self.world.events.schedule(
             self.world.time.now + cast_time, 
-            cast_end_handler, 
+            self._create_cast_end_handler(caster_id, target_id, ability_id), 
             self._event_type_on_cast(ability_id)
         )
 
@@ -94,6 +82,20 @@ class AbilitySystem:
             return EventType.ATTACK
         else:
             return EventType.CAST_END
+    
+    def _create_cast_end_handler(self, caster_id, target_id, ability_id):
+        ability_handler = self.world.get_component(ability_id, AbilityEffect).handler
+
+        if self.world.has_tag(ability_id, Attack):
+            def cast_end_handler():
+                ability_handler(self.world, caster_id, target_id)
+                return AttackEventResult(caster_id, target_id, ability_id)
+        else: 
+            def cast_end_handler():
+                ability_handler(self.world, caster_id, target_id)
+                return CastEventResult(caster_id, target_id, ability_id)
+
+        return cast_end_handler
     
     def _switch_autocast(self, ability_id):
         if self.world.has_tag(ability_id, Autocast):

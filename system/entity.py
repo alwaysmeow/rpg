@@ -13,11 +13,11 @@ class EntityFactory:
         unit_id = self.world.create_entity()
 
         self.world.add_component(unit_id, Name(name))
-        self.world.add_stat(unit_id, Health(100, 0))
-        self.world.add_stat(unit_id, Armor(1))
-        self.world.add_stat(unit_id, MagicResist())
-        self.world.add_stat(unit_id, AttackDamage(10))
-        self.world.add_stat(unit_id, AttackSpeed(50))
+        self.world.entity_factory.add_stat(unit_id, Health(100, 0))
+        self.world.entity_factory.add_stat(unit_id, Armor(1))
+        self.world.entity_factory.add_stat(unit_id, MagicResist())
+        self.world.entity_factory.add_stat(unit_id, AttackDamage(10))
+        self.world.entity_factory.add_stat(unit_id, AttackSpeed(50))
         self.world.add_tag(unit_id, Unit)
 
         return unit_id

@@ -5,6 +5,7 @@ from shared.damage_type import DamageType
 class AttackEventResult:
     attacker_id: int
     target_id: int
+    ability_id: int
 
 @dataclass
 class CastEventResult:

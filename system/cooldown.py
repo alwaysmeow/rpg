@@ -3,7 +3,7 @@ from component.tag import Attack
 from component.stats import AttackSpeed
 
 from shared.event_type import EventType
-from shared.event_result import CooldownEventResult
+from shared.event_result import CooldownEventResult, CastEventResult, AttackEventResult
 
 from utils import load_config
 
@@ -14,7 +14,8 @@ class CooldownSystem:
         config = load_config(game_config_path)
         self.attack_speed_coefficient = config["attack_speed_coefficient"]
 
-        self.world.events.subscribe(EventType.COOLDOWN_SET, self._on_cooldown_set)
+        self.world.events.subscribe(EventType.ATTACK, self._on_cast)
+        self.world.events.subscribe(EventType.CAST_END, self._on_cast)
     
     def _update_ability_cooldown(self, cooldown, delta):
         old_value = cooldown.value
@@ -52,7 +53,7 @@ class CooldownSystem:
             return CooldownEventResult(ability_id)
         return cooldown_end_handler
 
-    def _on_cooldown_set(self, result: CooldownEventResult):
+    def _on_cast(self, result: AttackEventResult | CastEventResult):
         self._set_cooldown(
             self.world.get_component(result.ability_id, Cooldown)
         )
