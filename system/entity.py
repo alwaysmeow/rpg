@@ -1,7 +1,7 @@
 from component.stats import Armor, MagicResist, Health, AttackDamage, AttackSpeed
 from component.name import Name
-from component.ability import AbilityEffect, Owner, Cooldown, CastTime, Autocast
-from component.tag import Unit, Ability, Attack, TargetAbility
+from component.ability import AbilityEffect, Owner, Cooldown, CastTime
+from component.tag import Unit, Ability, Attack, TargetAbility, Autocast
 
 from abilities.attack import attack_handler
 
@@ -29,9 +29,10 @@ class EntityFactory:
         self.world.add_component(ability_id, Owner(owner))
         self.world.add_component(ability_id, CastTime(cast_time))
         self.world.add_component(ability_id, Cooldown(cooldown_duration, 1))
-        self.world.add_component(ability_id, Autocast(autocast))
-        
+
         self.world.add_tag(ability_id, Ability)
+        if autocast:
+            self.world.add_tag(ability_id, Autocast)
 
         return ability_id
     

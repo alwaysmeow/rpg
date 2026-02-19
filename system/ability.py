@@ -1,6 +1,6 @@
-from component.ability import AbilityEffect, Owner, CastTime, Cooldown, Autocast
+from component.ability import AbilityEffect, Owner, CastTime, Cooldown
 from component.target import Target
-from component.tag import Dead, TargetAbility, Attack
+from component.tag import Dead, TargetAbility, Attack, Autocast
 
 from shared.event_type import EventType
 from shared.event_result import CastEventResult, CooldownEventResult, CombatEventResult
@@ -72,8 +72,7 @@ class AbilitySystem:
         return True
 
     def _autocast_trigger(self, ability_id):
-        autocast = self.world.get_component(ability_id, Autocast)
-        if autocast and autocast.value:
+        if self.world.has_tag(ability_id, Autocast):
             self.cast(ability_id)
     
     def _on_cooldown_unset(self, cooldown_event_result: CooldownEventResult):
@@ -82,14 +81,10 @@ class AbilitySystem:
     def _on_combat_start(self, combat_start_event_result: CombatEventResult):
         for team in combat_start_event_result.teams:
             for unit_id in team:
-                abilities = self.world.query_by_components({
-                    Autocast: {
-                        "include": { "value": [True] },
-                    },
-                    Owner: {
-                        "include": { "unit_id": [unit_id] },
-                    },
-                })
+                abilities = self.world.query_by_component(
+                    Owner,
+                    include_filters = { "unit_id": [unit_id] }
+                )
                 
                 for ability_id in abilities:
                     self._autocast_trigger(ability_id)
