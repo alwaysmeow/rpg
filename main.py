@@ -1,5 +1,5 @@
 from world import World
-from system.clock import Clock
+from clock import Clock
 from game import GameLoop
 
 from test_scripts import *
