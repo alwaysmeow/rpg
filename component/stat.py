@@ -1,6 +1,8 @@
 from shared.modifier import apply_modifiers
 
 class Stat:
+    formula_key = None
+
     def __init__(self, value = 0):
         self.base_value = value
         self.modifiers = []

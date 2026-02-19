@@ -1,6 +1,3 @@
-from component.stats import Armor, MagicResist
-from shared.formula import BaseArmorFormula, BaseMagicResistFormula
-
 class StatsSystem:
     def __init__(self, world):
         self.world = world
@@ -35,7 +32,7 @@ class StatsSystem:
                 self.world.logger.error(f"{formula.__name__} requires {component_type.__name__}.{value_name}")
                 return 0
             
-            arg_name = f"{component_type.__name__.lower()}_{value_name}"
+            arg_name = f"{component_type.formula_key}_{value_name}"
             kwargs[arg_name] = getattr(component, value_name)
         
         return formula.calculate(**kwargs)

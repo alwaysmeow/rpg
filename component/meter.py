@@ -2,6 +2,8 @@ from shared.modifier import apply_modifiers
 from utils import clamp
 
 class Meter:
+    formula_key = None
+
     def __init__(self, max_value = 0, regen = 0):
         self.base_max_value = max_value
         self.max_value_modifiers = []

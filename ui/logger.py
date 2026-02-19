@@ -1,7 +1,7 @@
 from rich.text import Text
 
 from component.name import Name
-from component.stats import Armor, MagicResist, Health
+from component.stats import Armor, MagicResistance, Health
 from component.ability import Cooldown
 from component.tag import *
 
@@ -33,7 +33,7 @@ class Logger:
         self._write(f"\nName: {self._marked_name(unit_id)}")
         self._write(f"Health: {self.world.get_component(unit_id, Health).value} / {self.world.get_component(unit_id, Health).effective_max_value}")
         self._write(f"Armor: {self.world.get_component(unit_id, Armor).effective_value}")
-        self._write(f"Magic Resist: {self.world.get_component(unit_id, MagicResist).effective_value}\n")
+        self._write(f"Magic Resist: {self.world.get_component(unit_id, MagicResistance).effective_value}\n")
     
     def log_combat(self, combat_id, teams):
         for team_index in range(len(teams)):

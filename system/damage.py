@@ -1,7 +1,7 @@
 from random import random
 
 from utils import load_config
-from component.stats import Health, MagicResist, Armor
+from component.stats import Health, MagicResistance, Armor
 from component.tag import Dead
 
 from shared.event_type import EventType
@@ -67,7 +67,7 @@ class DamageSystem:
             return amount * coefficient
 
     def _reduced_magic_damage(self, amount, target_id):
-        magic_resist = self.world.get_component(target_id, MagicResist)
+        magic_resist = self.world.get_component(target_id, MagicResistance)
 
         if not magic_resist:
             return amount

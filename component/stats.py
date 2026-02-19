@@ -3,13 +3,13 @@ from typing import Set
 from component.stat import FormulaStat
 from component.meter import FormulaMeter
 
-class Armor(FormulaStat): pass
-class MagicResist(FormulaStat): pass
-class AttackDamage(FormulaStat): pass
-class AttackSpeed(FormulaStat): pass
+class Armor(FormulaStat): formula_key = "armor"
+class MagicResistance(FormulaStat): formula_key = "magic_resistance"
+class AttackDamage(FormulaStat): formula_key = "attack_damage"
+class AttackSpeed(FormulaStat): formula_key = "attack_speed"
 
-class Health(FormulaMeter): pass
-class Mana(FormulaMeter): pass
+class Health(FormulaMeter): formula_key = "health"
+class Mana(FormulaMeter): formula_key = "mana"
 
 class Stats:
     def __init__(self, stats: Set[type] | None = None):

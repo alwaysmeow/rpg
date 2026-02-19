@@ -15,7 +15,7 @@ class BaseArmorFormula(Formula):
     def calculate(agility_effective_value):
         return agility_effective_value
 
-class BaseMagicResistFormula(Formula):
+class BaseMagicResistanceFormula(Formula):
     requires = [(Intelligence, "effective_value")]
 
     @staticmethod
