@@ -40,7 +40,8 @@ class EventSystem:
     def process(self, now):
         iterations = 0
         while self._queue and self._queue[0].time <= now and iterations < self.events_per_tick_limit:
-            event = heapq.heappop(self._queue)
+            event: Event = heapq.heappop(self._queue)
+            self._unique_keys.discard(event.unique_key)
             event_result = event.handler()
             if event.type:
                 self.emit(event.type, event_result)
