@@ -16,6 +16,8 @@ class Logger:
         self.markup = markup
 
         subscribers = {
+            EventType.ATTACK: self._log_attack_event_result,
+            EventType.CAST_END: self._log_cast_event_result,
             EventType.DAMAGE: self._log_damage_event_result,
             EventType.DEATH: self._log_death_event_result,
         }
@@ -43,6 +45,16 @@ class Logger:
         self._write(f"\nID: {ability_id}")
         self._write(f"Cooldown: {self.world.get_component(ability_id, Cooldown).value} / {self.world.get_component(ability_id, Cooldown).effective_max_value}\n")
     
+    def _log_attack_event_result(self, result: AttackEventResult):
+        attacker_name = self._marked_name(result.attacker_id)
+        target_name = self._marked_name(result.target_id)
+        self._write(f"- {attacker_name} attacks {target_name}")
+
+    def _log_cast_event_result(self, result: CastEventResult):
+        attacker_name = self._marked_name(result.attacker_id)
+        target_name = self._marked_name(result.target_id)
+        self._write(f"- {attacker_name} casts spell on {target_name}")
+
     def _log_damage_event_result(self, result: DamageEventResult):
         source_name = self._marked_name(result.source_id)
         target_name = self._marked_name(result.target_id)
