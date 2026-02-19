@@ -19,7 +19,7 @@ class World:
     def __init__(self, game_config_path="config/game.json"):
         # TODO: systems in list
         self.time = TimeSystem()
-        self.events = EventSystem(self)
+        self.events = EventSystem(self, game_config_path)
         self.entity_factory = EntityFactory(self)
         self.combat_system = CombatSystem(self)
         self.damage_system = DamageSystem(self, game_config_path)

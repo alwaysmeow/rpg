@@ -1,4 +1,5 @@
 {
     "armor_coefficient": 0.95,
-    "attack_speed_coefficient": 0.1
+    "attack_speed_coefficient": 0.1,
+    "max_events_per_tick": 100
 }

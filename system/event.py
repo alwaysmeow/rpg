@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from entity.event_type import EventType
 from entity.damage_type import DamageType
 
+from config_loader import load_config
+
 @dataclass
 class AttackEventResult:
     attacker_id: int
@@ -50,11 +52,15 @@ class Event:
         return self.time < other.time
 
 class EventSystem:
-    def __init__(self, world):
+    def __init__(self, world, game_config_path):
         self.world = world
         self._queue = []
         self._listeners: Dict[EventType, List[Callable]] = {}
         self._unique_keys = set()
+
+        config = load_config(game_config_path)
+        self.max_events_per_tick = config["max_events_per_tick"]
+
 
     def schedule(self, time, handler, event_type = None, unique_key = None):
         if unique_key and unique_key in self._unique_keys:
@@ -66,12 +72,13 @@ class EventSystem:
         return event
 
     def process(self, now):
-        # TODO: max iterations
-        while self._queue and self._queue[0].time <= now:
+        iterations = 0
+        while self._queue and self._queue[0].time <= now and iterations < self.max_events_per_tick:
             event = heapq.heappop(self._queue)
             event_result = event.handler()
             if event.type:
                 self.emit(event.type, event_result)
+            iterations += 0
     
     def subscribe(self, event_type, callback):
         if event_type not in self._listeners:
