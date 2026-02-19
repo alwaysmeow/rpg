@@ -9,29 +9,32 @@ class Formula:
         raise NotImplementedError
 
 class BaseArmorFormula(Formula):
-    requires = [Agility]
+    requires = [(Agility, "effective_value")]
 
     @staticmethod
-    def calculate(agility):
-        return agility.effective_value
+    def calculate(agility_effective_value):
+        return agility_effective_value
 
 class BaseMagicResistFormula(Formula):
-    requires = [Intelligence]
+    requires = [(Intelligence, "effective_value")]
 
     @staticmethod
-    def calculate(intelligence):
-        return 1 - (0.95 ** intelligence.effective_value)
+    def calculate(intelligence_effective_value):
+        return 1 - (0.95 ** intelligence_effective_value)
 
 class BaseMaxHealthFormula(Formula):
-    requires = [Strength]
+    requires = [(Strength, "effective_value")]
 
     @staticmethod
-    def calculate(strength):
-        return 100 + strength.effective_value
+    def calculate(strength_effective_value):
+        return 100 + strength_effective_value
 
 class BaseHealthRegenFormula(Formula):
-    requires = [Health, Strength] # TODO: fix circular dependency
+    requires = [
+        (Health, "effective_max_value"), 
+        (Strength, "effective_value")
+    ]
 
     @staticmethod
-    def calculate(health, strength):
-        return health.effective_max_value * 0.01 + strength.effective_value
+    def calculate(health_effective_max_value, strength_effective_value):
+        return health_effective_max_value * 0.01 + strength_effective_value

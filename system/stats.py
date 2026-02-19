@@ -20,11 +20,15 @@ class StatsSystem:
     def _calculate_formula(self, unit_id, formula):
         kwargs = {}
 
-        for component_type in formula.requires:
+        for require in formula.requires:
+            component_type, value_name = require
+
             component = self.world.get_component(unit_id, component_type)
-            if not component:
-                self.world.logger.error(f"Unit has no {component_type.__name__} for calculating {formula.__name__}")
+            if component is None or not hasattr(component, value_name):
+                self.world.logger.error(f"{formula.__name__} requires {component_type.__name__}.{value_name}")
                 return 0
-            kwargs[component_type.__name__.lower()] = component
+            
+            arg_name = f"{component_type.__name__.lower()}_{value_name}"
+            kwargs[arg_name] = getattr(component, value_name)
         
         return formula.calculate(**kwargs)
