@@ -30,7 +30,7 @@ class BaseMaxHealthFormula(Formula):
         return 100 + strength.effective_value
 
 class BaseHealthRegenFormula(Formula):
-    requires = [Health, Strength]
+    requires = [Health, Strength] # TODO: fix circular dependency
 
     @staticmethod
     def calculate(health, strength):
