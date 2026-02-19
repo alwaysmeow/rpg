@@ -1,4 +1,4 @@
-from config_loader import load_config
+from utils import load_config
 
 class GameLoop:
     def __init__(self, world, clock, engine_config_path = "config/engine.json"):

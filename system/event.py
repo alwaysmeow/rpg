@@ -3,7 +3,7 @@ from typing import Callable, Dict, List
 
 from shared.event_type import EventType
 
-from config_loader import load_config
+from utils import load_config
 
 class Event:
     def __init__(self, time, handler, event_type = None, unique_key = None):

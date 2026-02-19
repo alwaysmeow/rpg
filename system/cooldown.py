@@ -5,7 +5,7 @@ from component.stats import AttackSpeed
 from shared.event_type import EventType
 from shared.event_result import CooldownEventResult
 
-from config_loader import load_config
+from utils import load_config
 
 class CooldownSystem:
     def __init__(self, world, game_config_path="config/game.json"):

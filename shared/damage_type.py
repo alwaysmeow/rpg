@@ -1,6 +1,6 @@
 from enum import Enum
 
-from config_loader import load_config
+from utils import load_config
 
 config = load_config("config/ui.json")
 
