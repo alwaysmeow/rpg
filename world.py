@@ -57,6 +57,13 @@ class World:
     def get_component(self, entity: int, component_type: Type) -> Any:
         return self.components[component_type].get(entity)
     
+    def get_or_create_component(self, entity: int, component_type: Type) -> Any:
+        component = self.components[component_type].get(entity, None)
+        if component is None:
+            component = component_type()
+            self.components[component_type][entity] = component
+        return component
+    
     def query_by_component( # TODO: rework filters structure
         self, 
         component_type: Type, 

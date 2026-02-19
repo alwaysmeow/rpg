@@ -1,4 +1,5 @@
 from shared.modifier import apply_modifiers
+from shared.formula import Formula
 from utils import clamp
 
 class Meter:
@@ -29,3 +30,9 @@ class Meter:
     @property
     def effective_regen(self):
         return apply_modifiers(self.base_regen, self.regen_modifiers)
+
+class FormulaMeter(Meter):
+    def __init__(self, max_value = 0, regen = 0, base_max_value_formula: type = Formula, base_regen_formula: type = Formula):
+        super().__init__(max_value, regen)
+        self.base_max_value_formula: type = base_max_value_formula
+        self.base_regen_formula: type = base_regen_formula

@@ -1,30 +1,37 @@
-from typing import Protocol
 from component.attributes import Agility, Intelligence, Strength
 from component.stats import Health
 
-# TODO: full rework with fixes and abc
+class Formula:
+    requires = []
 
-class Formula(Protocol):
-    def calculate(self, world, entity_id):
-        pass
+    @staticmethod
+    def calculate():
+        raise NotImplementedError
 
 class BaseArmorFormula(Formula):
-    def calculate(self, world, entity_id):
-        agility = world.get_component(entity_id, Agility)
-        return agility
+    requires = [Agility]
+
+    @staticmethod
+    def calculate(agility):
+        return agility.effective_value
 
 class BaseMagicResistFormula(Formula):
-    def calculate(self, world, entity_id):
-        intelligence = world.get_component(entity_id, Intelligence)
-        return 1 - (0.95 ** intelligence)
+    requires = [Intelligence]
+
+    @staticmethod
+    def calculate(intelligence):
+        return 1 - (0.95 ** intelligence.effective_value)
 
 class BaseMaxHealthFormula(Formula):
-    def calculate(self, world, entity_id):
-        strength = world.get_component(entity_id, Strength)
-        return 100 + strength
+    requires = [Strength]
+
+    @staticmethod
+    def calculate(strength):
+        return 100 + strength.effective_value
 
 class BaseHealthRegenFormula(Formula):
-    def calculate(self, world, entity_id):
-        max_health = world.get_component(entity_id, Health).effective_max_value
-        strength = world.get_component(entity_id, Strength)
-        return max_health * 0.01 + strength
+    requires = [Health, Strength]
+
+    @staticmethod
+    def calculate(health, strength):
+        return health.effective_max_value * 0.01 + strength.effective_value

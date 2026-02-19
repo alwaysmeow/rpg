@@ -1,10 +1,22 @@
-from component.stat import Stat
-from component.meter import Meter
+from typing import Set
 
-class Armor(Stat): pass
-class MagicResist(Stat): pass
-class AttackDamage(Stat): pass
-class AttackSpeed(Stat): pass
+from component.stat import FormulaStat
+from component.meter import FormulaMeter
 
-class Health(Meter): pass
-class Mana(Meter): pass
+class Armor(FormulaStat): pass
+class MagicResist(FormulaStat): pass
+class AttackDamage(FormulaStat): pass
+class AttackSpeed(FormulaStat): pass
+
+class Health(FormulaMeter): pass
+class Mana(FormulaMeter): pass
+
+class Stats:
+    def __init__(self, set = {}):
+        self.set: Set[type] = set()
+    
+    def add(self, stat: type):
+        self.set.add(stat)
+
+    def discard(self, stat: type):
+        self.set.discard(stat)

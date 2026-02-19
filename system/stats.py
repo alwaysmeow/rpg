@@ -16,3 +16,15 @@ class StatsSystem:
     def update_base_values(self, entity_id):
         for stat_type in self.formulas:
             self.formulas[stat_type].calculate(self.world, entity_id)
+
+    def _calculate_formula(self, unit_id, formula):
+        kwargs = {}
+
+        for component_type in formula.requires:
+            component = self.world.get_component(unit_id, component_type)
+            if not component:
+                self.world.logger.error(f"Unit has no {component_type.__name__} for calculating {formula.__name__}")
+                return 0
+            kwargs[component_type.__name__.lower()] = component
+        
+        return formula.calculate(**kwargs)

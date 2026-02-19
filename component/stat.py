@@ -1,4 +1,5 @@
 from shared.modifier import apply_modifiers
+from shared.formula import Formula
 
 class Stat:
     def __init__(self, value = 0):
@@ -8,3 +9,8 @@ class Stat:
     @property
     def effective_value(self):
         return apply_modifiers(self.base_value, self.modifiers)
+
+class FormulaStat(Stat):
+    def __init__(self, value = 0, formula: type = Formula):
+        super().__init__(value)
+        self.formula: type = formula
