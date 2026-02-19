@@ -4,7 +4,9 @@ from game import GameLoop
 
 from test_scripts import *
 
-world = World()
+game_config_path="config/game.json"
+world = World(game_config_path)
+
 test_script(world)
 
 clock = Clock()

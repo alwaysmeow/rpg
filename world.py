@@ -16,14 +16,14 @@ from ui.logger import Logger
 from component.tag import Tag
 
 class World:
-    def __init__(self):
+    def __init__(self, game_config_path="config/game.json"):
         # TODO: systems in list
         self.time = TimeSystem()
         self.events = EventSystem(self)
         self.entity_factory = EntityFactory(self)
         self.combat_system = CombatSystem(self)
-        self.damage_system = DamageSystem(self)
-        self.cooldown_system = CooldownSystem(self)
+        self.damage_system = DamageSystem(self, game_config_path)
+        self.cooldown_system = CooldownSystem(self, game_config_path)
         self.ability_system = AbilitySystem(self)
         self.regeneration_system = RegenerationSystem(self)
 

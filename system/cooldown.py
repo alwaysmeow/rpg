@@ -7,10 +7,10 @@ from entity.event_type import EventType
 from config_loader import load_config
 
 class CooldownSystem:
-    def __init__(self, world):
+    def __init__(self, world, game_config_path="config/game.json"):
         self.world = world
 
-        config = load_config("config/game.json") # TODO: variable path
+        config = load_config(game_config_path)
         self.attack_speed_coefficient = config["attack_speed_coefficient"]
     
     def _update_ability_cooldown(self, cooldown, delta):

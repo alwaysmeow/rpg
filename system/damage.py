@@ -17,10 +17,10 @@ class Damage:
         self.amount = amount
 
 class DamageSystem:
-    def __init__(self, world):
+    def __init__(self, world, game_config_path="config/game.json"):
         self.world = world
 
-        config = load_config("config/game.json") # TODO: variable path
+        config = load_config(game_config_path)
         self.armor_coefficient = config["armor_coefficient"]
     
     def queue_damage(self, source_id, target_id, damage_type, base_amount):
