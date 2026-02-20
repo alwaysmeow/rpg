@@ -14,4 +14,4 @@ class Stat:
 class FormulaStat(Stat):
     def __init__(self, value = 0, formula: type = None):
         super().__init__(value)
-        self.base_value_formulas: type = formula
+        self.base_value_formula: type = formula
