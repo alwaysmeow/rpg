@@ -1,4 +1,5 @@
 from component.stats import Stats
+from shared.statref import StatRef
 
 class StatsSystem:
     def __init__(self, world):
@@ -7,14 +8,14 @@ class StatsSystem:
     def update_modifiers(self, entity_id, stat_type): # TODO
         self.world.get_component(entity_id, stat_type).modifiers = []
 
-    def _on_stat_update(self, entity_id, update_list: list[tuple]):
+    def _on_stat_update(self, entity_id, update_list: list[StatRef]):
         stats_component = self.world.get_component(entity_id, Stats)
 
-        if stats_component in None:
+        if stats_component is None:
             self.world.logger.error(f"Entity {entity_id} has no {component_type.__name__}")
             return
         
-        to_update_list = []
+        to_update_list: list[StatRef] = []
 
         stats = stats_component.set
         for component_type in stats:
@@ -27,15 +28,15 @@ class StatsSystem:
 
         return update_list
 
-    def _dependent_component_values(self, component, stat_value_data: tuple) -> list[tuple]:
-        value_data_list: list[tuple] = []
+    def _dependent_component_values(self, component, stat_value_data: StatRef) -> list[StatRef]:
+        value_data_list: list[StatRef] = []
 
         for value_name in component.formulas:
             formula = component.formulas[value_name]
             requirements = formula.requires
 
             if stat_value_data in requirements:
-                value_data_list.append((type(component), value_name))
+                value_data_list.append(StatRef(type(component), value_name))
         
         return value_data_list
 
