@@ -23,9 +23,11 @@ class StatsSystem:
             for updated_value in update_list:
                 to_update_list.append(*self._dependent_component_values(stat_component, updated_value))
         
+        # TODO: update all values to update
+
         return update_list
 
-    def _dependent_component_values(self, component, stat_value_data: tuple):
+    def _dependent_component_values(self, component, stat_value_data: tuple) -> list[tuple]:
         value_data_list: list[tuple] = []
 
         for value_name in component.formulas:
