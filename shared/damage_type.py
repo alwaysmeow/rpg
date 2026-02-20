@@ -2,6 +2,7 @@ from enum import Enum
 
 from utils import load_config
 
+# TODO: do something with this config loading
 config = load_config("config/ui.json")
 
 class DamageType(Enum):

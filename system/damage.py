@@ -84,6 +84,7 @@ class DamageSystem:
         return amount
     
     def _round_amount(self, amount) -> int:
+        # Rounds fractional damage probabilistically
         ceil = amount % 1 > random()
         return int(amount) + int(ceil)
 

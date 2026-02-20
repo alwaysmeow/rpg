@@ -51,7 +51,7 @@ class Logger:
         self._write(f"- {attacker_name} attacks {target_name}")
 
     def _log_cast_event_result(self, result: CastEventResult):
-        attacker_name = self._marked_name(result.attacker_id)
+        attacker_name = self._marked_name(result.caster_id)
         target_name = self._marked_name(result.target_id)
         self._write(f"- {attacker_name} casts spell on {target_name}")
 
