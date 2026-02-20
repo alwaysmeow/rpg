@@ -35,5 +35,7 @@ class Meter:
 class FormulaMeter(Meter):
     def __init__(self, max_value = 0, regen = 0, base_max_value_formula: type = None, base_regen_formula: type = None):
         super().__init__(max_value, regen)
-        self.base_max_value_formula: type = base_max_value_formula
-        self.base_regen_formula: type = base_regen_formula
+        self.formulas: dict[str, type] = {
+            "base_max_value": base_max_value_formula,
+            "base_regen": base_regen_formula,
+        }

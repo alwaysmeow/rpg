@@ -14,4 +14,6 @@ class Stat:
 class FormulaStat(Stat):
     def __init__(self, value = 0, formula: type = None):
         super().__init__(value)
-        self.base_value_formula: type = formula
+        self.formulas: dict[str, type] = {
+            "base_value": formula
+        }

@@ -1,6 +1,4 @@
 from component.stats import Stats
-from component.stat import FormulaStat
-from component.meter import FormulaMeter
 
 class StatsSystem:
     def __init__(self, world):
@@ -30,24 +28,23 @@ class StatsSystem:
     def _dependent_component_values(self, component, stat_value_data: tuple):
         value_data_list: list[tuple] = []
 
-        if isinstance(component, FormulaMeter):
-            pass
-        elif isinstance(component, FormulaStat):
-            requirements = component.base_value_formula.requires
+        for value_name in component.formulas:
+            formula = component.formulas[value_name]
+            requirements = formula.requires
+
             if stat_value_data in requirements:
-                value_data_list.append((type(component), "base_value"))
+                value_data_list.append((type(component), value_name))
         
         return value_data_list
 
-    def update_stat(self, entity_id, component_type, value_name):
+    def update_stat_value(self, entity_id, component_type, value_name):
         component = self.world.get_component(entity_id, component_type)
 
         if component is None:
             self.world.logger.error(f"Entity {entity_id} has no {component_type.__name__}")
             return
 
-        formula_attr_name = f"{value_name}_formula"
-        formula = getattr(component, formula_attr_name)
+        formula = component.formulas[value_name]
 
         setattr(
             component, 
