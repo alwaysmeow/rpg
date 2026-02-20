@@ -10,6 +10,13 @@ class StatsSystem:
     def update_modifiers(self, entity_id, stat_type): # TODO
         self.world.get_component(entity_id, stat_type).modifiers = []
 
+    def create_stat(self, entity_id, stat):
+        self.world.add_component(entity_id, stat)
+        stat_type = type(stat)
+
+        stats = self.world.get_or_create_component(entity_id, Stats)
+        stats.add(stat_type)
+
     def _update_stats(self, entity_id, stats: list[StatRef]):
         update_list = set(stats)
 
@@ -75,11 +82,11 @@ class StatsSystem:
             self._calculate_formula(entity_id, formula)
         )
 
-    def _calculate_formula(self, unit_id, formula):
+    def _calculate_formula(self, entity_id, formula):
         kwargs = {}
 
         for require in formula.requires:
-            component = self.world.get_component(unit_id, require.component_type)
+            component = self.world.get_component(entity_id, require.component_type)
             if component is None or not hasattr(component, require.value_name):
                 self.world.logger.error(
                     f"{formula.__name__} requires {require.component_type.__name__}.{require.value_name}"

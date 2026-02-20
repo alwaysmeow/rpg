@@ -10,6 +10,7 @@ from system.damage import DamageSystem
 from system.cooldown import CooldownSystem
 from system.ability import AbilitySystem
 from system.regeneration import RegenerationSystem
+from system.stats import StatsSystem
 
 from ui.logger import Logger
 
@@ -26,6 +27,7 @@ class World:
         self.cooldown_system = CooldownSystem(self, game_config_path)
         self.ability_system = AbilitySystem(self)
         self.regeneration_system = RegenerationSystem(self)
+        self.stats_system = StatsSystem(self)
 
         # TODO: move out
         console = Console()

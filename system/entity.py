@@ -13,11 +13,11 @@ class EntityFactory:
         unit_id = self.world.create_entity()
 
         self.world.add_component(unit_id, Name(name))
-        self.world.entity_factory.add_stat(unit_id, Health(100, 0))
-        self.world.entity_factory.add_stat(unit_id, Armor(1))
-        self.world.entity_factory.add_stat(unit_id, MagicResistance())
-        self.world.entity_factory.add_stat(unit_id, AttackDamage(10))
-        self.world.entity_factory.add_stat(unit_id, AttackSpeed(50))
+        self.world.stats_system.create_stat(unit_id, Health(100, 0))
+        self.world.stats_system.create_stat(unit_id, Armor(1))
+        self.world.stats_system.create_stat(unit_id, MagicResistance())
+        self.world.stats_system.create_stat(unit_id, AttackDamage(10))
+        self.world.stats_system.create_stat(unit_id, AttackSpeed(50))
         self.world.add_tag(unit_id, Unit)
 
         return unit_id
@@ -42,10 +42,3 @@ class EntityFactory:
         self.world.add_tag(ability_id, TargetAbility)
 
         return ability_id
-
-    def add_stat(self, unit_id, stat):
-        self.world.add_component(unit_id, stat)
-        stat_type = type(stat)
-
-        stats = self.world.get_or_create_component(unit_id, Stats)
-        stats.add(stat_type)
