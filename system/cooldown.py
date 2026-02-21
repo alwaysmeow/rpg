@@ -1,6 +1,6 @@
 from component.ability import Cooldown, Owner
 from component.tag import Attack
-from component.stats import AttackSpeed
+from component.stats import AttackDelay
 
 from shared.event_type import EventType
 from shared.event_result import CooldownEventResult, CastEventResult, AttackEventResult
@@ -22,9 +22,9 @@ class CooldownSystem:
         cooldown.value += cooldown.effective_regen * delta
         return cooldown.value - old_value
 
-    def _update_attack_cooldown(self, cooldown, attack_speed, delta):
+    def _update_attack_cooldown(self, cooldown, attack_delay, delta):
         old_value = cooldown.value
-        cooldown_regen = attack_speed * self.attack_speed_coefficient # TODO: analize formula
+        cooldown_regen = 1 / attack_delay
         cooldown.value += cooldown_regen * delta
         return cooldown.value - old_value
 
@@ -35,9 +35,9 @@ class CooldownSystem:
             if self.world.has_tag(ability_id, Attack):
                 owner = self.world.get_component(ability_id, Owner)
                 if owner:
-                    attack_speed = self.world.get_component(owner.unit_id, AttackSpeed)
-                    if attack_speed:
-                        progress = self._update_attack_cooldown(cooldown, attack_speed.effective_value, delta)
+                    attack_delay = self.world.get_component(owner.unit_id, AttackDelay)
+                    if attack_delay:
+                        progress = self._update_attack_cooldown(cooldown, attack_delay.effective_value, delta)
             else:
                 progress = self._update_ability_cooldown(cooldown, delta)
 

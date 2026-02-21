@@ -1,5 +1,5 @@
 from component.attributes import Agility, Intelligence, Strength
-from component.stats import Health
+from component.stats import Health, AttackSpeed
 from shared.statref import StatRef
 
 class Formula:
@@ -45,3 +45,12 @@ class BaseHealthRegenFormula(Formula):
     @staticmethod
     def calculate(health_effective_max_value, strength_effective_value):
         return health_effective_max_value * 0.01 + strength_effective_value
+
+class AttackDelayFormula():
+    requires = [
+        StatRef(AttackSpeed, "effective_value"), 
+    ]
+
+    @staticmethod
+    def calculate(attack_speed_effective_value):
+        return 1 / (attack_speed_effective_value * 0.1)

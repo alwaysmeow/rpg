@@ -1,4 +1,4 @@
-from component.stats import Stats, Armor, MagicResistance, Health, AttackDamage, AttackSpeed
+from component.stats import Stats, Armor, MagicResistance, Health, AttackDamage, AttackSpeed, AttackDelay
 from component.name import Name
 from component.ability import AbilityEffect, Owner, Cooldown, CastTime
 from component.tag import Unit, Ability, Attack, TargetAbility, Autocast
@@ -17,7 +17,10 @@ class EntityFactory:
         self.world.stats_system.create_stat(unit_id, Armor(1))
         self.world.stats_system.create_stat(unit_id, MagicResistance())
         self.world.stats_system.create_stat(unit_id, AttackDamage(10))
+
         self.world.stats_system.create_stat(unit_id, AttackSpeed(50))
+        self.world.stats_system.create_stat(unit_id, AttackDelay(0.2)) # TODO: should be dependent on AttackSpeed
+
         self.world.add_tag(unit_id, Unit)
 
         return unit_id

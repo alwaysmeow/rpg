@@ -7,6 +7,7 @@ class Armor(FormulaStat): formula_key = "armor"
 class MagicResistance(FormulaStat): formula_key = "magic_resistance"
 class AttackDamage(FormulaStat): formula_key = "attack_damage"
 class AttackSpeed(FormulaStat): formula_key = "attack_speed"
+class AttackDelay(FormulaStat): formula_key = "attack_delay"
 
 class Health(FormulaMeter): formula_key = "health"
 class Mana(FormulaMeter): formula_key = "mana"
