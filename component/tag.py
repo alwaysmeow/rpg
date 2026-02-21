@@ -1,5 +1,4 @@
-class Tag:
-    pass
+class Tag: pass
 
 class Player(Tag): pass
 class Unit(Tag): pass
@@ -11,3 +10,5 @@ class TargetAbility(Tag): pass
 class Autocast(Tag): pass
 
 class Combat(Tag): pass
+
+class Modifier(Tag): pass
