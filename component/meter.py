@@ -1,4 +1,3 @@
-from shared.modifier import apply_modifiers
 from utils import clamp
 
 class Meter:
@@ -6,10 +5,10 @@ class Meter:
 
     def __init__(self, max_value = 0, regen = 0):
         self.base_max_value = max_value
-        self.max_value_modifiers = []
+        self.effective_max_value = max_value
 
         self.base_regen = regen
-        self.regen_modifiers = []
+        self.effective_regen = regen
 
         self._value_ratio = 1.0
 
@@ -23,14 +22,6 @@ class Meter:
             self._value_ratio = 0
         else:
             self._value_ratio = clamp(v / self.effective_max_value, 0, 1)
-
-    @property
-    def effective_max_value(self):
-        return apply_modifiers(self.base_max_value, self.max_value_modifiers)
-
-    @property
-    def effective_regen(self):
-        return apply_modifiers(self.base_regen, self.regen_modifiers)
 
 class FormulaMeter(Meter):
     def __init__(self, max_value = 0, regen = 0, base_max_value_formula: type = None, base_regen_formula: type = None):
