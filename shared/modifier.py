@@ -1,5 +1,7 @@
 from enum import Enum
 
+# Legacy
+
 def apply_modifiers(base_value, modifiers):
     flat = 0
     multiplier = 0
@@ -14,8 +16,3 @@ def apply_modifiers(base_value, modifiers):
 class ModifierType(Enum):
     Flat = 0
     Multiplier = 1
-
-class Modifier:
-    def __init__(self, value, type):
-        self.value = value
-        self.type = type
