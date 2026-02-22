@@ -4,14 +4,14 @@ from component.ability import Owner, Cooldown
 
 from shared.formula import AttackDelayFormula
 from shared.event_type import EventType
-from shared.event_result import StatCreateResult, StatsUpdateResult
+from shared.event_result import StatsCreateResult, StatsUpdateResult
 from shared.statref import StatRef
 
 class AttackSpeedSystem:
     def __init__(self, world):
         self.world = world
 
-        self.world.events.subscribe(EventType.STAT_CREATE, self._on_stat_create)
+        self.world.events.subscribe(EventType.STATS_CREATE, self._on_stats_create)
         self.world.events.subscribe(EventType.STATS_UPDATE, self._on_stats_update)
 
     def _search_attack_ability(self, entity_id):
@@ -28,12 +28,13 @@ class AttackSpeedSystem:
         cooldown.base_regen = cooldown.base_max_value / attack_delay_value
         cooldown.effective_regen = cooldown.effective_max_value / attack_delay_value
 
-    def _on_stat_create(self, result: StatCreateResult):
-        if type(result.created) == AttackDelay:
-            new_value = result.created.effective_value
-            self._update_attack_ability_cooldown(result.entity_id, new_value)
+    def _on_stats_create(self, result: StatsCreateResult):
+        for component in result.created:
+            if type(component) == AttackDelay:
+                new_value = component.effective_value
+                return self._update_attack_ability_cooldown(result.entity_id, new_value)
 
     def _on_stats_update(self, result: StatsUpdateResult):
         new_value = result.updated[StatRef(AttackDelay, "effective_value")]
         if new_value:
-            self._update_attack_ability_cooldown(result.entity_id, new_value)
+            return self._update_attack_ability_cooldown(result.entity_id, new_value)

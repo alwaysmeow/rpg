@@ -1,4 +1,4 @@
-from typing import Dict, List, Any
+from typing import Dict, List, Set, Any
 
 from dataclasses import dataclass
 from shared.damage_type import DamageType
@@ -38,9 +38,9 @@ class DeathEventResult:
     killer_id: int
 
 @dataclass
-class StatCreateResult:
+class StatsCreateResult:
     entity_id: int
-    created: Any
+    created: Set[Any]
 
 @dataclass
 class StatsUpdateResult:

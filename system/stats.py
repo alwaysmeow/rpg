@@ -6,7 +6,7 @@ from component.stats import Stats, AttackSpeed, AttackDelay
 
 from shared.statref import StatRef
 from shared.formula import AttackDelayFormula
-from shared.event_result import StatCreateResult
+from shared.event_result import StatsCreateResult
 from shared.event_type import EventType
 
 from system.formula import FormulaSystem
@@ -28,17 +28,21 @@ class StatsSystem:
     def update_modifiers(self, entity_id, stat_type): # TODO
         self.world.get_component(entity_id, stat_type).modifiers = []
 
-    def create_stat(self, entity_id, stat_component):
+    def create_stats(self, entity_id, stat_components):
         self.world.events.schedule(
             self.world.time.now,
-            self._create_create_stat_event_handler(entity_id, stat_component),
-            EventType.STAT_CREATE,
-            (EventType.STAT_CREATE, entity_id, type(stat_component)),
+            self._create_stats_create_event_handler(entity_id, stat_components),
+            EventType.STATS_CREATE,
         )
 
     def create_attack_speed(self, entity_id, value):
-        self.create_stat(entity_id, AttackSpeed(value))
-        self.create_stat(entity_id, AttackDelay(None, AttackDelayFormula)) # Value is None because should be calculated
+        self.create_stats(
+            entity_id, 
+            [
+                AttackSpeed(value), 
+                AttackDelay(None, AttackDelayFormula) # Value is None because should be calculated
+            ]
+        )
 
     def _update_stats(self, entity_id, statrefs: Set[StatRef]) -> Dict[StatRef, float]:
         update_set = statrefs.copy()
@@ -133,17 +137,21 @@ class StatsSystem:
         
         return statrefs
 
-    def _create_create_stat_event_handler(self, entity_id, component):
+    def _create_stats_create_event_handler(self, entity_id, components):
         def handler():
-            self.world.add_component(entity_id, component)
-            stat_type = type(component)
+            for component in components:
+                self._create_stat(entity_id, component)
 
-            stats = self.world.get_or_create_component(entity_id, Stats)
-            stats.add(stat_type)
-
-            statrefs = self._get_statrefs_of_base_values(component)
-            self._update_stats(entity_id, statrefs)
-
-            return StatCreateResult(entity_id, component)
+            return StatsCreateResult(entity_id, components)
         
         return handler
+    
+    def _create_stat(self, entity_id, component):
+        self.world.add_component(entity_id, component)
+        stat_type = type(component)
+
+        stats = self.world.get_or_create_component(entity_id, Stats)
+        stats.add(stat_type)
+
+        statrefs = self._get_statrefs_of_base_values(component)
+        self._update_stats(entity_id, statrefs)
