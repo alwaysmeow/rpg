@@ -1,11 +1,16 @@
 from typing import Set
 
 from component.stats import Stats
+
 from shared.statref import StatRef
+from shared.event_type import EventType
+from shared.event_result import StatUpdateResult
 
 class StatsSystem:
     def __init__(self, world):
         self.world = world
+
+        self.world.events.subscribe(EventType.STAT_UPDATE, self._on_stat_update)
     
     def update_modifiers(self, entity_id, stat_type): # TODO
         self.world.get_component(entity_id, stat_type).modifiers = []
@@ -97,3 +102,10 @@ class StatsSystem:
             kwargs[arg_name] = getattr(component, require.value_name)
         
         return formula.calculate(**kwargs)
+    
+    def _on_stat_update(self, result: StatUpdateResult):
+        effective_values = ["effective_value", "effective_max_value", "effective_regen"]
+
+        if result.statref.value_name in effective_values:
+            # TODO formula update and STAT_UPDATE event
+            pass

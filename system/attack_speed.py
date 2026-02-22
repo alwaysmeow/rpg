@@ -13,7 +13,7 @@ class AttackSpeedSystem:
         self.world.stats_system.create_stat(entity_id, AttackSpeed(value))
         self.world.stats_system.create_stat(entity_id, AttackDelay(0, AttackDelayFormula))
 
-        self.world.event.schedule(
+        self.world.events.schedule(
             self.time.now,
             lambda: StatUpdateResult(StatRef(AttackSpeed, "base_value")),
             EventType.STAT_UPDATE,

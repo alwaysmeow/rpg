@@ -30,8 +30,8 @@ class World:
         self.ability_system = AbilitySystem(self)
         self.regeneration_system = RegenerationSystem(self)
         self.stats_system = StatsSystem(self)
-        self.attack_speed = AttackSpeedSystem(self)
-        self.modifier = ModifierSystem(self)
+        self.attack_speed_system = AttackSpeedSystem(self)
+        self.modifier_system = ModifierSystem(self)
 
         # TODO: move out
         console = Console()
