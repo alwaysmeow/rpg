@@ -23,9 +23,11 @@ class CooldownSystem:
         return cooldown.value - old_value
 
     def _update_attack_cooldown(self, cooldown, attack_delay, delta):
+        # TODO: remove method
         old_value = cooldown.value
-        cooldown_regen = 1 / attack_delay
-        cooldown.value += cooldown_regen * delta
+        if attack_delay:
+            cooldown_regen = 1 / attack_delay
+            cooldown.value += cooldown_regen * delta
         return cooldown.value - old_value
 
     def update(self, delta):

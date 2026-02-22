@@ -18,9 +18,6 @@ class EntityFactory:
         self.world.stats_system.create_stat(unit_id, MagicResistance())
         self.world.stats_system.create_stat(unit_id, AttackDamage(10))
 
-        self.world.stats_system.create_stat(unit_id, AttackSpeed(50))
-        self.world.stats_system.create_stat(unit_id, AttackDelay(0.2)) # TODO: should be dependent on AttackSpeed
-
         self.world.add_tag(unit_id, Unit)
 
         return unit_id
@@ -39,8 +36,10 @@ class EntityFactory:
 
         return ability_id
     
-    def create_autoattack(self, owner):
-        ability_id = self.create_ability(owner, attack_handler, 0, 1, True)
+    def create_autoattack(self, owner_id, attack_speed_value):
+        self.world.attack_speed_system.create_attack_speed(owner_id, attack_speed_value)
+
+        ability_id = self.create_ability(owner_id, attack_handler, 0, 1, True)
         self.world.add_tag(ability_id, Attack)
         self.world.add_tag(ability_id, TargetAbility)
 

@@ -35,5 +35,9 @@ class DeathEventResult:
     victim_id: int
     killer_id: int
 
+@dataclass
 class StatUpdateResult:
+    entity_id: int
     statref: StatRef
+    new_value: float
+    depth: int = 0
