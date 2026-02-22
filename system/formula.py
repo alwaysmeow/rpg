@@ -4,18 +4,22 @@ class FormulaSystem:
     def __init__(self, world):
         self.world = world
 
-    def _update_formula_value(self, entity_id, stat_ref: StatRef):
-        component = self.world.get_component(entity_id, stat_ref.component_type)
+    def _update_formula_value(self, entity_id, statref: StatRef):
+        component = self.world.get_component(entity_id, statref.component_type)
 
         if component is None:
-            self.world.logger.error(f"Entity {entity_id} has no {stat_ref.component_type.__name__}")
+            self.world.logger.error(f"Entity {entity_id} has no {statref.component_type.__name__}")
             return
 
-        formula = component.formulas[stat_ref.value_name]
+        formula = component.formulas[statref.value_name]
+
+        if formula is None:
+            self.world.logger.error(f"Entity {entity_id} has no formula for {statref.component_type.__name__}")
+            return
 
         setattr(
             component, 
-            stat_ref.value_name, 
+            statref.value_name, 
             self._calculate_formula(entity_id, formula)
         )
 

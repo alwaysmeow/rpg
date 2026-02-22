@@ -1,5 +1,7 @@
 from typing import Set, Dict
 
+from component.stat import Stat
+from component.meter import Meter
 from component.stats import Stats, AttackSpeed, AttackDelay
 
 from shared.statref import StatRef
@@ -38,8 +40,8 @@ class StatsSystem:
         self.create_stat(entity_id, AttackSpeed(value))
         self.create_stat(entity_id, AttackDelay(0, AttackDelayFormula))
 
-    def _update_stats(self, entity_id, stats: list[StatRef]) -> Dict[StatRef, float]:
-        update_set = set(stats)
+    def _update_stats(self, entity_id, statrefs: Set[StatRef]) -> Dict[StatRef, float]:
+        update_set = statrefs.copy()
         updated = {}
 
         # Circular dependency possible
@@ -83,6 +85,10 @@ class StatsSystem:
 
         for value_name in component.formulas:
             formula = component.formulas[value_name]
+
+            if formula is None:
+                continue
+
             requirements = formula.requires
 
             if parent in requirements:
@@ -116,6 +122,17 @@ class StatsSystem:
 
         return updated
     
+    def _get_statrefs_of_base_values(self, component) -> Set[StatRef]: # TODO: rework
+        statrefs = set()
+
+        if isinstance(component, Stat):
+            statrefs.add(StatRef(type(component), "base_value"))
+        elif isinstance(component, Meter):
+            statrefs.add(StatRef(type(component), "base_max_value"))
+            statrefs.add(StatRef(type(component), "base_regen"))
+        
+        return statrefs
+
     def _create_create_stat_event_handler(self, entity_id, component):
         def handler():
             self.world.add_component(entity_id, component)
@@ -123,6 +140,9 @@ class StatsSystem:
 
             stats = self.world.get_or_create_component(entity_id, Stats)
             stats.add(stat_type)
+
+            statrefs = self._get_statrefs_of_base_values(component)
+            self._update_stats(entity_id, statrefs)
 
             return StatCreateResult(entity_id, component)
         

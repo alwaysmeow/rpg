@@ -58,7 +58,7 @@ class ModifierSystem:
                     modifiers.append(modifier_data)
 
         base_value_name = self.stat_base_value_names_map[value_name]
-        base_value = component[base_value_name]
+        base_value = getattr(component, base_value_name)
         new_effective_value = self._apply_modifiers(base_value, modifiers)
 
         setattr(component, value_name, new_effective_value)
