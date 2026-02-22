@@ -136,6 +136,10 @@ class StatsSystem:
     def _create_create_stat_event_handler(self, entity_id, component):
         def handler():
             self.world.add_component(entity_id, component)
+            
+            # TODO: fix broken event queue (critical)
+            self.world.logger.log(f"{entity_id}, {component}")
+
             stat_type = type(component)
 
             stats = self.world.get_or_create_component(entity_id, Stats)
