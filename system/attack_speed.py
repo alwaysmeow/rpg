@@ -13,10 +13,6 @@ class AttackSpeedSystem:
 
         self.world.events.subscribe(EventType.STATS_UPDATE, self._on_stat_update)
 
-    def create_attack_speed(self, entity_id, value): # TODO: move to stats system
-        self.world.stats_system.create_stat(entity_id, AttackSpeed(value))
-        self.world.stats_system.create_stat(entity_id, AttackDelay(0, AttackDelayFormula))
-
     def _search_attack_ability(self, entity_id):
         attacks = self.world.query_by_tag(Attack)
         for ability_id in attacks:

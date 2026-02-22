@@ -34,6 +34,7 @@ class CooldownSystem:
         for ability_id in self.world.components[Cooldown]:
             cooldown = self.world.get_component(ability_id, Cooldown)
 
+            progress = 0
             if self.world.has_tag(ability_id, Attack):
                 owner = self.world.get_component(ability_id, Owner)
                 if owner:

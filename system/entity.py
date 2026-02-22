@@ -37,10 +37,10 @@ class EntityFactory:
         return ability_id
     
     def create_autoattack(self, owner_id, attack_speed_value):
-        self.world.attack_speed_system.create_attack_speed(owner_id, attack_speed_value)
-
         ability_id = self.create_ability(owner_id, attack_handler, 0, 1, True)
         self.world.add_tag(ability_id, Attack)
         self.world.add_tag(ability_id, TargetAbility)
+
+        self.world.stats_system.create_attack_speed(owner_id, attack_speed_value)
 
         return ability_id

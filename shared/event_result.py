@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List, Any
 
 from dataclasses import dataclass
 from shared.damage_type import DamageType
@@ -23,7 +23,7 @@ class CooldownEventResult:
 @dataclass
 class CombatEventResult:
     combat_id: int
-    teams: list[list[int]]
+    teams: List[List[int]]
 
 @dataclass
 class DamageEventResult:
@@ -36,6 +36,11 @@ class DamageEventResult:
 class DeathEventResult:
     victim_id: int
     killer_id: int
+
+@dataclass
+class StatCreateResult:
+    entity_id: int
+    created: Any
 
 @dataclass
 class StatsUpdateResult:

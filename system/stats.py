@@ -1,10 +1,11 @@
 from typing import Set, Dict
 
-from component.stats import Stats
+from component.stats import Stats, AttackSpeed, AttackDelay
 
 from shared.statref import StatRef
+from shared.formula import AttackDelayFormula
+from shared.event_result import StatCreateResult
 from shared.event_type import EventType
-from shared.event_result import StatsUpdateResult
 
 from system.formula import FormulaSystem
 from system.modifier import ModifierSystem
@@ -25,12 +26,17 @@ class StatsSystem:
     def update_modifiers(self, entity_id, stat_type): # TODO
         self.world.get_component(entity_id, stat_type).modifiers = []
 
-    def create_stat(self, entity_id, stat):
-        self.world.add_component(entity_id, stat)
-        stat_type = type(stat)
+    def create_stat(self, entity_id, stat_component):
+        self.world.events.schedule(
+            self.world.time.now,
+            self._create_create_stat_event_handler(entity_id, stat_component),
+            EventType.STAT_CREATE,
+            (EventType.STAT_CREATE, entity_id, type(stat_component)),
+        )
 
-        stats = self.world.get_or_create_component(entity_id, Stats)
-        stats.add(stat_type)
+    def create_attack_speed(self, entity_id, value):
+        self.create_stat(entity_id, AttackSpeed(value))
+        self.create_stat(entity_id, AttackDelay(0, AttackDelayFormula))
 
     def _update_stats(self, entity_id, stats: list[StatRef]) -> Dict[StatRef, float]:
         update_set = set(stats)
@@ -109,3 +115,15 @@ class StatsSystem:
             updated[statref] = new_value
 
         return updated
+    
+    def _create_create_stat_event_handler(self, entity_id, component):
+        def handler():
+            self.world.add_component(entity_id, component)
+            stat_type = type(component)
+
+            stats = self.world.get_or_create_component(entity_id, Stats)
+            stats.add(stat_type)
+
+            return StatCreateResult(entity_id, component)
+        
+        return handler
