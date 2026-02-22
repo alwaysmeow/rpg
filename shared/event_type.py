@@ -10,7 +10,7 @@ class EventType(Enum):
     COMBAT_END = ("combat_end", 0)
     COOLDOWN_SET = ("cooldown_set", 5)
     COOLDOWN_UNSET = ("cooldown_unset", 5)
-    STAT_UPDATE = ("stat_update", 10)
+    STATS_UPDATE = ("stat_update", 10)
 
     def __init__(self, value, priority):
         self._value_ = value

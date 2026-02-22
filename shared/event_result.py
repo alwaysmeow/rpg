@@ -1,3 +1,5 @@
+from typing import Dict
+
 from dataclasses import dataclass
 from shared.damage_type import DamageType
 from shared.statref import StatRef
@@ -36,8 +38,6 @@ class DeathEventResult:
     killer_id: int
 
 @dataclass
-class StatUpdateResult:
+class StatsUpdateResult:
     entity_id: int
-    statref: StatRef
-    new_value: float
-    depth: int = 0
+    updated: Dict[StatRef, float]

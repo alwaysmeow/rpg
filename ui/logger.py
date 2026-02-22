@@ -20,7 +20,7 @@ class Logger:
             EventType.CAST_END: self._log_cast_event_result,
             EventType.DAMAGE: self._log_damage_event_result,
             EventType.DEATH: self._log_death_event_result,
-            EventType.STAT_UPDATE: self._log_stat_update_event_result,
+            EventType.STATS_UPDATE: self._log_stats_update_event_result,
         }
 
         for event_type in subscribers:
@@ -67,9 +67,9 @@ class Logger:
         victim_name = self._marked_name(result.victim_id)
         self._write(f"- {killer_name} [red]killed[/red] {victim_name}")
 
-    def _log_stat_update_event_result(self, result: StatUpdateResult):
+    def _log_stats_update_event_result(self, result: StatsUpdateResult):
         owner_name = self._marked_name(result.entity_id)
-        self._write(f"- {owner_name}'s {result.statref.component_type.__name__} ({result.statref.value_name}) = {result.new_value}")
+        self._write(f"- {owner_name}'s stats changed")
 
     def error(self, text):
         self._write(f"- [bold red]ERROR:[/bold red] {text} - {self.world.time.now}")
