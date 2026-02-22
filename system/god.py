@@ -5,7 +5,7 @@ from component.tag import Unit, Ability, Attack, TargetAbility, Autocast
 
 from abilities.attack import attack_handler
 
-class EntityFactory:
+class God:
     def __init__(self, world):
         self.world = world
 
