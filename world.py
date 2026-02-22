@@ -11,6 +11,8 @@ from system.cooldown import CooldownSystem
 from system.ability import AbilitySystem
 from system.regeneration import RegenerationSystem
 from system.stats import StatsSystem
+from system.attack_speed import AttackSpeedSystem
+from system.modifier import ModifierSystem
 
 from ui.logger import Logger
 
@@ -28,6 +30,8 @@ class World:
         self.ability_system = AbilitySystem(self)
         self.regeneration_system = RegenerationSystem(self)
         self.stats_system = StatsSystem(self)
+        self.attack_speed = AttackSpeedSystem(self)
+        self.modifier = ModifierSystem(self)
 
         # TODO: move out
         console = Console()

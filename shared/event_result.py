@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from shared.damage_type import DamageType
+from shared.statref import StatRef
 
 @dataclass
 class AttackEventResult:
@@ -33,3 +34,6 @@ class DamageEventResult:
 class DeathEventResult:
     victim_id: int
     killer_id: int
+
+class StatUpdateResult:
+    statref: StatRef
