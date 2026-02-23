@@ -13,6 +13,7 @@ class EventBus:
         self.emits_per_tick_limit = config["emits_per_tick_limit"]
 
     def queue(self, event):
+        print(event)
         self._queue.put(event)
         return event
 

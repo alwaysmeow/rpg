@@ -18,7 +18,7 @@ class AttackCommand(Command):
         self.ability_id = ability_id
 
     def execute(self, world):
-        world.ability_system.cast(self.ability_id)
+        return world.ability_system.cast(self.ability_id)
 
 class CastStartCommand(Command):
     event_type = CastStartEvent
@@ -28,7 +28,7 @@ class CastStartCommand(Command):
         self.ability_id = ability_id
 
     def execute(self, world):
-        world.ability_system.cast(self.ability_id)
+        return world.ability_system.cast(self.ability_id)
 
 class CastEndCommand(Command):
     event_type = CastEndEvent
@@ -40,7 +40,7 @@ class CastEndCommand(Command):
         self.ability_id = ability_id
 
     def execute(self, world):
-        world.ability_system.cast_end(self.ability_id)
+        return world.ability_system.cast_end(self.ability_id)
 
 class DamageCommand(Command):
     event_type = DamageEvent
@@ -53,7 +53,7 @@ class DamageCommand(Command):
         self.amount = amount
 
     def execute(self, world):
-        world.damage_system.damage(self.source_id, self.target_id, self.damage_type, self.amount)
+        return world.damage_system.damage(self.source_id, self.target_id, self.damage_type, self.amount)
 
 class DeathCommand(Command):
     event_type = DeathEvent
@@ -64,7 +64,7 @@ class DeathCommand(Command):
         self.killer_id = killer_id
 
     def execute(self, world):
-        world.damage_system.death(self.victim_id, self.killer_id)
+        return world.damage_system.death(self.victim_id, self.killer_id)
 
 class CombatStartCommand(Command):
     event_type = CombatStartEvent
@@ -74,7 +74,7 @@ class CombatStartCommand(Command):
         self.combat_id = combat_id
 
     def execute(self, world):
-        world.combat_system.combat_start(self.combat_id)
+        return world.combat_system.combat_start(self.combat_id)
 
 class CombatEndCommand(Command):
     event_type = CombatEndEvent
@@ -84,7 +84,7 @@ class CombatEndCommand(Command):
         self.combat_id = combat_id
 
     def execute(self, world):
-        world.combat_system.combat_end(self.combat_id)
+        return world.combat_system.combat_end(self.combat_id)
 
     def unique_key(self):
         return (CombatEndCommand, self.combat_id)
@@ -97,7 +97,7 @@ class CooldownSetCommand(Command):
         self.ability_id = ability_id
 
     def execute(self, world):
-        world.cooldown_system.cooldown_set(self.combat_id)
+        return world.cooldown_system.cooldown_set(self.combat_id)
 
 class CooldownUnsetCommand(Command):
     event_type = CooldownUnsetEvent
@@ -107,7 +107,7 @@ class CooldownUnsetCommand(Command):
         self.ability_id = ability_id
 
     def execute(self, world):
-        world.cooldown_system.cooldown_unset(self.combat_id)
+        return world.cooldown_system.cooldown_unset(self.combat_id)
 
 class StatsCreateCommand(Command):
     event_type = StatsCreateEvent
@@ -118,7 +118,7 @@ class StatsCreateCommand(Command):
         self.components = components
 
     def execute(self, world):
-        world.cooldown_system.create_stats(self.entity_id, self.components)
+        return world.cooldown_system.create_stats(self.entity_id, self.components)
 
 class StatsUpdateCommand(Command):
     event_type = StatsUpdateEvent
@@ -129,4 +129,4 @@ class StatsUpdateCommand(Command):
         self.statrefs = statrefs
 
     def execute(self, world):
-        world.cooldown_system.update_stats(self.entity_id, self.statrefs)
+        return world.cooldown_system.update_stats(self.entity_id, self.statrefs)
