@@ -5,6 +5,9 @@ from shared.damage_type import DamageType
 from shared.statref import StatRef
 
 @dataclass
+class NoneEvent: pass
+
+@dataclass
 class AttackEvent:
     attacker_id: int
     target_id: int

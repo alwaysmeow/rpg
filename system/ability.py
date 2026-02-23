@@ -14,13 +14,21 @@ class AbilitySystem:
     
     def attack(self, ability_id):
         attacker_id, target_id = self._cast(ability_id, AttackCommand)
-        ability_handler = self.world.get_component(ability_id, AbilityEffect).handler
-        ability_handler(self.world, attacker_id, target_id)
-        return AttackEvent(attacker_id, target_id, ability_id)
+        if not attacker_id is None and not target_id is None:
+            ability_handler = self.world.get_component(ability_id, AbilityEffect).handler
+            ability_handler(self.world, attacker_id, target_id)
+            return AttackEvent(attacker_id, target_id, ability_id)
+        else:
+            return NoneEvent()
 
     def cast_start(self, ability_id):
         caster_id, target_id = self._cast(ability_id, CastStartCommand)
-        return CastStartEvent(caster_id, target_id, ability_id)
+        if not caster_id is None and not target_id is None:
+            ability_handler = self.world.get_component(ability_id, AbilityEffect).handler
+            ability_handler(self.world, caster_id, target_id)
+            return CastStartEvent(caster_id, target_id, ability_id)
+        else:
+            return NoneEvent()
 
     def cast_end(self, caster_id, target_id, ability_id):
         ability_handler = self.world.get_component(ability_id, AbilityEffect).handler
