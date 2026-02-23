@@ -31,6 +31,10 @@ class DamageSystem:
             EventType.DAMAGE
         )
     
+    def death(self, victim_id, killer_id):
+        self.world.add_tag(victim_id, Dead)
+        return DeathEventResult(victim_id, killer_id)
+
     def _process_damage(self, damage: Damage):
         health = self.world.get_component(damage.target_id, Health)
         if not health:
@@ -110,9 +114,3 @@ class DamageSystem:
             amount = self._process_damage(damage)
             return DamageEventResult(damage.source_id, damage.target_id, amount, damage.type)
         return damage_event_handler
-
-    def _create_death_event_handler(self, victim_id, killer_id):
-        def death_event_handler():
-            self.world.add_tag(victim_id, Dead)
-            return DeathEventResult(victim_id, killer_id)
-        return death_event_handler

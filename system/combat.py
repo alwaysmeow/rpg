@@ -32,6 +32,16 @@ class CombatSystem:
 
         return combat_id
     
+    def combat_start(self, combat_id):
+        teams = self._get_teams(combat_id)
+        self.world.logger.log_combat(combat_id, teams)
+        return CombatEventResult(combat_id, teams)
+
+    def combat_end(self, combat_id):
+        teams = self._get_teams(combat_id)
+        self.world.logger.log_combat(combat_id, teams)
+        return CombatEventResult(combat_id, teams)
+
     def _find_new_target(self, enemies):
         for enemy_id in enemies:
             if not self.world.has_tag(enemy_id, Dead):

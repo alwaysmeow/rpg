@@ -59,6 +59,16 @@ class AbilitySystem:
 
         return True
 
+    def cast_end(self, caster_id, target_id, ability_id):
+        ability_handler = self.world.get_component(ability_id, AbilityEffect).handler
+
+        if self.world.has_tag(ability_id, Attack):
+            ability_handler(self.world, caster_id, target_id)
+            return AttackEventResult(caster_id, target_id, ability_id)
+        else:
+            ability_handler(self.world, caster_id, target_id)
+            return CastEventResult(caster_id, target_id, ability_id)
+
     def _autocast_trigger(self, ability_id):
         if self.world.has_tag(ability_id, Autocast):
             self.cast(ability_id)

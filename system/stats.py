@@ -24,16 +24,12 @@ class StatsSystem:
             "base_max_value": "effective_max_value",
             "base_regen": "effective_regen"
         }
-    
-    def update_modifiers(self, entity_id, stat_type): # TODO
-        self.world.get_component(entity_id, stat_type).modifiers = []
 
-    def create_stats(self, entity_id, stat_components):
-        self.world.events.schedule(
-            self.world.time.now,
-            self._create_stats_create_event_handler(entity_id, stat_components),
-            EventType.STATS_CREATE,
-        )
+    def create_stats(self, entity_id, components):
+        for component in components:
+            self._create_stat(entity_id, component)
+
+        return StatsCreateResult(entity_id, components)
 
     def create_attack_speed(self, entity_id, value):
         self.create_stats(
@@ -44,7 +40,7 @@ class StatsSystem:
             ]
         )
 
-    def _update_stats(self, entity_id, statrefs: Set[StatRef]) -> Dict[StatRef, float]:
+    def update_stats(self, entity_id, statrefs: Set[StatRef]) -> Dict[StatRef, float]:
         update_set = statrefs.copy()
         updated = {}
 
@@ -136,15 +132,6 @@ class StatsSystem:
             statrefs.add(StatRef(type(component), "base_regen"))
         
         return statrefs
-
-    def _create_stats_create_event_handler(self, entity_id, components):
-        def handler():
-            for component in components:
-                self._create_stat(entity_id, component)
-
-            return StatsCreateResult(entity_id, components)
-        
-        return handler
     
     def _create_stat(self, entity_id, component):
         self.world.add_component(entity_id, component)
@@ -154,4 +141,4 @@ class StatsSystem:
         stats.add(stat_type)
 
         statrefs = self._get_statrefs_of_base_values(component)
-        self._update_stats(entity_id, statrefs)
+        self.update_stats(entity_id, statrefs)
