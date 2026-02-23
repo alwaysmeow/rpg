@@ -1,4 +1,6 @@
 from shared.damage_type import DamageType
+from shared.command import DamageCommand
+
 from component.stats import AttackDamage
 
 def attack_handler(world, attacker_id, target_id):
@@ -6,6 +8,9 @@ def attack_handler(world, attacker_id, target_id):
     if not damage:
         return False
     
-    world.damage_system.queue_damage(attacker_id, target_id, DamageType.Physical, damage.effective_value)
+    world.events.scheduler.schedule(
+        world.time.now,
+        DamageCommand(attacker_id, target_id, DamageType.Physical, damage.effective_value)
+    )
 
     return True
