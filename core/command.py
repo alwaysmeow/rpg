@@ -1,4 +1,4 @@
-from shared.event import *
+from core.event import *
 
 class Command:
     event_type: type = None

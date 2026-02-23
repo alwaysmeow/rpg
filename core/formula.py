@@ -1,6 +1,6 @@
 from component.attributes import Agility, Intelligence, Strength
 from component.stats import Health, AttackSpeed
-from shared.statref import StatRef
+from core.statref import StatRef
 
 class Formula:
     requires = []

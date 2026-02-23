@@ -1,4 +1,4 @@
-from shared.statref import StatRef
+from core.statref import StatRef
 
 class FormulaSystem:
     def __init__(self, world):

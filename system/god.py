@@ -1,10 +1,10 @@
 from component.stats import Stats, Armor, MagicResistance, Health, AttackDamage, AttackSpeed, AttackDelay
 from component.name import Name
 from component.ability import AbilityEffect, Owner, Cooldown, CastTime
-from component.tag import Unit, Ability, Attack, TargetAbility, Autocast
+from tag.tag import Unit, Ability, Attack, TargetAbility, Autocast
 
-from shared.command import *
-from shared.formula import AttackDelayFormula
+from core.command import *
+from core.formula import AttackDelayFormula
 
 from abilities.attack import attack_handler
 

@@ -4,11 +4,11 @@ from component.stat import Stat
 from component.meter import Meter
 from component.stats import Stats, AttackSpeed, AttackDelay
 
-from shared.statref import StatRef
-from shared.event import StatsCreateEvent, StatsUpdateEvent
+from core.statref import StatRef
+from core.event import StatsCreateEvent, StatsUpdateEvent
 
-from system.formula import FormulaSystem
-from system.modifier import ModifierSystem
+from system.stats.formula import FormulaSystem
+from system.stats.modifier import ModifierSystem
 
 class StatsSystem:
     def __init__(self, world):
@@ -17,7 +17,7 @@ class StatsSystem:
         self.formulas = FormulaSystem(world)
         self.modifiers = ModifierSystem(world)
 
-        self.stat_value_names_map = {
+        self.base_to_effective_names = {
             "base_value": "effective_value",
             "base_max_value": "effective_max_value",
             "base_regen": "effective_regen"
@@ -30,23 +30,23 @@ class StatsSystem:
         return StatsCreateEvent(entity_id, components)
 
     def update_stats(self, entity_id, statrefs: Set[StatRef]) -> StatsUpdateEvent:
-        update_set = statrefs.copy()
+        pending_statrefs = statrefs.copy()
         updated = {}
 
         # Circular dependency possible
         max_iterations = 15 # TODO: get from config
         iterations = 0
 
-        while update_set and iterations < max_iterations:
-            self._stats_update_round(entity_id, update_set)
+        while pending_statrefs and iterations < max_iterations:
+            self._stats_update_round(entity_id, pending_statrefs)
 
-            update_set = self._get_next_round_update_set(entity_id, update_set)
+            pending_statrefs = self._resolve_dependencies(entity_id, pending_statrefs)
             iterations += 1
         
         return StatsUpdateEvent(entity_id, updated)
 
-    def _get_next_round_update_set(self, entity_id, parents: Set[StatRef]) -> Set[StatRef]:
-        # Gets StatRef's dependent on list of parent StatRef's
+    def _resolve_dependencies(self, entity_id, parents: Set[StatRef]) -> Set[StatRef]:
+        # Gets StatRef's dependent set of parent StatRef's
         stats_component = self.world.get_component(entity_id, Stats)
 
         if stats_component is None:
@@ -86,8 +86,8 @@ class StatsSystem:
         return value_data_list
 
     def _stats_update_round(self, entity_id, statrefs: Set[StatRef]) -> Dict[StatRef, float]:
-        base_values_names = self.stat_value_names_map.keys()
-        effective_values_names = self.stat_value_names_map.values()
+        base_values_names = self.base_to_effective_names.keys()
+        effective_values_names = self.base_to_effective_names.values()
 
         base_statrefs = set(s for s in statrefs if s.value_name in base_values_names)
         effective_statrefs = set(s for s in statrefs if s.value_name in effective_values_names)
@@ -100,7 +100,7 @@ class StatsSystem:
             updated[statref] = new_value
 
             # Update effective values of updated base values
-            effective_name = self.stat_value_names_map[statref.value_name]
+            effective_name = self.base_to_effective_names[statref.value_name]
             effective_statref = StatRef(statref.component_type, effective_name)
             effective_statrefs.add(effective_statref)
 

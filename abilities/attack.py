@@ -1,5 +1,5 @@
-from shared.damage_type import DamageType
-from shared.command import DamageCommand
+from core.damage_type import DamageType
+from core.command import DamageCommand
 
 from component.stats import AttackDamage
 

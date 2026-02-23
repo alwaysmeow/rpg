@@ -2,18 +2,18 @@ from random import random
 
 from utils import load_config
 from component.stats import Health, MagicResistance, Armor
-from component.tag import Dead
+from tag.tag import Dead
 
-from shared.damage_type import DamageType
-from shared.command import *
-from shared.event import DamageEvent, DeathEvent
+from core.damage_type import DamageType
+from core.command import *
+from core.event import DamageEvent, DeathEvent
 
-class Damage:
-    def __init__(self, source_id, target_id, type: DamageType, amount: int):
-        self.source_id = source_id
-        self.target_id = target_id
-        self.type = type
-        self.amount = amount
+@dataclass
+class Damage: # similar to DamageEvent
+    source_id: int
+    target_id: int
+    type: DamageType
+    amount: int
 
 class DamageSystem:
     def __init__(self, world, game_config_path="config/game.json"):

@@ -1,8 +1,8 @@
 from typing import Dict, List, Set, Any
 
 from dataclasses import dataclass
-from shared.damage_type import DamageType
-from shared.statref import StatRef
+from core.damage_type import DamageType
+from core.statref import StatRef
 
 @dataclass
 class NoneEvent: pass

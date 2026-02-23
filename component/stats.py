@@ -1,16 +1,16 @@
 from typing import Set
 
-from component.stat import FormulaStat
-from component.meter import FormulaMeter
+from component.stat import Stat
+from component.meter import Meter
 
-class Armor(FormulaStat): formula_key = "armor"
-class MagicResistance(FormulaStat): formula_key = "magic_resistance"
-class AttackDamage(FormulaStat): formula_key = "attack_damage"
-class AttackSpeed(FormulaStat): formula_key = "attack_speed"
-class AttackDelay(FormulaStat): formula_key = "attack_delay"
+class Armor(Stat): formula_key = "armor"
+class MagicResistance(Stat): formula_key = "magic_resistance"
+class AttackDamage(Stat): formula_key = "attack_damage"
+class AttackSpeed(Stat): formula_key = "attack_speed"
+class AttackDelay(Stat): formula_key = "attack_delay"
 
-class Health(FormulaMeter): formula_key = "health"
-class Mana(FormulaMeter): formula_key = "mana"
+class Health(Meter): formula_key = "health"
+class Mana(Meter): formula_key = "mana"
 
 class Stats:
     def __init__(self, stats: Set[type] | None = None):

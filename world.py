@@ -3,20 +3,17 @@ from collections import defaultdict
 from rich.console import Console
 
 from system.time import TimeSystem
-from system.event import EventSystem
+from system.event.event import EventSystem
 from system.god import God
 from system.combat import CombatSystem
 from system.damage import DamageSystem
 from system.cooldown import CooldownSystem
 from system.ability import AbilitySystem
 from system.regeneration import RegenerationSystem
-from system.stats import StatsSystem
+from system.stats.stats import StatsSystem
 from system.attack_speed import AttackSpeedSystem
-from system.modifier import ModifierSystem
 
 from ui.logger import Logger
-
-from component.tag import Tag
 
 class World:
     def __init__(self, game_config_path="config/game.json"):
@@ -31,7 +28,6 @@ class World:
         self.regeneration_system = RegenerationSystem(self)
         self.stats_system = StatsSystem(self)
         self.attack_speed_system = AttackSpeedSystem(self)
-        self.modifier_system = ModifierSystem(self)
 
         # TODO: move out
         console = Console()

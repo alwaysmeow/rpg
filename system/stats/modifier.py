@@ -1,13 +1,13 @@
-from shared.modifier_type import ModifierType
+from core.modifier_type import ModifierType
 
 from component.modifier import ModifierData, TargetModifiers
-from component.tag import Modifier
+from tag.tag import Modifier
 
 class ModifierSystem:
     def __init__(self, world):
         self.world = world
     
-        self.stat_base_value_names_map = {
+        self.effective_to_base_names = {
             "effective_value": "base_value",
             "effective_max_value": "base_max_value",
             "effective_regen": "base_regen"
@@ -40,7 +40,7 @@ class ModifierSystem:
             self.world.logger.error(f"Component {component_type.__name__} should exist")
             return
         
-        if not value_name in self.stat_base_value_names_map:
+        if not value_name in self.effective_to_base_names:
             self.world.logger.error(f"_update_effective_value method updates only effective values")
             return
 
@@ -54,7 +54,7 @@ class ModifierSystem:
                 if modifier_data:
                     modifiers.append(modifier_data)
 
-        base_value_name = self.stat_base_value_names_map[value_name]
+        base_value_name = self.effective_to_base_names[value_name]
         base_value = getattr(component, base_value_name)
         new_effective_value = self._apply_modifiers(base_value, modifiers)
 

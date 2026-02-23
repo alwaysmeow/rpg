@@ -3,9 +3,9 @@ from rich.text import Text
 from component.name import Name
 from component.stats import Armor, MagicResistance, Health
 from component.ability import Cooldown
-from component.tag import *
+from tag.tag import *
 
-from shared.event import *
+from core.event import *
 
 class Logger:
     def __init__(self, world, sink=print, markup=True):
@@ -29,7 +29,7 @@ class Logger:
         self.sink(text if self.markup else text.plain)
 
     def log_unit(self, unit_id):
-        self._write(f"\nName: {self._marked_name(unit_id)}")
+        self._write(f"\nName: {self._format_name(unit_id)}")
         self._write(f"Health: {self.world.get_component(unit_id, Health).value} / {self.world.get_component(unit_id, Health).effective_max_value}")
         self._write(f"Armor: {self.world.get_component(unit_id, Armor).effective_value}")
         self._write(f"Magic Resist: {self.world.get_component(unit_id, MagicResistance).effective_value}\n")
@@ -45,28 +45,28 @@ class Logger:
         self._write(f"Cooldown: {self.world.get_component(ability_id, Cooldown).value} / {self.world.get_component(ability_id, Cooldown).effective_max_value}\n")
     
     def _log_attack_event(self, event: AttackEvent):
-        attacker_name = self._marked_name(event.attacker_id)
-        target_name = self._marked_name(event.target_id)
+        attacker_name = self._format_name(event.attacker_id)
+        target_name = self._format_name(event.target_id)
         self._write(f"- {attacker_name} attacks {target_name}")
 
     def _log_cast_event(self, event: CastEndEvent):
-        attacker_name = self._marked_name(event.caster_id)
-        target_name = self._marked_name(event.target_id)
+        attacker_name = self._format_name(event.caster_id)
+        target_name = self._format_name(event.target_id)
         self._write(f"- {attacker_name} casts spell on {target_name}")
 
     def _log_damage_event(self, event: DamageEvent):
-        source_name = self._marked_name(event.source_id)
-        target_name = self._marked_name(event.target_id)
-        damage_value = self._marked_damage(event.amount, event.damage_type)
+        source_name = self._format_name(event.source_id)
+        target_name = self._format_name(event.target_id)
+        damage_value = self._format_damage(event.amount, event.damage_type)
         self._write(f"- {source_name} deals {damage_value} damage to {target_name}")
 
     def _log_death_event(self, event: DeathEvent):
-        killer_name = self._marked_name(event.killer_id)
-        victim_name = self._marked_name(event.victim_id)
+        killer_name = self._format_name(event.killer_id)
+        victim_name = self._format_name(event.victim_id)
         self._write(f"- {killer_name} [red]killed[/red] {victim_name}")
 
     def _log_stats_update_event(self, event: StatsUpdateEvent):
-        owner_name = self._marked_name(event.entity_id)
+        owner_name = self._format_name(event.entity_id)
         self._write(f"- {owner_name}'s stats changed")
 
     def error(self, text):
@@ -75,7 +75,7 @@ class Logger:
     def log(self, text):
         self._write(f"\n- LOG: {text} - {self.world.time.now}\n")
 
-    def _marked_name(self, entity_id):
+    def _format_name(self, entity_id):
         name_component = self.world.get_component(entity_id, Name)
 
         if name_component:
@@ -93,5 +93,5 @@ class Logger:
 
         return f"[cyan]{name}[/cyan]"
     
-    def _marked_damage(self, value, damage_type):
+    def _format_damage(self, value, damage_type):
         return f"[{damage_type.color}]{value}[/{damage_type.color}]"

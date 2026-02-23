@@ -1,7 +1,7 @@
 import heapq
 from typing import Dict
 
-from shared.command import Command
+from core.command import Command
 
 from utils import load_config
 

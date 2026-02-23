@@ -1,7 +1,7 @@
 from typing import Dict, List
 from collections import defaultdict
 
-from shared.modifier_type import ModifierType
+from core.modifier_type import ModifierType
 
 class ModifierData:
     def __init__(self, stat: type, value: float = 0, type: ModifierType = ModifierType.Flat):

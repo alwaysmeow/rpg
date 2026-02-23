@@ -1,5 +1,5 @@
-from system.scheduler import CommandScheduler
-from system.event_bus import EventBus
+from system.event.scheduler import CommandScheduler
+from system.event.bus import EventBus
 
 class EventSystem:
     def __init__(self, world, game_config_path):

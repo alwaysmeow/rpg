@@ -1,9 +1,9 @@
 from component.stats import AttackDelay
-from component.tag import Attack
+from tag.tag import Attack
 from component.ability import Owner, Cooldown
 
-from shared.event import StatsUpdateEvent, StatsCreateEvent
-from shared.statref import StatRef
+from core.event import StatsUpdateEvent, StatsCreateEvent
+from core.statref import StatRef
 
 class AttackSpeedSystem:
     def __init__(self, world):

@@ -1,9 +1,9 @@
 from component.ability import Cooldown, Owner
-from component.tag import Attack
+from tag.tag import Attack
 from component.stats import AttackDelay
 
-from shared.command import *
-from shared.event import CooldownUnsetEvent, CooldownSetEvent, CastEndEvent, AttackEvent
+from core.command import *
+from core.event import CooldownUnsetEvent, CooldownSetEvent, CastEndEvent, AttackEvent
 
 from utils import load_config
 
