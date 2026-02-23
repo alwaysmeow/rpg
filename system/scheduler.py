@@ -46,19 +46,18 @@ class CommandScheduler:
 
     def process(self, now):
         iterations = 0
-        while self._queue and self._queue[0].time <= now and iterations < self.events_per_tick_limit:
+        while self._queue and self._queue[0].time <= now and iterations < self.commands_per_tick_limit:
             record: CommandRecord = heapq.heappop(self._queue)
             unique_key = record.command.unique_key()
             self._unique_keys.discard(unique_key)
 
             event = record.command.execute(self.world)
-
-            # TODO: Put event in event bus
+            self.world.events.bus.queue(event)
 
             iterations += 1
 
         # Delete sequence counters if all events processed
-        if iterations < self.events_per_tick_limit:
+        if iterations < self.commands_per_tick_limit:
             self._clear_seq_dict(now)
     
     def _clear_seq_dict(self, now):

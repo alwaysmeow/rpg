@@ -8,4 +8,4 @@ class EventSystem:
 
     def process(self, now):
         self.scheduler.process(now)
-        self.bus.process(now)
+        self.bus.process()
