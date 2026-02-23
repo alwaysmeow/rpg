@@ -13,9 +13,6 @@ class CooldownSystem:
 
         config = load_config(game_config_path)
         self.attack_speed_coefficient = config["attack_speed_coefficient"]
-
-        self.world.events.bus.subscribe(AttackEvent, self._on_cast)
-        self.world.events.bus.subscribe(CastEndEvent, self._on_cast)
     
     def cooldown_set(self, ability_id):
         cooldown = self.world.get_component(ability_id, Cooldown)
@@ -58,6 +55,3 @@ class CooldownSystem:
                     self.world.time.now,
                     CooldownUnsetCommand(ability_id)
                 )
-
-    def _on_cast(self, result: AttackEvent | CastEndEvent):
-        self.cooldown_set(result.ability_id)
