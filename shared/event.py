@@ -38,8 +38,8 @@ class CombatEndEvent(CombatEvent): pass
 class DamageEvent:
     source_id: int
     target_id: int
-    amount: int
     damage_type: DamageType
+    amount: int
 
 @dataclass
 class DeathEvent:

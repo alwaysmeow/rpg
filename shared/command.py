@@ -53,7 +53,7 @@ class DamageCommand(Command):
         self.amount = amount
 
     def execute(self, world):
-        world.damage_system.queue_damage(self.source_id, self.target_id, self.damage_type, self.amount)
+        world.damage_system.damage(self.source_id, self.target_id, self.damage_type, self.amount)
 
 class DeathCommand(Command):
     event_type = DeathEvent

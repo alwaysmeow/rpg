@@ -2,15 +2,15 @@ from component.ability import AbilityEffect, Owner, CastTime, Cooldown
 from component.target import Target
 from component.tag import Dead, TargetAbility, Attack, Autocast
 
-from shared.event_type import EventType
-from shared.event_result import CastEventResult, CooldownEventResult, CombatEventResult, AttackEventResult
+from shared.command import *
+from shared.event import *
 
 class AbilitySystem:
     def __init__(self, world):
         self.world = world
 
-        self.world.events.subscribe(EventType.COOLDOWN_UNSET, self._on_cooldown_unset)
-        self.world.events.subscribe(EventType.COMBAT_START, self._on_combat_start)
+        self.world.events.bus.subscribe(CooldownUnsetEvent, self._on_cooldown_unset)
+        self.world.events.bus.subscribe(CombatStartEvent, self._on_combat_start)
     
     def cast(self, ability_id):
         ability_tags = self.world.get_tags(ability_id)
@@ -41,20 +41,15 @@ class AbilitySystem:
         cast_time_component = self.world.get_component(ability_id, CastTime)
         cast_time = cast_time_component.value if cast_time_component else 0
 
-        def cast_start_handler():
-            return CastEventResult(caster_id, target_id, ability_id)
-
         if cast_time:
-            self.world.events.schedule(
-                self.world.time.now, 
-                cast_start_handler, 
-                EventType.CAST_START
+            self.world.events.scheduler.schedule(
+                self.world.time.now,
+                CastStartCommand(ability_id)
             )
         
-        self.world.events.schedule(
+        self.world.events.scheduler.schedule(
             self.world.time.now + cast_time, 
-            self._create_cast_end_handler(caster_id, target_id, ability_id), 
-            self._event_type_on_cast(ability_id)
+            CastEndCommand(ability_id)
         )
 
         return True
@@ -64,19 +59,19 @@ class AbilitySystem:
 
         if self.world.has_tag(ability_id, Attack):
             ability_handler(self.world, caster_id, target_id)
-            return AttackEventResult(caster_id, target_id, ability_id)
+            return AttackEvent(caster_id, target_id, ability_id)
         else:
             ability_handler(self.world, caster_id, target_id)
-            return CastEventResult(caster_id, target_id, ability_id)
+            return CastEvent(caster_id, target_id, ability_id)
 
     def _autocast_trigger(self, ability_id):
         if self.world.has_tag(ability_id, Autocast):
             self.cast(ability_id)
     
-    def _on_cooldown_unset(self, cooldown_event_result: CooldownEventResult):
+    def _on_cooldown_unset(self, cooldown_event_result: CooldownEvent):
         self._autocast_trigger(cooldown_event_result.ability_id)
     
-    def _on_combat_start(self, combat_start_event_result: CombatEventResult):
+    def _on_combat_start(self, combat_start_event_result: CombatEvent):
         for team in combat_start_event_result.teams:
             for unit_id in team:
                 abilities = self.world.query_by_component(
@@ -89,23 +84,9 @@ class AbilitySystem:
     
     def _event_type_on_cast(self, ability_id):
         if self.world.has_tag(ability_id, Attack):
-            return EventType.ATTACK
+            return AttackEvent
         else:
-            return EventType.CAST_END
-    
-    def _create_cast_end_handler(self, caster_id, target_id, ability_id):
-        ability_handler = self.world.get_component(ability_id, AbilityEffect).handler
-
-        if self.world.has_tag(ability_id, Attack):
-            def cast_end_handler():
-                ability_handler(self.world, caster_id, target_id)
-                return AttackEventResult(caster_id, target_id, ability_id)
-        else: 
-            def cast_end_handler():
-                ability_handler(self.world, caster_id, target_id)
-                return CastEventResult(caster_id, target_id, ability_id)
-
-        return cast_end_handler
+            return CastEndEvent
     
     def _switch_autocast(self, ability_id):
         if self.world.has_tag(ability_id, Autocast):

@@ -5,9 +5,7 @@ from component.stats import Armor, MagicResistance, Health
 from component.ability import Cooldown
 from component.tag import *
 
-from shared.damage_type import DamageType
-from shared.event_type import EventType
-from shared.event_result import *
+from shared.event import *
 
 class Logger:
     def __init__(self, world, sink=print, markup=True):
@@ -16,15 +14,15 @@ class Logger:
         self.markup = markup
 
         subscribers = {
-            EventType.ATTACK: self._log_attack_event_result,
-            EventType.CAST_END: self._log_cast_event_result,
-            EventType.DAMAGE: self._log_damage_event_result,
-            EventType.DEATH: self._log_death_event_result,
-            EventType.STATS_UPDATE: self._log_stats_update_event_result,
+            AttackEvent: self._log_attack_event,
+            CastEndEvent: self._log_cast_event,
+            DamageEvent: self._log_damage_event,
+            DeathEvent: self._log_death_event,
+            StatsUpdateEvent: self._log_stats_update_event,
         }
 
         for event_type in subscribers:
-            self.world.events.subscribe(event_type, subscribers[event_type])
+            self.world.events.bus.subscribe(event_type, subscribers[event_type])
     
     def _write(self, markup_text):
         text = Text.from_markup(markup_text)
@@ -46,29 +44,29 @@ class Logger:
         self._write(f"\nID: {ability_id}")
         self._write(f"Cooldown: {self.world.get_component(ability_id, Cooldown).value} / {self.world.get_component(ability_id, Cooldown).effective_max_value}\n")
     
-    def _log_attack_event_result(self, result: AttackEventResult):
-        attacker_name = self._marked_name(result.attacker_id)
-        target_name = self._marked_name(result.target_id)
+    def _log_attack_event(self, event: AttackEvent):
+        attacker_name = self._marked_name(event.attacker_id)
+        target_name = self._marked_name(event.target_id)
         self._write(f"- {attacker_name} attacks {target_name}")
 
-    def _log_cast_event_result(self, result: CastEventResult):
-        attacker_name = self._marked_name(result.caster_id)
-        target_name = self._marked_name(result.target_id)
+    def _log_cast_event(self, event: CastEndEvent):
+        attacker_name = self._marked_name(event.caster_id)
+        target_name = self._marked_name(event.target_id)
         self._write(f"- {attacker_name} casts spell on {target_name}")
 
-    def _log_damage_event_result(self, result: DamageEventResult):
-        source_name = self._marked_name(result.source_id)
-        target_name = self._marked_name(result.target_id)
-        damage_value = self._marked_damage(result.amount, result.damage_type)
+    def _log_damage_event(self, event: DamageEvent):
+        source_name = self._marked_name(event.source_id)
+        target_name = self._marked_name(event.target_id)
+        damage_value = self._marked_damage(event.amount, event.damage_type)
         self._write(f"- {source_name} deals {damage_value} damage to {target_name}")
 
-    def _log_death_event_result(self, result: DeathEventResult):
-        killer_name = self._marked_name(result.killer_id)
-        victim_name = self._marked_name(result.victim_id)
+    def _log_death_event(self, event: DeathEvent):
+        killer_name = self._marked_name(event.killer_id)
+        victim_name = self._marked_name(event.victim_id)
         self._write(f"- {killer_name} [red]killed[/red] {victim_name}")
 
-    def _log_stats_update_event_result(self, result: StatsUpdateResult):
-        owner_name = self._marked_name(result.entity_id)
+    def _log_stats_update_event(self, event: StatsUpdateEvent):
+        owner_name = self._marked_name(event.entity_id)
         self._write(f"- {owner_name}'s stats changed")
 
     def error(self, text):

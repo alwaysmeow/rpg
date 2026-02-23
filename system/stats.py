@@ -6,8 +6,7 @@ from component.stats import Stats, AttackSpeed, AttackDelay
 
 from shared.statref import StatRef
 from shared.formula import AttackDelayFormula
-from shared.event_result import StatsCreateResult
-from shared.event_type import EventType
+from shared.event import StatsCreateEvent
 
 from system.formula import FormulaSystem
 from system.modifier import ModifierSystem
@@ -29,7 +28,7 @@ class StatsSystem:
         for component in components:
             self._create_stat(entity_id, component)
 
-        return StatsCreateResult(entity_id, components)
+        return StatsCreateEvent(entity_id, components)
 
     def create_attack_speed(self, entity_id, value):
         self.create_stats(
