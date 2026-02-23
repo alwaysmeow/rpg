@@ -52,7 +52,6 @@ class CommandScheduler:
             self._unique_keys.discard(unique_key)
 
             event = record.command.execute(self.world)
-            print(record.command, event)
             self.world.events.bus.queue(event)
 
             iterations += 1

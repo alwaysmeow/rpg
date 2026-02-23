@@ -60,17 +60,6 @@ class AbilitySystem:
             self.world.time.now,
             CooldownSetCommand(ability_id)
         )
-        
-        if cast_time:
-            self.world.events.scheduler.schedule(
-                self.world.time.now,
-                CastStartCommand(ability_id)
-            )
-        
-        self.world.events.scheduler.schedule(
-            self.world.time.now + cast_time, 
-            command_type(ability_id)
-        )
 
         return caster_id, target_id
 
