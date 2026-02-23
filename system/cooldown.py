@@ -2,8 +2,8 @@ from component.ability import Cooldown, Owner
 from component.tag import Attack
 from component.stats import AttackDelay
 
-from shared.event_type import EventType
-from shared.event_result import CooldownEventResult, CastEventResult, AttackEventResult
+from shared.command import *
+from shared.event import CooldownUnsetEvent, CooldownSetEvent, CastEndEvent, AttackEvent
 
 from utils import load_config
 
@@ -13,10 +13,16 @@ class CooldownSystem:
 
         config = load_config(game_config_path)
         self.attack_speed_coefficient = config["attack_speed_coefficient"]
-
-        self.world.events.subscribe(EventType.ATTACK, self._on_cast)
-        self.world.events.subscribe(EventType.CAST_END, self._on_cast)
     
+    def cooldown_set(self, ability_id):
+        cooldown = self.world.get_component(ability_id, Cooldown)
+        if cooldown:
+            cooldown.value = 0
+        return CooldownSetEvent(ability_id)
+
+    def cooldown_unset(self, ability_id):
+        return CooldownUnsetEvent(ability_id)
+
     def _update_ability_cooldown(self, cooldown, delta):
         old_value = cooldown.value
         cooldown.value += cooldown.effective_regen * delta
@@ -45,22 +51,7 @@ class CooldownSystem:
                 progress = self._update_ability_cooldown(cooldown, delta)
 
             if progress and progress > 0 and cooldown.value >= 1:
-                self.world.events.schedule(
+                self.world.events.scheduler.schedule(
                     self.world.time.now,
-                    self._create_cooldown_unset_handler(ability_id),
-                    EventType.COOLDOWN_UNSET
+                    CooldownUnsetCommand(ability_id)
                 )
-    
-    def _create_cooldown_unset_handler(self, ability_id):
-        def cooldown_end_handler():
-            return CooldownEventResult(ability_id)
-        return cooldown_end_handler
-
-    def _on_cast(self, result: AttackEventResult | CastEventResult):
-        self._set_cooldown(
-            self.world.get_component(result.ability_id, Cooldown)
-        )
-    
-    def _set_cooldown(self, cooldown: Cooldown):
-        if cooldown:
-            cooldown.value = 0

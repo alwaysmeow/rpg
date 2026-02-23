@@ -2,14 +2,14 @@ from component.tag import Combat, Dead
 from component.target import Target
 from component.combat import CombatParticipation, CombatState
 
-from shared.event_type import EventType
-from shared.event_result import DeathEventResult, CombatEventResult
+from shared.command import *
+from shared.event import DeathEvent, CombatEvent
 
 class CombatSystem:
     def __init__(self, world):
         self.world = world
 
-        self.world.events.subscribe(EventType.DEATH, self._on_participant_death)
+        self.world.events.bus.subscribe(DeathEvent, self._on_death)
     
     def create_combat(self, teams):
         combat_id = self.world.create_entity()
@@ -24,14 +24,24 @@ class CombatSystem:
 
         self._update_all_targets(combat_id)
         
-        self.world.events.schedule(
+        self.world.events.scheduler.schedule(
             self.world.time.now,
-            self._create_combat_start_handler(combat_id),
-            EventType.COMBAT_START
+            CombatStartCommand(combat_id)
         )
 
         return combat_id
     
+    def combat_start(self, combat_id):
+        teams = self._get_teams(combat_id)
+        self.world.logger.log_combat(combat_id, teams)
+        return CombatStartEvent(combat_id, teams)
+
+    def combat_end(self, combat_id):
+        teams = self._get_teams(combat_id)
+        self.world.logger.log_combat(combat_id, teams)
+        self._unset_all_targets(combat_id)
+        return CombatEndEvent(combat_id, teams)
+
     def _find_new_target(self, enemies):
         for enemy_id in enemies:
             if not self.world.has_tag(enemy_id, Dead):
@@ -58,6 +68,13 @@ class CombatSystem:
             for unit_id in teams[team_index]:
                 if not self.world.has_tag(unit_id, Dead):
                     self.world.add_component(unit_id, Target(new_target_id))
+
+    def _unset_all_targets(self, combat_id):
+        teams = self._get_teams(combat_id)
+
+        for team_index in range(len(teams)):
+            for unit_id in teams[team_index]:
+                self.world.get_or_create_component(unit_id, Target).unit_id = None
     
     def _get_teams(self, combat_id):
         # TODO: maybe create component for teams
@@ -101,30 +118,15 @@ class CombatSystem:
             if len(teams_alive) > 1:
                 return False
 
-        self.world.events.schedule(
+        self.world.events.scheduler.schedule(
             self.world.time.now,
-            self._create_combat_end_handler(combat_id),
-            EventType.COMBAT_END,
-            (EventType.COMBAT_END, combat_id)
+            CombatEndCommand(combat_id)
         )
 
         return True
-    
-    def _create_combat_start_handler(self, combat_id):
-        def combat_start_handler():
-            return CombatEventResult(combat_id, self._get_teams(combat_id))
-        return combat_start_handler
 
-    def _create_combat_end_handler(self, combat_id):
-        def combat_end_handler():
-            teams = self._get_teams(combat_id)
-            self.world.logger.log_combat(combat_id, teams)
-            return CombatEventResult(combat_id, teams)
-
-        return combat_end_handler
-
-    def _on_participant_death(self, death_event_result: DeathEventResult):
-        victim_participation = self.world.get_component(death_event_result.victim_id, CombatParticipation)
+    def _on_death(self, event: DeathEvent):
+        victim_participation = self.world.get_component(event.victim_id, CombatParticipation)
         if victim_participation:
             self._update_targets_after_death(victim_participation)
             self._check_combat_end(victim_participation.combat_id)

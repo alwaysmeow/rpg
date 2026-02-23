@@ -4,9 +4,9 @@ from utils import load_config
 from component.stats import Health, MagicResistance, Armor
 from component.tag import Dead
 
-from shared.event_type import EventType
 from shared.damage_type import DamageType
-from shared.event_result import DamageEventResult, DeathEventResult
+from shared.command import *
+from shared.event import DamageEvent, DeathEvent
 
 class Damage:
     def __init__(self, source_id, target_id, type: DamageType, amount: int):
@@ -22,15 +22,15 @@ class DamageSystem:
         config = load_config(game_config_path)
         self.armor_coefficient = config["armor_coefficient"]
     
-    def queue_damage(self, source_id, target_id, damage_type, base_amount):
+    def damage(self, source_id, target_id, damage_type, base_amount):
         damage = Damage(source_id, target_id, damage_type, base_amount)
-        
-        self.world.events.schedule(
-            self.world.time.now,
-            self._create_damage_event_handler(damage),
-            EventType.DAMAGE
-        )
+        amount = self._process_damage(damage)
+        return DamageEvent(source_id, target_id, damage_type, amount)
     
+    def death(self, victim_id, killer_id):
+        self.world.add_tag(victim_id, Dead)
+        return DeathEvent(victim_id, killer_id)
+
     def _process_damage(self, damage: Damage):
         health = self.world.get_component(damage.target_id, Health)
         if not health:
@@ -45,10 +45,9 @@ class DamageSystem:
         amount = self._apply_for_unit(damage.target_id, amount)
 
         if self._check_death(damage.target_id):
-            self.world.events.schedule(
+            self.world.events.scheduler.schedule(
                 self.world.time.now,
-                self._create_death_event_handler(damage.target_id, damage.source_id),
-                EventType.DEATH
+                DeathCommand(damage.target_id, damage.source_id)
             )
         
         return round(amount)
@@ -104,15 +103,3 @@ class DamageSystem:
         if health and health.value <= 0:
             return True
         return False
-    
-    def _create_damage_event_handler(self, damage: Damage):
-        def damage_event_handler():
-            amount = self._process_damage(damage)
-            return DamageEventResult(damage.source_id, damage.target_id, amount, damage.type)
-        return damage_event_handler
-
-    def _create_death_event_handler(self, victim_id, killer_id):
-        def death_event_handler():
-            self.world.add_tag(victim_id, Dead)
-            return DeathEventResult(victim_id, killer_id)
-        return death_event_handler

@@ -1,9 +1,6 @@
 from shared.modifier_type import ModifierType
-from shared.event_type import EventType
-from shared.event_result import StatsUpdateResult
-from shared.statref import StatRef
 
-from component.modifier import ModifierData, SourceModifiers, TargetModifiers
+from component.modifier import ModifierData, TargetModifiers
 from component.tag import Modifier
 
 class ModifierSystem:

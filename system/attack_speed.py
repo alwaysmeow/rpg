@@ -1,18 +1,16 @@
-from component.stats import AttackSpeed, AttackDelay
+from component.stats import AttackDelay
 from component.tag import Attack
 from component.ability import Owner, Cooldown
 
-from shared.formula import AttackDelayFormula
-from shared.event_type import EventType
-from shared.event_result import StatsCreateResult, StatsUpdateResult
+from shared.event import StatsUpdateEvent, StatsCreateEvent
 from shared.statref import StatRef
 
 class AttackSpeedSystem:
     def __init__(self, world):
         self.world = world
 
-        self.world.events.subscribe(EventType.STATS_CREATE, self._on_stats_create)
-        self.world.events.subscribe(EventType.STATS_UPDATE, self._on_stats_update)
+        self.world.events.bus.subscribe(StatsCreateEvent, self._on_stats_create)
+        self.world.events.bus.subscribe(StatsUpdateEvent, self._on_stats_update)
 
     def _search_attack_ability(self, entity_id):
         attacks = self.world.query_by_tag(Attack)
@@ -28,13 +26,13 @@ class AttackSpeedSystem:
         cooldown.base_regen = cooldown.base_max_value / attack_delay_value
         cooldown.effective_regen = cooldown.effective_max_value / attack_delay_value
 
-    def _on_stats_create(self, result: StatsCreateResult):
-        for component in result.created:
+    def _on_stats_create(self, event: StatsCreateEvent):
+        for component in event.created:
             if type(component) == AttackDelay:
                 new_value = component.effective_value
-                return self._update_attack_ability_cooldown(result.entity_id, new_value)
+                return self._update_attack_ability_cooldown(event.entity_id, new_value)
 
-    def _on_stats_update(self, result: StatsUpdateResult):
-        new_value = result.updated[StatRef(AttackDelay, "effective_value")]
+    def _on_stats_update(self, event: StatsUpdateEvent):
+        new_value = event.updated[StatRef(AttackDelay, "effective_value")]
         if new_value:
-            return self._update_attack_ability_cooldown(result.entity_id, new_value)
+            return self._update_attack_ability_cooldown(event.entity_id, new_value)

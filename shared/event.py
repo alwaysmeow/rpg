@@ -5,44 +5,56 @@ from shared.damage_type import DamageType
 from shared.statref import StatRef
 
 @dataclass
-class AttackEventResult:
+class NoneEvent: pass
+
+@dataclass
+class AttackEvent:
     attacker_id: int
     target_id: int
     ability_id: int
 
 @dataclass
-class CastEventResult:
+class CastEvent:
     caster_id: int
     target_id: int
     ability_id: int
 
-@dataclass
-class CooldownEventResult:
-    ability_id: int
+class CastStartEvent(CastEvent): pass
+class CastEndEvent(CastEvent): pass
 
 @dataclass
-class CombatEventResult:
+class CooldownEvent:
+    ability_id: int
+
+class CooldownSetEvent(CooldownEvent): pass
+class CooldownUnsetEvent(CooldownEvent): pass
+
+@dataclass
+class CombatEvent:
     combat_id: int
     teams: List[List[int]]
 
-@dataclass
-class DamageEventResult:
-    source_id: int
-    target_id: int
-    amount: int
-    damage_type: DamageType
+class CombatStartEvent(CombatEvent): pass
+class CombatEndEvent(CombatEvent): pass
 
 @dataclass
-class DeathEventResult:
+class DamageEvent:
+    source_id: int
+    target_id: int
+    damage_type: DamageType
+    amount: int
+
+@dataclass
+class DeathEvent:
     victim_id: int
     killer_id: int
 
 @dataclass
-class StatsCreateResult:
+class StatsCreateEvent:
     entity_id: int
     created: Set[Any]
 
 @dataclass
-class StatsUpdateResult:
+class StatsUpdateEvent:
     entity_id: int
     updated: Dict[StatRef, float]
