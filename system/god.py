@@ -3,6 +3,9 @@ from component.name import Name
 from component.ability import AbilityEffect, Owner, Cooldown, CastTime
 from component.tag import Unit, Ability, Attack, TargetAbility, Autocast
 
+from shared.command import *
+from shared.formula import AttackDelayFormula
+
 from abilities.attack import attack_handler
 
 class God:
@@ -46,6 +49,20 @@ class God:
         self.world.add_tag(ability_id, Attack)
         self.world.add_tag(ability_id, TargetAbility)
 
-        self.world.stats_system.create_attack_speed(owner_id, attack_speed_value)
+        self.exec_cmd(
+            StatsCreateCommand(
+                owner_id, 
+                [
+                    AttackSpeed(attack_speed_value),
+                    AttackDelay(None, AttackDelayFormula)
+                ]
+            )
+        )
 
         return ability_id
+    
+    def exec_cmd(self, command):
+        self.world.events.scheduler.schedule(
+            self.world.time.now,
+            command
+        )

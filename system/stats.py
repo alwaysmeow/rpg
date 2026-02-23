@@ -5,8 +5,7 @@ from component.meter import Meter
 from component.stats import Stats, AttackSpeed, AttackDelay
 
 from shared.statref import StatRef
-from shared.formula import AttackDelayFormula
-from shared.event import StatsCreateEvent
+from shared.event import StatsCreateEvent, StatsUpdateEvent
 
 from system.formula import FormulaSystem
 from system.modifier import ModifierSystem
@@ -24,22 +23,13 @@ class StatsSystem:
             "base_regen": "effective_regen"
         }
 
-    def create_stats(self, entity_id, components):
+    def create_stats(self, entity_id, components) -> StatsCreateEvent:
         for component in components:
             self._create_stat(entity_id, component)
 
         return StatsCreateEvent(entity_id, components)
 
-    def create_attack_speed(self, entity_id, value):
-        self.create_stats(
-            entity_id, 
-            [
-                AttackSpeed(value), 
-                AttackDelay(None, AttackDelayFormula) # Value is None because should be calculated
-            ]
-        )
-
-    def update_stats(self, entity_id, statrefs: Set[StatRef]) -> Dict[StatRef, float]:
+    def update_stats(self, entity_id, statrefs: Set[StatRef]) -> StatsUpdateEvent:
         update_set = statrefs.copy()
         updated = {}
 
@@ -53,7 +43,7 @@ class StatsSystem:
             update_set = self._get_next_round_update_set(entity_id, update_set)
             iterations += 1
         
-        return updated
+        return StatsUpdateEvent(entity_id, updated)
 
     def _get_next_round_update_set(self, entity_id, parents: Set[StatRef]) -> Set[StatRef]:
         # Gets StatRef's dependent on list of parent StatRef's

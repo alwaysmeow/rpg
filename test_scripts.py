@@ -3,7 +3,7 @@ def test_script(world):
     world.god.create_autoattack(flaneur, 50)
 
     meowmeow = world.god.create_unit("meowmeow")
-    world.god.create_autoattack(meowmeow, 50)
+    world.god.create_autoattack(meowmeow, 20)
 
     world.combat_system.create_combat([
         [flaneur],

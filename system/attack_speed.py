@@ -33,6 +33,6 @@ class AttackSpeedSystem:
                 return self._update_attack_ability_cooldown(event.entity_id, new_value)
 
     def _on_stats_update(self, event: StatsUpdateEvent):
-        new_value = event.updated[StatRef(AttackDelay, "effective_value")]
-        if new_value:
+        new_value = event.update.get(StatRef(AttackDelay, "effective_value"))
+        if not new_value is None:
             return self._update_attack_ability_cooldown(event.entity_id, new_value)

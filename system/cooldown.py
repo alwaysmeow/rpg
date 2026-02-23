@@ -28,27 +28,12 @@ class CooldownSystem:
         cooldown.value += cooldown.effective_regen * delta
         return cooldown.value - old_value
 
-    def _update_attack_cooldown(self, cooldown, attack_delay, delta):
-        # TODO: remove method
-        old_value = cooldown.value
-        if attack_delay:
-            cooldown_regen = 1 / attack_delay
-            cooldown.value += cooldown_regen * delta
-        return cooldown.value - old_value
-
     def update(self, delta):
         for ability_id in self.world.components[Cooldown]:
             cooldown = self.world.get_component(ability_id, Cooldown)
 
             progress = 0
-            if self.world.has_tag(ability_id, Attack):
-                owner = self.world.get_component(ability_id, Owner)
-                if owner:
-                    attack_delay = self.world.get_component(owner.unit_id, AttackDelay)
-                    if attack_delay:
-                        progress = self._update_attack_cooldown(cooldown, attack_delay.effective_value, delta)
-            else:
-                progress = self._update_ability_cooldown(cooldown, delta)
+            progress = self._update_ability_cooldown(cooldown, delta)
 
             if progress and progress > 0 and cooldown.value >= 1:
                 self.world.events.scheduler.schedule(

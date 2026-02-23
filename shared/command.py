@@ -116,7 +116,7 @@ class StatsCreateCommand(Command):
         self.components = components
 
     def execute(self, world):
-        return world.cooldown_system.create_stats(self.entity_id, self.components)
+        return world.stats_system.create_stats(self.entity_id, self.components)
 
 class StatsUpdateCommand(Command):
     event_type = StatsUpdateEvent
@@ -127,4 +127,4 @@ class StatsUpdateCommand(Command):
         self.statrefs = statrefs
 
     def execute(self, world):
-        return world.cooldown_system.update_stats(self.entity_id, self.statrefs)
+        return world.stats_system.update_stats(self.entity_id, self.statrefs)
