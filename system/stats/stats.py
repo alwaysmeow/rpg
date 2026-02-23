@@ -5,6 +5,7 @@ from component.meter import Meter
 from component.stats import Stats, AttackSpeed, AttackDelay
 
 from core.statref import StatRef
+from core.command import StatsUpdateCommand
 from core.event import StatsCreateEvent, StatsUpdateEvent
 
 from system.stats.formula import FormulaSystem
@@ -24,8 +25,14 @@ class StatsSystem:
         }
 
     def create_stats(self, entity_id, components) -> StatsCreateEvent:
+        statrefs = set()
         for component in components:
-            self._create_stat(entity_id, component)
+            statrefs |= self._create_stat(entity_id, component)
+
+        self.world.events.scheduler.schedule(
+            self.world.time.now,
+            StatsUpdateCommand(entity_id, statrefs)
+        )
 
         return StatsCreateEvent(entity_id, components)
 
@@ -38,7 +45,7 @@ class StatsSystem:
         iterations = 0
 
         while pending_statrefs and iterations < max_iterations:
-            self._stats_update_round(entity_id, pending_statrefs)
+            updated |= self._stats_update_round(entity_id, pending_statrefs)
 
             pending_statrefs = self._resolve_dependencies(entity_id, pending_statrefs)
             iterations += 1
@@ -130,4 +137,4 @@ class StatsSystem:
         stats.add(stat_type)
 
         statrefs = self._get_statrefs_of_base_values(component)
-        self.update_stats(entity_id, statrefs)
+        return statrefs

@@ -1,4 +1,5 @@
 from random import random
+from dataclasses import dataclass
 
 from utils import load_config
 from component.stats import Health, MagicResistance, Armor

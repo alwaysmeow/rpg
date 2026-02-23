@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic, Type
+from typing import TypeVar, Generic, Type, Set, List
 
 from core.event import *
 
@@ -63,7 +63,7 @@ class DeathCommand(Command[DeathEvent]):
         return world.damage_system.death(self.victim_id, self.killer_id)
 
 class CombatStartCommand(Command[CombatStartEvent]):
-    priority = 5
+    priority = 0
 
     def __init__(self, combat_id: int):
         self.combat_id = combat_id
@@ -102,9 +102,9 @@ class CooldownUnsetCommand(Command[CooldownUnsetEvent]):
         return world.cooldown_system.cooldown_unset(self.ability_id)
 
 class StatsCreateCommand(Command[StatsCreateEvent]):
-    priority = 10
+    priority = 15
 
-    def __init__(self, entity_id: int, components: list):
+    def __init__(self, entity_id: int, components: List):
         self.entity_id = entity_id
         self.components = components
 
@@ -114,7 +114,7 @@ class StatsCreateCommand(Command[StatsCreateEvent]):
 class StatsUpdateCommand(Command[StatsUpdateEvent]):
     priority = 10
 
-    def __init__(self, entity_id: int, statrefs: list):
+    def __init__(self, entity_id: int, statrefs: Set):
         self.entity_id = entity_id
         self.statrefs = statrefs
 

@@ -16,14 +16,17 @@ class God:
         unit_id = self.world.create_entity()
 
         self.world.add_component(unit_id, Name(name))
-        self.world.stats_system.create_stats(
-            unit_id, 
-            [
-                Health(100, 0),
-                Armor(1),
-                MagicResistance(),
-                AttackDamage(10),
-            ]
+        
+        self.exec_cmd(
+            StatsCreateCommand(
+                unit_id, 
+                [
+                    Health(100, 0),
+                    Armor(1),
+                    MagicResistance(),
+                    AttackDamage(10),
+                ]
+            )
         )
 
         self.world.add_tag(unit_id, Unit)
