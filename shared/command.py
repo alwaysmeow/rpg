@@ -18,7 +18,7 @@ class AttackCommand(Command):
         self.ability_id = ability_id
 
     def execute(self, world):
-        return world.ability_system.cast(self.ability_id)
+        return world.ability_system.attack(self.ability_id)
 
 class CastStartCommand(Command):
     event_type = CastStartEvent
@@ -28,15 +28,13 @@ class CastStartCommand(Command):
         self.ability_id = ability_id
 
     def execute(self, world):
-        return world.ability_system.cast(self.ability_id)
+        return world.ability_system.cast_start(self.ability_id)
 
 class CastEndCommand(Command):
     event_type = CastEndEvent
     priority = 5
 
-    def __init__(self, caster_id: int, target_id: int, ability_id: int):
-        self.caster_id = caster_id
-        self.target_id = target_id
+    def __init__(self, ability_id: int):
         self.ability_id = ability_id
 
     def execute(self, world):
@@ -97,7 +95,7 @@ class CooldownSetCommand(Command):
         self.ability_id = ability_id
 
     def execute(self, world):
-        return world.cooldown_system.cooldown_set(self.combat_id)
+        return world.cooldown_system.cooldown_set(self.ability_id)
 
 class CooldownUnsetCommand(Command):
     event_type = CooldownUnsetEvent
@@ -107,7 +105,7 @@ class CooldownUnsetCommand(Command):
         self.ability_id = ability_id
 
     def execute(self, world):
-        return world.cooldown_system.cooldown_unset(self.combat_id)
+        return world.cooldown_system.cooldown_unset(self.ability_id)
 
 class StatsCreateCommand(Command):
     event_type = StatsCreateEvent

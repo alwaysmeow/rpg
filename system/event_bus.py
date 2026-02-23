@@ -19,7 +19,7 @@ class EventBus:
 
     def process(self):
         iterations = 0
-        while self._queue and iterations < self.emits_per_tick_limit:
+        while not self._queue.empty() and iterations < self.emits_per_tick_limit:
             event = self._queue.get()
             self.emit(event)
             iterations += 1
