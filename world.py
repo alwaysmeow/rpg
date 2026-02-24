@@ -17,17 +17,19 @@ from ui.logger import Logger
 
 class World:
     def __init__(self, game_config_path="config/game.json"):
-        # TODO: systems in list
-        self.time = TimeSystem()
-        self.events = EventSystem(self, game_config_path)
+        self.systems: Dict[Type, Any] = {}
+
+        self.registry_system(TimeSystem())
+        self.registry_system(EventSystem(self, game_config_path))
+        self.registry_system(CombatSystem(self))
+        self.registry_system(DamageSystem(self, game_config_path))
+        self.registry_system(CooldownSystem(self, game_config_path))
+        self.registry_system(AbilitySystem(self))
+        self.registry_system(RegenerationSystem(self))
+        self.registry_system(StatsSystem(self))
+        self.registry_system(AttackSpeedSystem(self))
+
         self.god = God(self)
-        self.combat_system = CombatSystem(self)
-        self.damage_system = DamageSystem(self, game_config_path)
-        self.cooldown_system = CooldownSystem(self, game_config_path)
-        self.ability_system = AbilitySystem(self)
-        self.regeneration_system = RegenerationSystem(self)
-        self.stats_system = StatsSystem(self)
-        self.attack_speed_system = AttackSpeedSystem(self)
 
         # TODO: move out
         console = Console()
@@ -39,10 +41,10 @@ class World:
         self._next_entity_id = 0
 
     def update(self, delta):
-        self.time.advance(delta)
-        self.cooldown_system.update(delta)
-        self.regeneration_system.update(delta)
-        self.events.process(self.time.now)
+        self.get_system(TimeSystem).advance(delta)
+        self.get_system(CooldownSystem).update(delta)
+        self.get_system(RegenerationSystem).update(delta)
+        self.get_system(EventSystem).process(self.time.now)
 
     def create_entity(self) -> int:
         entity_id = self._next_entity_id
@@ -50,6 +52,13 @@ class World:
         self.entities.add(entity_id)
         return entity_id
     
+    def registry_system(self, system):
+        self.systems[type(system)] = system
+        return system
+
+    def get_system(self, system_type):
+        return self.systems.get(system_type)
+
     def add_component(self, entity: int, component: Any):
         self.components[type(component)][entity] = component
     
