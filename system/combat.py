@@ -1,15 +1,17 @@
+from system.system import System
+
 from tag.tag import Combat, Dead
 from component.target import Target
 from component.combat import CombatParticipation, CombatState
 
 from core.command import *
-from core.event import DeathEvent, CombatEvent
+from core.event import DeathEvent
 
-class CombatSystem:
+class CombatSystem(System):
     def __init__(self, world):
-        self.world = world
+        super().__init__(world)
 
-        self.world.events.bus.subscribe(DeathEvent, self._on_death)
+        self.subscribe(DeathEvent, self._on_death)
     
     def create_combat(self, teams):
         combat_id = self.world.create_entity()
@@ -24,10 +26,7 @@ class CombatSystem:
 
         self._update_all_targets(combat_id)
         
-        self.world.events.scheduler.schedule(
-            self.world.time.now,
-            CombatStartCommand(combat_id)
-        )
+        self.schedule(CombatStartCommand(combat_id))
 
         return combat_id
     
@@ -118,10 +117,7 @@ class CombatSystem:
             if len(teams_alive) > 1:
                 return False
 
-        self.world.events.scheduler.schedule(
-            self.world.time.now,
-            CombatEndCommand(combat_id)
-        )
+        self.schedule(CombatEndCommand(combat_id))
 
         return True
 

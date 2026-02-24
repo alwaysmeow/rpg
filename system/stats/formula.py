@@ -1,9 +1,7 @@
+from system.system import System
 from core.statref import StatRef
 
-class FormulaSystem:
-    def __init__(self, world):
-        self.world = world
-
+class FormulaSystem(System):
     def _update_formula_value(self, entity_id, statref: StatRef):
         component = self.world.get_component(entity_id, statref.component_type)
 

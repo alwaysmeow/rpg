@@ -1,6 +1,8 @@
 from random import random
 from dataclasses import dataclass
 
+from system.system import System
+
 from utils import load_config
 from component.stats import Health, MagicResistance, Armor
 from tag.tag import Dead
@@ -16,9 +18,9 @@ class Damage: # similar to DamageEvent
     type: DamageType
     amount: int
 
-class DamageSystem:
+class DamageSystem(System):
     def __init__(self, world, game_config_path="config/game.json"):
-        self.world = world
+        super().__init__(world)
 
         config = load_config(game_config_path)
         self.armor_coefficient = config["armor_coefficient"]
@@ -46,10 +48,7 @@ class DamageSystem:
         amount = self._apply_for_unit(damage.target_id, amount)
 
         if self._check_death(damage.target_id):
-            self.world.events.scheduler.schedule(
-                self.world.time.now,
-                DeathCommand(damage.target_id, damage.source_id)
-            )
+            self.schedule(DeathCommand(damage.target_id, damage.source_id))
         
         return round(amount)
 

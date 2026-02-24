@@ -4,3 +4,4 @@ class TimeSystem:
 
     def advance(self, delta):
         self.now += delta
+        return self.now

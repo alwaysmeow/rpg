@@ -4,7 +4,6 @@ from rich.console import Console
 
 from system.time import TimeSystem
 from system.event.event import EventSystem
-from system.god import God
 from system.combat import CombatSystem
 from system.damage import DamageSystem
 from system.cooldown import CooldownSystem
@@ -12,6 +11,7 @@ from system.ability import AbilitySystem
 from system.regeneration import RegenerationSystem
 from system.stats.stats import StatsSystem
 from system.attack_speed import AttackSpeedSystem
+from system.god import God
 
 from ui.logger import Logger
 
@@ -29,6 +29,7 @@ class World:
         self.registry_system(StatsSystem(self))
         self.registry_system(AttackSpeedSystem(self))
 
+        # Temporary object
         self.god = God(self)
 
         # TODO: move out
@@ -41,10 +42,10 @@ class World:
         self._next_entity_id = 0
 
     def update(self, delta):
-        self.get_system(TimeSystem).advance(delta)
+        now = self.get_system(TimeSystem).advance(delta)
         self.get_system(CooldownSystem).update(delta)
         self.get_system(RegenerationSystem).update(delta)
-        self.get_system(EventSystem).process(self.time.now)
+        self.get_system(EventSystem).process(now)
 
     def create_entity(self) -> int:
         entity_id = self._next_entity_id

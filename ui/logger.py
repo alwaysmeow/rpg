@@ -1,5 +1,8 @@
 from rich.text import Text
 
+from system.event.event import EventSystem
+from system.time import TimeSystem
+
 from component.name import Name
 from component.stats import Armor, MagicResistance, Health
 from component.ability import Cooldown
@@ -22,7 +25,7 @@ class Logger:
         }
 
         for event_type in subscribers:
-            self.world.events.bus.subscribe(event_type, subscribers[event_type])
+            self.world.get_system(EventSystem).bus.subscribe(event_type, subscribers[event_type])
     
     def _write(self, markup_text):
         text = Text.from_markup(markup_text)
@@ -70,10 +73,10 @@ class Logger:
         self._write(f"- {owner_name}'s stats changed")
 
     def error(self, text):
-        self._write(f"- [bold red]ERROR:[/bold red] {text} - {self.world.time.now}")
+        self._write(f"- [bold red]ERROR:[/bold red] {text} - {self._time()}")
 
     def log(self, text):
-        self._write(f"\n- LOG: {text} - {self.world.time.now}\n")
+        self._write(f"\n- LOG: {text} - {self._time()}\n")
 
     def _format_name(self, entity_id):
         name_component = self.world.get_component(entity_id, Name)
@@ -95,3 +98,6 @@ class Logger:
     
     def _format_damage(self, value, damage_type):
         return f"[{damage_type.color}]{value}[/{damage_type.color}]"
+    
+    def _time(self):
+        return self.world.get_system(TimeSystem).now

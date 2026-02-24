@@ -1,3 +1,5 @@
+from system.system import System
+
 from component.stats import AttackDelay
 from tag.tag import Attack
 from component.ability import Owner, Cooldown
@@ -5,12 +7,12 @@ from component.ability import Owner, Cooldown
 from core.event import StatsUpdateEvent, StatsCreateEvent
 from core.statref import StatRef
 
-class AttackSpeedSystem:
+class AttackSpeedSystem(System):
     def __init__(self, world):
-        self.world = world
+        super().__init__(world)
 
-        self.world.events.bus.subscribe(StatsCreateEvent, self._on_stats_create)
-        self.world.events.bus.subscribe(StatsUpdateEvent, self._on_stats_update)
+        self.subscribe(StatsCreateEvent, self._on_stats_create)
+        self.subscribe(StatsUpdateEvent, self._on_stats_update)
 
     def _search_attack_ability(self, entity_id):
         attacks = self.world.query_by_tag(Attack)

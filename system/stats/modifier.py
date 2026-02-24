@@ -1,11 +1,11 @@
+from system.system import System
 from core.modifier_type import ModifierType
-
 from component.modifier import ModifierData, TargetModifiers
 from tag.tag import Modifier
 
-class ModifierSystem:
+class ModifierSystem(System):
     def __init__(self, world):
-        self.world = world
+        super().__init__(world)
     
         self.effective_to_base_names = {
             "effective_value": "base_value",

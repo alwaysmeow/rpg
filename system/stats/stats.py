@@ -8,12 +8,13 @@ from core.statref import StatRef
 from core.command import StatsUpdateCommand
 from core.event import StatsCreateEvent, StatsUpdateEvent
 
+from system.system import System
 from system.stats.formula import FormulaSystem
 from system.stats.modifier import ModifierSystem
 
-class StatsSystem:
+class StatsSystem(System):
     def __init__(self, world):
-        self.world = world
+        super().__init__(world)
 
         self.formulas = FormulaSystem(world)
         self.modifiers = ModifierSystem(world)
@@ -29,10 +30,7 @@ class StatsSystem:
         for component in components:
             statrefs |= self._create_stat(entity_id, component)
 
-        self.world.events.scheduler.schedule(
-            self.world.time.now,
-            StatsUpdateCommand(entity_id, statrefs)
-        )
+        self.schedule(StatsUpdateCommand(entity_id, statrefs))
 
         return StatsCreateEvent(entity_id, components)
 

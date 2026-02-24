@@ -1,15 +1,15 @@
-from component.ability import Cooldown, Owner
-from tag.tag import Attack
-from component.stats import AttackDelay
+from system.system import System
+
+from component.ability import Cooldown
 
 from core.command import *
 from core.event import CooldownUnsetEvent, CooldownSetEvent, CastEndEvent, AttackEvent
 
 from utils import load_config
 
-class CooldownSystem:
+class CooldownSystem(System):
     def __init__(self, world, game_config_path="config/game.json"):
-        self.world = world
+        super().__init__(world)
 
         config = load_config(game_config_path)
         self.attack_speed_coefficient = config["attack_speed_coefficient"]
@@ -36,7 +36,4 @@ class CooldownSystem:
             progress = self._update_ability_cooldown(cooldown, delta)
 
             if progress and progress > 0 and cooldown.value >= 1:
-                self.world.events.scheduler.schedule(
-                    self.world.time.now,
-                    CooldownUnsetCommand(ability_id)
-                )
+                self.schedule(CooldownUnsetCommand(ability_id))

@@ -1,3 +1,5 @@
+from system.system import System
+
 from component.ability import AbilityEffect, Owner, CastTime, Cooldown
 from component.target import Target
 from tag.tag import Dead, TargetAbility, Attack, Autocast
@@ -5,12 +7,12 @@ from tag.tag import Dead, TargetAbility, Attack, Autocast
 from core.command import *
 from core.event import *
 
-class AbilitySystem:
+class AbilitySystem(System):
     def __init__(self, world):
-        self.world = world
+        super().__init__(world)
 
-        self.world.events.bus.subscribe(CooldownUnsetEvent, self._on_cooldown_unset)
-        self.world.events.bus.subscribe(CombatStartEvent, self._on_combat_start)
+        self.subscribe(CooldownUnsetEvent, self._on_cooldown_unset)
+        self.subscribe(CombatStartEvent, self._on_combat_start)
     
     def attack(self, ability_id):
         attacker_id, target_id = self._cast(ability_id, AttackCommand)
@@ -26,6 +28,11 @@ class AbilitySystem:
         if not caster_id is None and not target_id is None:
             ability_handler = self.world.get_component(ability_id, AbilityEffect).handler
             ability_handler(self.world, caster_id, target_id)
+
+            # TODO: schedule cast end command
+            # cast_time_component = self.world.get_component(ability_id, CastTime)
+            # cast_time = cast_time_component.value if cast_time_component else 0
+
             return CastStartEvent(caster_id, target_id, ability_id)
         else:
             return NoneEvent()
@@ -61,23 +68,14 @@ class AbilitySystem:
             self.world.logger.error("Casting of this ability needs target. Cast cancelled.")
             return None, None
 
-        cast_time_component = self.world.get_component(ability_id, CastTime)
-        cast_time = cast_time_component.value if cast_time_component else 0
-
-        self.world.events.scheduler.schedule(
-            self.world.time.now,
-            CooldownSetCommand(ability_id)
-        )
+        self.schedule(CooldownSetCommand(ability_id))
 
         return caster_id, target_id
 
     def _autocast_trigger(self, ability_id):
         if self.world.has_tag(ability_id, Autocast):
             command_type = self._cast_command_type(ability_id)
-            self.world.events.scheduler.schedule(
-                self.world.time.now,
-                command_type(ability_id)
-            )
+            self.schedule(command_type(ability_id))
     
     def _on_cooldown_unset(self, cooldown_event_result: CooldownEvent):
         self._autocast_trigger(cooldown_event_result.ability_id)

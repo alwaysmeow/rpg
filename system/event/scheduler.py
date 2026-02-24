@@ -19,8 +19,9 @@ class CommandRecord:
         return self.time < other.time
 
 class CommandScheduler:
-    def __init__(self, world, game_config_path):
+    def __init__(self, world, event_bus, game_config_path):
         self.world = world
+        self.event_bus = event_bus
         self._queue = []
         self._unique_keys = set()
         self._seq: Dict[float, int] = {}
@@ -52,7 +53,7 @@ class CommandScheduler:
             self._unique_keys.discard(unique_key)
 
             event = record.command.execute(self.world)
-            self.world.events.bus.queue(event)
+            self.event_bus.queue(event)
 
             iterations += 1
 

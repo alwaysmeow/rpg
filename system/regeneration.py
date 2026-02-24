@@ -1,8 +1,9 @@
+from system.system import System
 from component.stats import Health, Mana
 
-class RegenerationSystem:
+class RegenerationSystem(System):
     def __init__(self, world):
-        self.world = world
+        super().__init__(world)
         self.regenerable = [
             Health,
             Mana

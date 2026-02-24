@@ -1,6 +1,8 @@
-from typing import TypeVar, Generic, Type, Set, List
+from typing import TypeVar, Generic, Set, List
 
 from core.event import *
+
+# execute(self, world) methods of commands should use local import for preventing circular dependencies
 
 E = TypeVar("E", bound=BaseEvent)
 
@@ -20,7 +22,8 @@ class AttackCommand(Command[AttackEvent]):
         self.ability_id = ability_id
 
     def execute(self, world) -> AttackEvent:
-        return world.ability_system.attack(self.ability_id)
+        from system.ability import AbilitySystem
+        return world.get_system(AbilitySystem).attack(self.ability_id)
 
 class CastStartCommand(Command[CastStartEvent]):
     priority = 5
@@ -29,7 +32,8 @@ class CastStartCommand(Command[CastStartEvent]):
         self.ability_id = ability_id
 
     def execute(self, world) -> CastStartEvent:
-        return world.ability_system.cast_start(self.ability_id)
+        from system.ability import AbilitySystem
+        return world.get_system(AbilitySystem).cast_start(self.ability_id)
 
 class CastEndCommand(Command[CastEndEvent]):
     priority = 5
@@ -38,7 +42,8 @@ class CastEndCommand(Command[CastEndEvent]):
         self.ability_id = ability_id
 
     def execute(self, world) -> CastEndEvent:
-        return world.ability_system.cast_end(self.ability_id)
+        from system.ability import AbilitySystem
+        return world.get_system(AbilitySystem).cast_end(self.ability_id)
 
 class DamageCommand(Command[DamageEvent]):
     priority = 5
@@ -50,7 +55,8 @@ class DamageCommand(Command[DamageEvent]):
         self.amount = amount
 
     def execute(self, world) -> DamageEvent:
-        return world.damage_system.damage(self.source_id, self.target_id, self.damage_type, self.amount)
+        from system.damage import DamageSystem
+        return world.get_system(DamageSystem).damage(self.source_id, self.target_id, self.damage_type, self.amount)
 
 class DeathCommand(Command[DeathEvent]):
     priority = 5
@@ -60,7 +66,8 @@ class DeathCommand(Command[DeathEvent]):
         self.killer_id = killer_id
 
     def execute(self, world) -> DeathEvent:
-        return world.damage_system.death(self.victim_id, self.killer_id)
+        from system.damage import DamageSystem
+        return world.get_system(DamageSystem).death(self.victim_id, self.killer_id)
 
 class CombatStartCommand(Command[CombatStartEvent]):
     priority = 0
@@ -69,7 +76,8 @@ class CombatStartCommand(Command[CombatStartEvent]):
         self.combat_id = combat_id
 
     def execute(self, world) -> CombatStartEvent:
-        return world.combat_system.combat_start(self.combat_id)
+        from system.combat import CombatSystem
+        return world.get_system(CombatSystem).combat_start(self.combat_id)
 
 class CombatEndCommand(Command[CombatEndEvent]):
     priority = 0
@@ -78,7 +86,8 @@ class CombatEndCommand(Command[CombatEndEvent]):
         self.combat_id = combat_id
 
     def execute(self, world) -> CombatEndEvent:
-        return world.combat_system.combat_end(self.combat_id)
+        from system.combat import CombatSystem
+        return world.get_system(CombatSystem).combat_end(self.combat_id)
 
     def unique_key(self):
         return (CombatEndCommand, self.combat_id)
@@ -90,7 +99,8 @@ class CooldownSetCommand(Command[CooldownSetEvent]):
         self.ability_id = ability_id
 
     def execute(self, world) -> CooldownSetEvent:
-        return world.cooldown_system.cooldown_set(self.ability_id)
+        from system.cooldown import CooldownSystem
+        return world.get_system(CooldownSystem).cooldown_set(self.ability_id)
 
 class CooldownUnsetCommand(Command[CooldownUnsetEvent]):
     priority = 5
@@ -99,7 +109,8 @@ class CooldownUnsetCommand(Command[CooldownUnsetEvent]):
         self.ability_id = ability_id
 
     def execute(self, world) -> CooldownUnsetEvent:
-        return world.cooldown_system.cooldown_unset(self.ability_id)
+        from system.cooldown import CooldownSystem
+        return world.get_system(CooldownSystem).cooldown_unset(self.ability_id)
 
 class StatsCreateCommand(Command[StatsCreateEvent]):
     priority = 15
@@ -109,7 +120,8 @@ class StatsCreateCommand(Command[StatsCreateEvent]):
         self.components = components
 
     def execute(self, world) -> StatsCreateEvent:
-        return world.stats_system.create_stats(self.entity_id, self.components)
+        from system.stats.stats import StatsSystem
+        return world.get_system(StatsSystem).create_stats(self.entity_id, self.components)
 
 class StatsUpdateCommand(Command[StatsUpdateEvent]):
     priority = 10
@@ -119,4 +131,5 @@ class StatsUpdateCommand(Command[StatsUpdateEvent]):
         self.statrefs = statrefs
 
     def execute(self, world) -> StatsUpdateEvent:
-        return world.stats_system.update_stats(self.entity_id, self.statrefs)
+        from system.stats.stats import StatsSystem
+        return world.get_system(StatsSystem).update_stats(self.entity_id, self.statrefs)

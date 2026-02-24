@@ -1,3 +1,6 @@
+from system.time import TimeSystem
+from system.event.event import EventSystem
+
 from component.stats import Stats, Armor, MagicResistance, Health, AttackDamage, AttackSpeed, AttackDelay
 from component.name import Name
 from component.ability import AbilityEffect, Owner, Cooldown, CastTime
@@ -65,7 +68,7 @@ class God:
         return ability_id
     
     def exec_cmd(self, command):
-        self.world.events.scheduler.schedule(
-            self.world.time.now,
+        self.world.get_system(EventSystem).scheduler.schedule(
+            self.world.get_system(TimeSystem).now,
             command
         )
