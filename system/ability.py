@@ -15,62 +15,84 @@ class AbilitySystem(System):
         self.subscribe(CombatStartEvent, self._on_combat_start)
     
     def attack(self, ability_id):
-        attacker_id, target_id = self._cast(ability_id, AttackCommand)
-        if not attacker_id is None and not target_id is None:
+        if self._is_cast_possible(ability_id):
+            attacker_id = self._get_caster_id(ability_id)
+            target_id = self._get_target_id(attacker_id)
+
             ability_handler = self.world.get_component(ability_id, AbilityEffect).handler
             ability_handler(self.world, attacker_id, target_id)
+            self.schedule(CooldownSetCommand(ability_id))
             return AttackEvent(attacker_id, target_id, ability_id)
         else:
             return NoneEvent()
 
     def cast_start(self, ability_id):
-        caster_id, target_id = self._cast(ability_id, CastStartCommand)
-        if not caster_id is None and not target_id is None:
-            ability_handler = self.world.get_component(ability_id, AbilityEffect).handler
-            ability_handler(self.world, caster_id, target_id)
+        if self._is_cast_possible(ability_id):
+            caster_id = self._get_caster_id(ability_id)
+            target_id = self._get_target_id(caster_id)
 
-            # TODO: schedule cast end command
-            # cast_time_component = self.world.get_component(ability_id, CastTime)
-            # cast_time = cast_time_component.value if cast_time_component else 0
+            cast_time_component = self.world.get_component(ability_id, CastTime)
+            cast_time = cast_time_component.value if cast_time_component else 0
+
+            if not cast_time:
+                ability_handler = self.world.get_component(ability_id, AbilityEffect).handler
+                ability_handler(self.world, caster_id, target_id)
+                self.schedule(CooldownSetCommand(ability_id))
+            else:
+                self.schedule(CastEndCommand(ability_id), cast_time)
 
             return CastStartEvent(caster_id, target_id, ability_id)
         else:
             return NoneEvent()
 
-    def cast_end(self, caster_id, target_id, ability_id):
+    def cast_end(self, ability_id):
+        caster_id = self._get_caster_id(ability_id)
+        target_id = self._get_target_id(caster_id)
+
         ability_handler = self.world.get_component(ability_id, AbilityEffect).handler
         ability_handler(self.world, caster_id, target_id)
+        self.schedule(CooldownSetCommand(ability_id))
         return CastEndEvent(caster_id, target_id, ability_id)
 
-    def _cast(self, ability_id, command_type):
-        ability_tags = self.world.get_tags(ability_id)
-
-        cooldown = self.world.get_component(ability_id, Cooldown)
-        if cooldown and cooldown.value != 1:
-            self.world.logger.error("Spell is not ready. Cast cancelled.")
-            return None, None
-
-        caster_id = None
+    def _get_caster_id(self, ability_id):
         caster = self.world.get_component(ability_id, Owner)
         if caster:
-            caster_id = caster.unit_id
+            return caster.unit_id
+        else:
+            return None
 
-        if caster_id and self.world.has_tag(caster_id, Dead):
-            self.world.logger.error("Caster should be alive. Cast cancelled.")
-            return None, None
-
-        target_id = None
+    def _get_target_id(self, caster_id):
         target = self.world.get_component(caster_id, Target)
         if target:
-            target_id = target.unit_id
+            return target.unit_id
+        else:
+            return None
 
+    def _is_cast_possible(self, ability_id):
+        caster_id = self._get_caster_id(ability_id)
+        target_id = self._get_target_id(caster_id)
+        ability_tags = self.world.get_tags(ability_id)
+
+        # Check cooldown
+        if self._is_ability_ready(ability_id):
+            self.world.logger.error("Spell is not ready. Cast cancelled.")
+            return False
+
+        # Check is caster alive
+        if caster_id and self.world.has_tag(caster_id, Dead):
+            self.world.logger.error("Caster should be alive. Cast cancelled.")
+            return False
+
+        # Check target if it's target ability
         if TargetAbility in ability_tags and target_id is None:
             self.world.logger.error("Casting of this ability needs target. Cast cancelled.")
-            return None, None
+            return False
+        
+        return True
 
-        self.schedule(CooldownSetCommand(ability_id))
-
-        return caster_id, target_id
+    def _is_ability_ready(self, ability_id):
+        cooldown = self.world.get_component(ability_id, Cooldown)
+        return not cooldown or cooldown.value >= 1
 
     def _autocast_trigger(self, ability_id):
         if self.world.has_tag(ability_id, Autocast):
