@@ -1,6 +1,6 @@
 from system.system import System
 
-from component.ability import AbilityEffect, Owner, CastTime, Cooldown
+from component.ability import AbilityEffect, Owner, CastTime, Cooldown, ResourceCost
 from component.target import Target
 from tag.tag import Dead, TargetAbility, Attack, Autocast
 
@@ -68,6 +68,13 @@ class AbilitySystem(System):
         else:
             return None
 
+    def _get_cost(self, ability_id):
+        cost = self.world.get_component(ability_id, ResourceCost)
+        if cost:
+            return cost.cost
+        else:
+            return {}
+
     def _is_cast_possible(self, ability_id):
         caster_id = self._get_caster_id(ability_id)
         target_id = self._get_target_id(caster_id)
@@ -75,30 +82,47 @@ class AbilitySystem(System):
 
         # Check cooldown
         if not self._is_ability_ready(ability_id):
-            self.world.logger.error("Spell is not ready. Cast cancelled.")
+            self.world.logger.error("Spell is not ready. Cast isn't possible.")
             return False
 
         # Check is caster alive
         if caster_id and self.world.has_tag(caster_id, Dead):
-            self.world.logger.error("Caster should be alive. Cast cancelled.")
+            self.world.logger.error("Caster should be alive. Cast isn't possible.")
             return False
 
         # Check target if it's target ability
         if TargetAbility in ability_tags and target_id is None:
-            self.world.logger.error("Casting of this ability needs target. Cast cancelled.")
+            self.world.logger.error("Casting of this ability needs target. Cast isn't possible.")
             return False
         
+        # Check resources
+        if not self._enough_resources(ability_id):
+            self.world.logger.error("Not enough resources. Cast isn't possible.")
+            return False
+
         return True
 
     def _is_ability_ready(self, ability_id):
         cooldown = self.world.get_component(ability_id, Cooldown)
         return not cooldown or cooldown.value >= 1
+    
+    def _enough_resources(self, ability_id):
+        cost = self._get_cost(ability_id)
+        caster_id = self._get_caster_id(ability_id)
+
+        for resource_type in cost:
+            resource_component = self.world.get_component(caster_id, resource_type)
+
+            if not resource_component or resource_component.value < cost[resource_type]:
+                return False
+
+        return True
 
     def _autocast_trigger(self, ability_id):
         if self.world.has_tag(ability_id, Autocast):
             command_type = self._cast_command_type(ability_id)
             self.schedule(command_type(ability_id))
-    
+
     def _on_cooldown_unset(self, cooldown_event_result: CooldownEvent):
         self._autocast_trigger(cooldown_event_result.ability_id)
     
