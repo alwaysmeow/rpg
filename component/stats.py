@@ -11,6 +11,7 @@ class AttackDelay(Stat): formula_key = "attack_delay"
 
 class Health(Meter): formula_key = "health"
 class Mana(Meter): formula_key = "mana"
+class Stamina(Meter): formula_key = "stamina"
 
 class Stats:
     def __init__(self, stats: Set[type] | None = None):

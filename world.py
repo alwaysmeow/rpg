@@ -8,7 +8,7 @@ from system.combat import CombatSystem
 from system.damage import DamageSystem
 from system.cooldown import CooldownSystem
 from system.ability import AbilitySystem
-from system.regeneration import RegenerationSystem
+from system.resource import ResourceSystem
 from system.stats.stats import StatsSystem
 from system.attack_speed import AttackSpeedSystem
 from system.god import God
@@ -25,7 +25,7 @@ class World:
         self.registry_system(DamageSystem(self, game_config_path))
         self.registry_system(CooldownSystem(self, game_config_path))
         self.registry_system(AbilitySystem(self))
-        self.registry_system(RegenerationSystem(self))
+        self.registry_system(ResourceSystem(self))
         self.registry_system(StatsSystem(self))
         self.registry_system(AttackSpeedSystem(self))
 
@@ -44,7 +44,7 @@ class World:
     def update(self, delta):
         now = self.get_system(TimeSystem).advance(delta)
         self.get_system(CooldownSystem).update(delta)
-        self.get_system(RegenerationSystem).update(delta)
+        self.get_system(ResourceSystem).update(delta)
         self.get_system(EventSystem).process(now)
 
     def create_entity(self) -> int:

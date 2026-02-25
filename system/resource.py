@@ -1,12 +1,13 @@
 from system.system import System
-from component.stats import Health, Mana
+from component.stats import Health, Mana, Stamina
 
-class RegenerationSystem(System):
+class ResourceSystem(System):
     def __init__(self, world):
         super().__init__(world)
         self.regenerable = [
             Health,
-            Mana
+            Mana,
+            Stamina
         ]
     
     def update(self, delta):
