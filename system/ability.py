@@ -74,7 +74,7 @@ class AbilitySystem(System):
         ability_tags = self.world.get_tags(ability_id)
 
         # Check cooldown
-        if self._is_ability_ready(ability_id):
+        if not self._is_ability_ready(ability_id):
             self.world.logger.error("Spell is not ready. Cast cancelled.")
             return False
 
