@@ -133,3 +133,14 @@ class StatsUpdateCommand(Command[StatsUpdateEvent]):
     def execute(self, world) -> StatsUpdateEvent:
         from system.stats.stats import StatsSystem
         return world.get_system(StatsSystem).update_stats(self.entity_id, self.statrefs)
+    
+class UseResourceCommand(Command[UseResourceEvent]):
+    priority = 10
+
+    def __init__(self, entity_id: int, resource: Set):
+        self.entity_id = entity_id
+        self.resource = resource
+
+    def execute(self, world) -> UseResourceEvent:
+        from system.resource import ResourceSystem
+        return world.get_system(ResourceSystem).use_resource(self.entity_id, self.resource)

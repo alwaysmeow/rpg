@@ -22,6 +22,7 @@ class AbilitySystem(System):
             ability_handler = self.world.get_component(ability_id, AbilityEffect).handler
             ability_handler(self.world, attacker_id, target_id)
             self.schedule(CooldownSetCommand(ability_id))
+            self.schedule(UseResourceCommand(attacker_id, self._get_cost(ability_id)))
             return AttackEvent(attacker_id, target_id, ability_id)
         else:
             return NoneEvent()
@@ -38,6 +39,7 @@ class AbilitySystem(System):
                 ability_handler = self.world.get_component(ability_id, AbilityEffect).handler
                 ability_handler(self.world, caster_id, target_id)
                 self.schedule(CooldownSetCommand(ability_id))
+                self.schedule(UseResourceCommand(caster_id, self._get_cost(ability_id)))
             else:
                 self.schedule(CastEndCommand(ability_id), cast_time)
 
