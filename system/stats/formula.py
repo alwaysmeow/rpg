@@ -1,7 +1,27 @@
 from system.system import System
+
 from core.statref import StatRef
+from core.formula import *
+
+from component.stats import *
 
 class FormulaSystem(System):
+    default_formulas = {
+        Health: {
+            "base_max_value": MaxHealthFormula,
+            "base_regen": HealthRegenFormula,
+        },
+        Armor: {
+            "base_value": ArmorFormula
+        },
+        MagicResistance: {
+            "base_value": MagicResistanceFormula
+        },
+        AttackSpeed: {
+            "base_value": ArmorFormula
+        },
+    }
+
     def _update_formula_value(self, entity_id, statref: StatRef):
         component = self.world.get_component(entity_id, statref.component_type)
 
@@ -26,13 +46,10 @@ class FormulaSystem(System):
 
         for require in formula.requires:
             component = self.world.get_component(entity_id, require.component_type)
-            if component is None or not hasattr(component, require.value_name):
-                self.world.logger.error(
-                    f"{formula.__name__} requires {require.component_type.__name__}.{require.value_name}"
-                )
-                return 0
-            
             arg_name = f"{require.component_type.formula_key}_{require.value_name}"
-            kwargs[arg_name] = getattr(component, require.value_name)
+            if component is None or not hasattr(component, require.value_name):
+                kwargs[arg_name] = 0
+            else:
+                kwargs[arg_name] = getattr(component, require.value_name)
         
         return formula.calculate(**kwargs)

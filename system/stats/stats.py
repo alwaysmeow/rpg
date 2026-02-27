@@ -128,8 +128,13 @@ class StatsSystem(System):
         return statrefs
     
     def _create_stat(self, entity_id, component):
-        self.world.add_component(entity_id, component)
         stat_type = type(component)
+
+        for formula_name in component.formulas:
+            if component.formulas[formula_name] is None and stat_type in FormulaSystem.default_formulas:
+                component.formulas[formula_name] = FormulaSystem.default_formulas[stat_type][formula_name]
+
+        self.world.add_component(entity_id, component)
 
         stats = self.world.get_or_create_component(entity_id, Stats)
         stats.add(stat_type)

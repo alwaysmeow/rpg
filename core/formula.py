@@ -9,7 +9,7 @@ class Formula:
     def calculate():
         raise NotImplementedError
 
-class BaseArmorFormula(Formula):
+class ArmorFormula(Formula):
     requires = [
         StatRef(Agility, "effective_value")
     ]
@@ -18,7 +18,7 @@ class BaseArmorFormula(Formula):
     def calculate(agility_effective_value):
         return agility_effective_value
 
-class BaseMagicResistanceFormula(Formula):
+class MagicResistanceFormula(Formula):
     requires = [
         StatRef(Intelligence, "effective_value")
     ]
@@ -27,7 +27,7 @@ class BaseMagicResistanceFormula(Formula):
     def calculate(intelligence_effective_value):
         return 1 - (0.95 ** intelligence_effective_value)
 
-class BaseMaxHealthFormula(Formula):
+class MaxHealthFormula(Formula):
     requires = [
         StatRef(Strength, "effective_value")
     ]
@@ -36,7 +36,7 @@ class BaseMaxHealthFormula(Formula):
     def calculate(strength_effective_value):
         return 100 + strength_effective_value
 
-class BaseHealthRegenFormula(Formula):
+class HealthRegenFormula(Formula):
     requires = [
         StatRef(Health, "effective_max_value"), 
         StatRef(Strength, "effective_value")
