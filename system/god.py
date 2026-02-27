@@ -14,27 +14,6 @@ from abilities.attack import attack_handler
 class God:
     def __init__(self, world):
         self.world = world
-
-    def create_unit(self, name):
-        unit_id = self.world.create_entity()
-
-        self.world.add_component(unit_id, Name(name))
-        
-        self.exec_cmd(
-            StatsCreateCommand(
-                unit_id, 
-                [
-                    Health(100, 0),
-                    Armor(1),
-                    MagicResistance(),
-                    AttackDamage(10),
-                ]
-            )
-        )
-
-        self.world.add_tag(unit_id, Unit)
-
-        return unit_id
     
     def create_ability(self, owner, handler, cast_time, cooldown_duration, autocast):
         ability_id = self.world.create_entity()

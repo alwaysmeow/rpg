@@ -17,8 +17,8 @@ class FormulaSystem(System):
         MagicResistance: {
             "base_value": MagicResistanceFormula
         },
-        AttackSpeed: {
-            "base_value": ArmorFormula
+        AttackDelay: {
+            "base_value": AttackDelayFormula
         },
     }
 

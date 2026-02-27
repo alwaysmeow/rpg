@@ -1,0 +1,16 @@
+{
+    "name": "meowmeow",
+    "stats": {
+        "health": {},
+
+        "armor": {},
+        "magic_resistance": {},
+
+        "attack_damage": { 
+            "value": 10
+        },
+        "attack_speed": {
+            "value": 10
+        }
+    }
+}

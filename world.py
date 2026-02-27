@@ -13,6 +13,8 @@ from system.stats.stats import StatsSystem
 from system.attack_speed import AttackSpeedSystem
 from system.god import God
 
+from builder.unit import UnitBuilder
+
 from ui.logger import Logger
 
 class World:
@@ -28,6 +30,8 @@ class World:
         self.registry_system(ResourceSystem(self))
         self.registry_system(StatsSystem(self))
         self.registry_system(AttackSpeedSystem(self))
+
+        self.unit_builder = UnitBuilder(self)
 
         # Temporary object
         self.god = God(self)
