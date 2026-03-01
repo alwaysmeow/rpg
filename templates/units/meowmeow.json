@@ -6,11 +6,7 @@
         "armor": 20,
         "magic_resistance": 0,
 
-        "attack_damage": { 
-            "value": 10
-        },
-        "attack_speed": {
-            "value": 10
-        }
+        "attack_damage": 100,
+        "attack_speed": 1
     }
 }
