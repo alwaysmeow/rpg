@@ -14,15 +14,20 @@ class EffectDuration:
 
 class EffectBehaviour:
     def on_apply(self, world, effect_id): pass
+    def on_tick(self, world, effect_id): pass
     def on_remove(self, world, effect_id): pass
 
-class CompositeEffect(EffectBehaviour):
+class CompositeBehaviour(EffectBehaviour):
     def __init__(self, *behaviours: EffectBehaviour):
         self.behaviours = behaviours
 
     def on_apply(self, world, effect_id):
         for b in self.behaviours:
             b.on_apply(world, effect_id)
+
+    def on_tick(self, world, effect_id):
+        for b in self.behaviours:
+            b.on_tick(world, effect_id)
 
     def on_remove(self, world, effect_id):
         for b in self.behaviours:

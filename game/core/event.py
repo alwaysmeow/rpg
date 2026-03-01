@@ -48,6 +48,15 @@ class DeathEvent(BaseEvent):
     victim_id: int
     killer_id: int
 
+
+@dataclass
+class EffectEvent(BaseEvent):
+    effect_id: int
+
+class EffectApplyEvent(EffectEvent): pass
+class EffectTickEvent(EffectEvent): pass
+class EffectRemoveEvent(EffectEvent): pass
+
 @dataclass
 class StatsCreateEvent(BaseEvent):
     entity_id: int

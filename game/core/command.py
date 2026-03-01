@@ -36,30 +36,6 @@ class CastEndCommand(Command[CastEndEvent]):
         from game.system.ability import AbilitySystem
         return world.get_system(AbilitySystem).cast_end(self.ability_id)
 
-class DamageCommand(Command[DamageEvent]):
-    priority = 5
-
-    def __init__(self, source_id: int, target_id: int, damage_type, amount: float):
-        self.source_id = source_id
-        self.target_id = target_id
-        self.damage_type = damage_type
-        self.amount = amount
-
-    def execute(self, world) -> DamageEvent:
-        from game.system.damage import DamageSystem
-        return world.get_system(DamageSystem).damage(self.source_id, self.target_id, self.damage_type, self.amount)
-
-class DeathCommand(Command[DeathEvent]):
-    priority = 5
-
-    def __init__(self, victim_id: int, killer_id: int):
-        self.victim_id = victim_id
-        self.killer_id = killer_id
-
-    def execute(self, world) -> DeathEvent:
-        from game.system.damage import DamageSystem
-        return world.get_system(DamageSystem).death(self.victim_id, self.killer_id)
-
 class CombatStartCommand(Command[CombatStartEvent]):
     priority = 0
 
@@ -102,6 +78,60 @@ class CooldownUnsetCommand(Command[CooldownUnsetEvent]):
     def execute(self, world) -> CooldownUnsetEvent:
         from game.system.cooldown import CooldownSystem
         return world.get_system(CooldownSystem).cooldown_unset(self.ability_id)
+
+class DamageCommand(Command[DamageEvent]):
+    priority = 5
+
+    def __init__(self, source_id: int, target_id: int, damage_type, amount: float):
+        self.source_id = source_id
+        self.target_id = target_id
+        self.damage_type = damage_type
+        self.amount = amount
+
+    def execute(self, world) -> DamageEvent:
+        from game.system.damage import DamageSystem
+        return world.get_system(DamageSystem).damage(self.source_id, self.target_id, self.damage_type, self.amount)
+
+class DeathCommand(Command[DeathEvent]):
+    priority = 5
+
+    def __init__(self, victim_id: int, killer_id: int):
+        self.victim_id = victim_id
+        self.killer_id = killer_id
+
+    def execute(self, world) -> DeathEvent:
+        from game.system.damage import DamageSystem
+        return world.get_system(DamageSystem).death(self.victim_id, self.killer_id)
+
+class EffectApplyCommand(Command[EffectApplyEvent]):
+    priority = 5
+
+    def __init__(self, effect_id: int): # TODO: analyse behaviour
+        self.effect_id = effect_id
+
+    def execute(self, world) -> DeathEvent:
+        from game.system.effect import EffectSystem
+        return world.get_system(EffectSystem).apply(self.effect_id)
+
+class EffectTickCommand(Command[EffectTickEvent]):
+    priority = 5
+
+    def __init__(self, effect_id: int):
+        self.effect_id = effect_id
+
+    def execute(self, world) -> DeathEvent:
+        from game.system.effect import EffectSystem
+        return world.get_system(EffectSystem).tick(self.effect_id)
+
+class EffectRemoveCommand(Command[EffectRemoveEvent]):
+    priority = 5
+
+    def __init__(self, effect_id: int):
+        self.effect_id = effect_id
+
+    def execute(self, world) -> DeathEvent:
+        from game.system.effect import EffectSystem
+        return world.get_system(EffectSystem).remove(self.effect_id)
 
 class StatsCreateCommand(Command[StatsCreateEvent]):
     priority = 15
