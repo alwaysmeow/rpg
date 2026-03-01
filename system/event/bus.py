@@ -1,27 +1,20 @@
 from queue import Queue
 from typing import Callable, Dict, List
 
-from utils import load_config
-
 class EventBus:
     def __init__(self, world, game_config_path):
         self.world = world
         self._queue: Queue = Queue()
         self._listeners: Dict[type, List[Callable]] = {}
 
-        config = load_config(game_config_path)
-        self.emits_per_tick_limit = config["emits_per_tick_limit"]
-
     def queue(self, event):
         self._queue.put(event)
         return event
 
-    def process(self):
-        iterations = 0
-        while not self.is_empty() and iterations < self.emits_per_tick_limit:
+    def process_one(self):
+        if self.has_pending():
             event = self._queue.get()
             self.emit(event)
-            iterations += 1
     
     def subscribe(self, event_type, callback):
         if event_type not in self._listeners:
@@ -37,5 +30,5 @@ class EventBus:
             for callback in self._listeners[type(event)]:
                 callback(event)
     
-    def is_empty(self):
-        return self._queue.empty()
+    def has_pending(self):
+        return not self._queue.empty()

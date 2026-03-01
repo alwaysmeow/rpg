@@ -3,8 +3,6 @@ from typing import Dict
 
 from core.command import Command
 
-from utils import load_config
-
 class CommandRecord:
     def __init__(self, time, command: Command, seq = 0):
         self.time = time
@@ -25,11 +23,6 @@ class CommandScheduler:
         self._queue = []
         self._unique_keys = set()
         self._seq: Dict[float, int] = {}
-
-        self.iterations = 0
-
-        config = load_config(game_config_path)
-        self.commands_per_tick_limit = config["commands_per_tick_limit"]
 
     def schedule(self, time, command: Command):
         unique_key = command.unique_key()
@@ -56,20 +49,10 @@ class CommandScheduler:
             event = record.command.execute(self.world)
             self.event_bus.queue(event)
 
-            self.iterations += 1
-
     def has_ready(self, now):
-        return bool(self._queue) and self._queue[0].time <= now and self.iterations < self.commands_per_tick_limit
+        return bool(self._queue) and self._queue[0].time <= now
 
-    def start_process(self):
-        self.iterations = 0
-
-    def end_process(self, now):
-        # Delete sequence counters if all events processed
-        if self.iterations < self.commands_per_tick_limit:
-            self._clear_seq_dict(now)
-
-    def _clear_seq_dict(self, now):
+    def clear_seq_dict(self, now):
         keys_to_delete = [t for t in self._seq if t <= now]
         for t in keys_to_delete:
             del self._seq[t]
