@@ -72,7 +72,13 @@ class UnitBuilder:
     
     def _build_component(self, stat_key: str, params: Any):
         stat_type = self.STAT_MAP.get(stat_key)
-        return stat_type(**params)
+
+        if isinstance(params, (int, float)):
+            return stat_type(value=params, hardcoded=True)
+        
+        hardcoded = "value" in params
+
+        return stat_type(**params, hardcoded=hardcoded)
 
     def _exec_cmd(self, command):
         self.world.get_system(EventSystem).scheduler.schedule(

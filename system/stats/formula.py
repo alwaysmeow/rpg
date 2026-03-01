@@ -29,10 +29,14 @@ class FormulaSystem(System):
             self.world.logger.error(f"Entity {entity_id} has no {statref.component_type.__name__}")
             return
 
-        formula = component.formulas[statref.value_name]
+        if component.hardcoded:
+            self.world.logger.log(f"Entity {entity_id}'s {statref.component_type.__name__} stat is hardcoded")
+            return
+
+        formula = component.formulas.get(statref.value_name)
 
         if formula is None:
-            self.world.logger.error(f"Entity {entity_id} has no formula for {statref.component_type.__name__}")
+            self.world.logger.log(f"Entity {entity_id} has no formula for {statref.component_type.__name__}")
             return
 
         setattr(

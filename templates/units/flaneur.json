@@ -3,8 +3,8 @@
     "stats": {
         "health": {},
 
-        "armor": {},
-        "magic_resistance": {},
+        "armor": 0,
+        "magic_resistance": 0,
 
         "attack_damage": { 
             "value": 10
