@@ -22,6 +22,10 @@ class AttackSpeedSystem(System):
 
     def _update_attack_ability_cooldown(self, entity_id, attack_delay_value):
         attack_ability_id = self._search_attack_ability(entity_id)
+
+        if attack_ability_id is None:
+            return
+
         cooldown = self.world.get_or_create_component(attack_ability_id, Cooldown)
 
         cooldown.base_regen = cooldown.base_max_value / attack_delay_value

@@ -24,10 +24,6 @@ class EffectSystem(System):
         behaviour = self.world.get_component(effect_id, CompositeBehaviour)
         if behaviour:
             getattr(behaviour, method_name)(self.world, effect_id)
-
-    def effect_still_active(self, effect_id):
-        duration_component = self.world.get_component(effect_id, EffectDuration)
-        return duration_component and duration_component.remaining > 0
     
     def effect_still_active(self, effect_id):
         duration_component = self.world.get_component(effect_id, EffectDuration)

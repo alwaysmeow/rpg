@@ -13,13 +13,13 @@ class AttackEvent(BaseEvent):
     ability_id: int
 
 @dataclass
-class CastEvent(BaseEvent):
+class AbilityEvent(BaseEvent):
     caster_id: int
     target_id: int
     ability_id: int
 
-class CastEvent(CastEvent): pass
-class CastEndEvent(CastEvent): pass
+class CastEvent(AbilityEvent): pass
+class CastEndEvent(AbilityEvent): pass
 
 @dataclass
 class CooldownEvent(BaseEvent):
