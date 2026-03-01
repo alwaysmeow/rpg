@@ -7,6 +7,6 @@
         "magic_resistance": 0,
 
         "attack_damage": 100,
-        "attack_speed": 1
+        "attack_speed": 20
     }
 }

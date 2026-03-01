@@ -31,21 +31,10 @@ class God:
 
         return ability_id
     
-    def create_autoattack(self, owner_id, attack_speed_value):
+    def create_autoattack(self, owner_id):
         ability_id = self.create_ability(owner_id, [AttackBehaviour()], 0, 1, True)
         self.world.add_tag(ability_id, Attack)
         self.world.add_tag(ability_id, TargetAbility)
-
-        self.exec_cmd(
-            StatsCreateCommand(
-                owner_id, 
-                [
-                    AttackSpeed(attack_speed_value),
-                    AttackDelay(None, AttackDelayFormula)
-                ]
-            )
-        )
-
         return ability_id
     
     def create_dot_effect(self, target_id, damage, delay):

@@ -1,9 +1,3 @@
-"""
-UnitBuilder — создаёт юнитов из JSON-конфигов.
-
-Пример JSON-файла: см. units/warrior.json
-"""
-
 import json
 from typing import Any
 
@@ -13,7 +7,7 @@ from engine.system.time import TimeSystem
 from game.component.stats import (
     Health, Mana, Stamina,
     Armor, MagicResistance,
-    AttackDamage, AttackSpeed
+    AttackDamage, AttackSpeed, AttackDelay
 )
 
 from game.component.attributes import Strength, Agility, Intelligence, Wisdom, Luck
@@ -41,7 +35,11 @@ class UnitBuilder:
         "luck":              Luck,
     }
 
-    METER_TYPES = {Health, Mana, Stamina}
+    DEPENDENT_STATS: dict[type, set[type]] = {
+        AttackSpeed: { AttackDelay }
+    }
+
+    METER_TYPES = { Health, Mana, Stamina }
     
     def __init__(self, world):
         self.world = world
@@ -64,6 +62,10 @@ class UnitBuilder:
         for key, params in stats_data.items():
             component = self._build_component(key, params)
             components.append(component)
+
+            if type(component) in self.DEPENDENT_STATS:
+                for stat_type in self.DEPENDENT_STATS[type(component)]:
+                    components.append(stat_type())
 
         if components:
             self._exec_cmd(StatsCreateCommand(unit_id, components))
