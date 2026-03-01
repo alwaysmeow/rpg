@@ -3,6 +3,8 @@ from engine.system.event.event import EventSystem
 
 from game.component.stats import AttackSpeed, AttackDelay
 from game.component.ability import AbilityEffect, Owner, Cooldown, CastTime
+from game.component.effect import EffectTarget, EffectDuration, CompositeBehaviour
+from game.effects.damage_over_time import DamageOverTimeBehaviour
 from game.tag.tag import Ability, Attack, TargetAbility, Autocast
 
 from game.core.command import *
@@ -45,6 +47,17 @@ class God:
 
         return ability_id
     
+    def create_dot_effect(self, target_id, damage, delay):
+        effect_id = self.world.create_entity()
+
+        self.world.add_component(effect_id, EffectTarget(target_id))
+        self.world.add_component(effect_id, EffectDuration(None))
+        self.world.add_component(effect_id, CompositeBehaviour(
+            DamageOverTimeBehaviour(DamageType.Pure, damage, delay)
+        ))
+
+        self.exec_cmd(EffectApplyCommand(effect_id))
+
     def exec_cmd(self, command):
         self.world.get_system(EventSystem).scheduler.schedule(
             self.world.get_system(TimeSystem).now,

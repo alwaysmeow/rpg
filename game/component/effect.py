@@ -10,7 +10,7 @@ class EffectTarget:
 
 @dataclass
 class EffectDuration:
-    remaining: float
+    remaining: float | None
 
 class EffectBehaviour:
     def on_apply(self, world, effect_id): pass

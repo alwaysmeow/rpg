@@ -22,7 +22,7 @@ class EffectSystem(System):
     def _invoke(self, effect_id, method_name):
         behaviour = self.world.get_component(effect_id, CompositeBehaviour)
         if behaviour:
-            getattr(behaviour, method_name)(effect_id)
+            getattr(behaviour, method_name)(self.world, effect_id)
 
     def effect_still_active(self, effect_id):
         duration_component = self.world.get_component(effect_id, EffectDuration)
@@ -30,4 +30,12 @@ class EffectSystem(System):
     
     def effect_still_active(self, effect_id):
         duration_component = self.world.get_component(effect_id, EffectDuration)
-        return duration_component and duration_component.remaining > 0
+        if duration_component:
+            return duration_component.remaining is None or duration_component.remaining > 0
+        return False
+
+    def update(self, delta):
+        for effect_id in self.world.components[EffectDuration]:
+            duration_component = self.world.get_component(effect_id, EffectDuration)
+            if duration_component and not duration_component.remaining is None:
+                duration_component.remaining -= delta

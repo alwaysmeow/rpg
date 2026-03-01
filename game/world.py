@@ -9,6 +9,7 @@ from game.system.ability import AbilitySystem
 from game.system.resource import ResourceSystem
 from game.system.stats.stats import StatsSystem
 from game.system.attack_speed import AttackSpeedSystem
+from game.system.effect import EffectSystem
 from game.system.god import God
 
 from game.builder.unit import UnitBuilder
@@ -26,6 +27,7 @@ class GameWorld(World):
         self.registry_system(ResourceSystem(self))
         self.registry_system(StatsSystem(self))
         self.registry_system(AttackSpeedSystem(self))
+        self.registry_system(EffectSystem(self))
 
         self.unit_builder = UnitBuilder(self)
 
@@ -39,4 +41,5 @@ class GameWorld(World):
     def update(self, delta):
         self.get_system(CooldownSystem).update(delta)
         self.get_system(ResourceSystem).update(delta)
+        self.get_system(EffectSystem).update(delta)
         super().update(delta)
