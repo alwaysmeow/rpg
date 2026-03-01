@@ -1,4 +1,4 @@
-from system.combat import CombatSystem
+from game.system.combat import CombatSystem
 
 def test_script(world):
     flaneur = world.unit_builder.build_from_file("templates/units/flaneur.json")

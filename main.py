@@ -1,11 +1,12 @@
-from world import World
-from clock import Clock
-from game import GameLoop
+from engine.clock import Clock
+from engine.game import GameLoop
+
+from game.world import GameWorld
 
 from dev.test_scripts import *
 
 game_config_path="config/game.json"
-world = World(game_config_path)
+world = GameWorld(game_config_path)
 
 test_script(world)
 

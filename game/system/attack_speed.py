@@ -1,0 +1,33 @@
+from engine.system.system import System
+
+from game.component.stats import AttackDelay
+from game.component.ability import Owner, Cooldown
+
+from game.tag.tag import Attack
+
+from game.core.event import StatsUpdateEvent
+from game.core.statref import StatRef
+
+class AttackSpeedSystem(System):
+    def __init__(self, world):
+        super().__init__(world)
+        self.subscribe(StatsUpdateEvent, self._on_stats_update)
+
+    def _search_attack_ability(self, entity_id):
+        attacks = self.world.query_by_tag(Attack)
+        for ability_id in attacks:
+            owner = self.world.get_component(ability_id, Owner)
+            if owner and owner.unit_id == entity_id:
+                return ability_id
+
+    def _update_attack_ability_cooldown(self, entity_id, attack_delay_value):
+        attack_ability_id = self._search_attack_ability(entity_id)
+        cooldown = self.world.get_or_create_component(attack_ability_id, Cooldown)
+
+        cooldown.base_regen = cooldown.base_max_value / attack_delay_value
+        cooldown.effective_regen = cooldown.effective_max_value / attack_delay_value
+
+    def _on_stats_update(self, event: StatsUpdateEvent):
+        new_value = event.updated.get(StatRef(AttackDelay, "effective_value"))
+        if not new_value is None:
+            return self._update_attack_ability_cooldown(event.entity_id, new_value)

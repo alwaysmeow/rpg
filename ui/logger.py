@@ -1,14 +1,14 @@
 from rich.text import Text
 
-from system.event.event import EventSystem
-from system.time import TimeSystem
+from engine.system.event.event import EventSystem
+from engine.system.time import TimeSystem
 
-from component.name import Name
-from component.stats import Armor, MagicResistance, Health
-from component.ability import Cooldown
-from tag.tag import *
+from game.component.name import Name
+from game.component.stats import Armor, MagicResistance, Health
+from game.component.ability import Cooldown
+from game.tag.tag import *
 
-from core.event import *
+from game.core.event import *
 
 class Logger:
     def __init__(self, world, sink=print, markup=True):

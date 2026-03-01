@@ -1,4 +1,5 @@
 {
     "updates_per_second": 60,
-    "update_max_steps": 5
+    "update_max_steps": 5,
+    "commands_per_tick_limit": 100
 }
