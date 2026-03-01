@@ -21,7 +21,10 @@ class CommandScheduler:
         self.world = world
         self.event_bus = event_bus
         self._queue = []
+
         self._unique_keys = set()
+        self._cancelled_keys = set()
+
         self._seq: Dict[float, int] = {}
 
     def schedule(self, time, command: Command):
@@ -37,6 +40,7 @@ class CommandScheduler:
 
         if unique_key:
             self._unique_keys.add(unique_key)
+            self._cancelled_keys.discard(unique_key)
 
         return record
     
@@ -45,6 +49,10 @@ class CommandScheduler:
             record: CommandRecord = heapq.heappop(self._queue)
             unique_key = record.command.unique_key()
             self._unique_keys.discard(unique_key)
+
+            if unique_key in self._cancelled_keys:
+                self._cancelled_keys.discard(unique_key)
+                return
 
             event = record.command.execute(self.world)
             self.event_bus.queue(event)
@@ -56,3 +64,8 @@ class CommandScheduler:
         keys_to_delete = [t for t in self._seq if t <= now]
         for t in keys_to_delete:
             del self._seq[t]
+    
+    def cancel_unique_command(self, unique_key):
+        if unique_key in self._unique_keys:
+            self._cancelled_keys.add(unique_key)
+            self._unique_keys.discard(unique_key)
