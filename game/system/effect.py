@@ -1,6 +1,7 @@
 from engine.system.system import System
 
-from game.component.effect import EffectDuration, CompositeBehaviour
+from game.component.behaviour import CompositeBehaviour
+from game.component.effect import EffectDuration
 from game.core.event import EffectApplyEvent, EffectTickEvent, EffectRemoveEvent
 
 class EffectSystem(System):

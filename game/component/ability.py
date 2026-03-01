@@ -3,10 +3,6 @@ from typing import Dict
 
 from game.component.meter import Meter
 
-class AbilityEffect:
-    def __init__(self, handler = lambda world, caster, target: None):
-        self.handler = handler
-
 @dataclass
 class Owner:
     unit_id: int = None

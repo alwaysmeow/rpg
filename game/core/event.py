@@ -18,7 +18,7 @@ class CastEvent(BaseEvent):
     target_id: int
     ability_id: int
 
-class CastStartEvent(CastEvent): pass
+class CastEvent(CastEvent): pass
 class CastEndEvent(CastEvent): pass
 
 @dataclass

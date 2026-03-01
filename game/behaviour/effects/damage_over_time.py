@@ -1,7 +1,8 @@
-from game.component.effect import EffectBehaviour, EffectTarget
+from game.component.behaviour import Behaviour
+from game.component.effect import EffectTarget
 from game.core.command import DamageCommand, EffectTickCommand
 
-class DamageOverTimeBehaviour(EffectBehaviour):
+class DamageOverTimeBehaviour(Behaviour):
     def __init__(self, damage_type, damage_amount, delay):
         self.damage_type = damage_type
         self.damage_amount = damage_amount

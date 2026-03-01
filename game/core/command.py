@@ -16,15 +16,15 @@ class AttackCommand(Command[AttackEvent]):
         from game.system.ability import AbilitySystem
         return world.get_system(AbilitySystem).attack(self.ability_id)
 
-class CastStartCommand(Command[CastStartEvent]):
+class CastCommand(Command[CastEvent]):
     priority = 5
 
     def __init__(self, ability_id: int):
         self.ability_id = ability_id
 
-    def execute(self, world) -> CastStartEvent:
+    def execute(self, world) -> CastEvent:
         from game.system.ability import AbilitySystem
-        return world.get_system(AbilitySystem).cast_start(self.ability_id)
+        return world.get_system(AbilitySystem).cast(self.ability_id)
 
 class CastEndCommand(Command[CastEndEvent]):
     priority = 5
