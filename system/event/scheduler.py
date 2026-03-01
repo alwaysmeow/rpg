@@ -26,6 +26,8 @@ class CommandScheduler:
         self._unique_keys = set()
         self._seq: Dict[float, int] = {}
 
+        self.iterations = 0
+
         config = load_config(game_config_path)
         self.commands_per_tick_limit = config["commands_per_tick_limit"]
 
@@ -44,10 +46,9 @@ class CommandScheduler:
             self._unique_keys.add(unique_key)
 
         return record
-
-    def process(self, now):
-        iterations = 0
-        while self._queue and self._queue[0].time <= now and iterations < self.commands_per_tick_limit:
+    
+    def process_one(self, now):
+        if self.has_ready(now):
             record: CommandRecord = heapq.heappop(self._queue)
             unique_key = record.command.unique_key()
             self._unique_keys.discard(unique_key)
@@ -55,12 +56,19 @@ class CommandScheduler:
             event = record.command.execute(self.world)
             self.event_bus.queue(event)
 
-            iterations += 1
+            self.iterations += 1
 
+    def has_ready(self, now):
+        return bool(self._queue) and self._queue[0].time <= now and self.iterations < self.commands_per_tick_limit
+
+    def start_process(self):
+        self.iterations = 0
+
+    def end_process(self, now):
         # Delete sequence counters if all events processed
-        if iterations < self.commands_per_tick_limit:
+        if self.iterations < self.commands_per_tick_limit:
             self._clear_seq_dict(now)
-    
+
     def _clear_seq_dict(self, now):
         keys_to_delete = [t for t in self._seq if t <= now]
         for t in keys_to_delete:

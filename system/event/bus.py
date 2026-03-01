@@ -18,7 +18,7 @@ class EventBus:
 
     def process(self):
         iterations = 0
-        while not self._queue.empty() and iterations < self.emits_per_tick_limit:
+        while not self.is_empty() and iterations < self.emits_per_tick_limit:
             event = self._queue.get()
             self.emit(event)
             iterations += 1
@@ -36,3 +36,6 @@ class EventBus:
         if type(event) in self._listeners:
             for callback in self._listeners[type(event)]:
                 callback(event)
+    
+    def is_empty(self):
+        return self._queue.empty()

@@ -7,5 +7,11 @@ class EventSystem:
         self.scheduler = CommandScheduler(world, self.bus, game_config_path)
 
     def process(self, now):
-        self.scheduler.process(now)
-        self.bus.process()
+        self.scheduler.start_process()
+
+        # TODO: fix bus limit makes infinite cycle
+        while self.scheduler.has_ready(now) or not self.bus.is_empty():
+            self.scheduler.process_one(now)
+            self.bus.process() 
+
+        self.scheduler.end_process(now)
