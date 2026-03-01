@@ -30,7 +30,6 @@ class FormulaSystem(System):
             return
 
         if component.hardcoded:
-            self.world.logger.log(f"Entity {entity_id}'s {statref.component_type.__name__} stat is hardcoded")
             return
 
         formula = component.formulas.get(statref.value_name)

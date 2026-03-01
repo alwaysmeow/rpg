@@ -27,6 +27,7 @@ class AbilitySystem(System):
             caster_id = self._get_caster_id(ability_id)
             target_id = self._get_target_id(caster_id)
             self._invoke(ability_id, "on_cast")
+            self.schedule(CooldownSetCommand(ability_id))
             return CastEvent(caster_id, target_id, ability_id)
         else:
             return NoneEvent()
@@ -108,8 +109,7 @@ class AbilitySystem(System):
 
     def _autocast_trigger(self, ability_id):
         if self.world.has_tag(ability_id, Autocast):
-            command_type = self._cast_command_type(ability_id)
-            self.schedule(command_type(ability_id))
+            self.schedule(CastCommand(ability_id))
 
     def _on_cooldown_unset(self, cooldown_event_result: CooldownEvent):
         self._autocast_trigger(cooldown_event_result.ability_id)
@@ -124,12 +124,6 @@ class AbilitySystem(System):
                 
                 for ability_id in abilities:
                     self._autocast_trigger(ability_id)
-    
-    def _cast_command_type(self, ability_id):
-        if self.world.has_tag(ability_id, Attack):
-            return AttackCommand
-        else:
-            return CastEndCommand
     
     def _switch_autocast(self, ability_id):
         if self.world.has_tag(ability_id, Autocast):

@@ -21,7 +21,7 @@ class AttackBehaviour(Behaviour):
 
         attacker = world.get_component(ability_id, Owner)
 
-        if attacker and attacker.unit_id:
+        if attacker and not attacker.unit_id is None:
             attacker_id = attacker.unit_id
         
             target_component = world.get_component(attacker_id, Target)

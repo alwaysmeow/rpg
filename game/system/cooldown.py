@@ -34,6 +34,6 @@ class CooldownSystem(System):
 
             progress = 0
             progress = self._update_ability_cooldown(cooldown, delta)
-
+            
             if progress and progress > 0 and cooldown.value >= 1:
                 self.schedule(CooldownUnsetCommand(ability_id))
