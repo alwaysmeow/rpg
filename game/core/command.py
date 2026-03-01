@@ -122,6 +122,9 @@ class EffectTickCommand(Command[EffectTickEvent]):
     def execute(self, world) -> DeathEvent:
         from game.system.effect import EffectSystem
         return world.get_system(EffectSystem).tick(self.effect_id)
+    
+    def unique_key(self):
+        return (EffectTickCommand, self.effect_id)
 
 class EffectRemoveCommand(Command[EffectRemoveEvent]):
     priority = 5

@@ -3,7 +3,7 @@ from engine.system.event.event import EventSystem
 
 from game.component.stats import AttackSpeed, AttackDelay
 from game.component.ability import AbilityEffect, Owner, Cooldown, CastTime
-from game.component.effect import EffectTarget, EffectDuration, CompositeBehaviour
+from game.component.effect import EffectTarget, EffectDuration, CompositeBehaviour, Effects
 from game.effects.damage_over_time import DamageOverTimeBehaviour
 from game.tag.tag import Ability, Attack, TargetAbility, Autocast
 
@@ -55,6 +55,9 @@ class God:
         self.world.add_component(effect_id, CompositeBehaviour(
             DamageOverTimeBehaviour(DamageType.Pure, damage, delay)
         ))
+
+        effects = self.world.get_or_create_component(target_id, Effects)
+        effects.set.add(effect_id)
 
         self.exec_cmd(EffectApplyCommand(effect_id))
 

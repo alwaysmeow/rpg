@@ -4,6 +4,7 @@ from game.tag.tag import Combat, Dead
 
 from game.component.target import Target
 from game.component.combat import CombatParticipation, CombatState
+from game.component.effect import Effects
 
 from game.core.command import *
 from game.core.event import DeathEvent
@@ -40,6 +41,7 @@ class CombatSystem(System):
         teams = self._get_teams(combat_id)
         self.world.logger.log_combat(combat_id, teams)
         self._unset_all_targets(combat_id)
+        self._remove_all_effects(combat_id)
         return CombatEndEvent(combat_id, teams)
 
     def _find_new_target(self, enemies):
@@ -76,6 +78,16 @@ class CombatSystem(System):
             for unit_id in teams[team_index]:
                 self.world.get_or_create_component(unit_id, Target).unit_id = None
     
+    def _remove_all_effects(self, combat_id):
+        teams = self._get_teams(combat_id)
+
+        for team_index in range(len(teams)):
+            for unit_id in teams[team_index]:
+                # TODO: remove unit's effects event
+                effects = self.world.get_or_create_component(unit_id, Effects).set
+                for effect_id in effects:
+                    self.schedule(EffectRemoveCommand(effect_id))
+
     def _get_teams(self, combat_id):
         # TODO: maybe create component for teams
         units_id = self.world.query_by_component(

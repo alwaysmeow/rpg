@@ -14,7 +14,7 @@ class System:
         )
     
     def cancel_unique_command(self, unique_key):
-        self.world.get_system(EventSystem).cancel_unique_command(unique_key)
+        self.world.get_system(EventSystem).scheduler.cancel_unique_command(unique_key)
     
     def subscribe(self, event_type: type, method):
         self.world.get_system(EventSystem).bus.subscribe(event_type, method)

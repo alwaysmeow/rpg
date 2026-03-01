@@ -33,3 +33,8 @@ class DamageOverTimeBehaviour(EffectBehaviour):
 
         if effect_system.effect_still_active(effect_id):
             effect_system.schedule(EffectTickCommand(effect_id), self.delay)
+    
+    def on_remove(self, world, effect_id):
+        from game.system.effect import EffectSystem
+        effect_system = world.get_system(EffectSystem)
+        effect_system.cancel_unique_command((EffectTickCommand, effect_id))

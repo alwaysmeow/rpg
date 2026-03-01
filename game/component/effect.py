@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Set
 
 @dataclass
 class EffectSource:
@@ -11,6 +12,16 @@ class EffectTarget:
 @dataclass
 class EffectDuration:
     remaining: float | None
+
+class Effects:
+    def __init__(self, stats: Set[int] | None = None):
+        self.set: Set[int] = stats if stats is not None else set()
+    
+    def add(self, effect_id: int):
+        self.set.add(effect_id)
+
+    def discard(self, effect_id: int):
+        self.set.discard(effect_id)
 
 class EffectBehaviour:
     def on_apply(self, world, effect_id): pass
