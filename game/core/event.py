@@ -68,6 +68,11 @@ class StatsUpdateEvent(BaseEvent):
     updated: Dict[StatRef, float]
 
 @dataclass
+class ResourceRestoreEvent(BaseEvent):
+    entity_id: int
+    resource: Dict[type, int]
+
+@dataclass
 class UseResourceEvent(BaseEvent):
     entity_id: int
     resource: Dict[type, int]

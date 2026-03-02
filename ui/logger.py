@@ -17,16 +17,19 @@ class Logger:
         self.markup = markup
 
         subscribers = {
-            AttackEvent: self._log_attack_event,
-            CastEndEvent: self._log_cast_event,
+            # AttackEvent: self._log_attack_event,
+            # CastEndEvent: self._log_cast_event,
+            CombatStartEvent: self._log_combat,
+            CombatEndEvent: self._log_combat,
             DamageEvent: self._log_damage_event,
             DeathEvent: self._log_death_event,
             StatsUpdateEvent: self._log_stats_update_event,
+            ResourceRestoreEvent: self._log_resource_restore_event,
         }
 
         for event_type in subscribers:
             self.world.get_system(EventSystem).bus.subscribe(event_type, subscribers[event_type])
-    
+
     def _write(self, markup_text):
         text = Text.from_markup(markup_text)
         self.sink(text if self.markup else text.plain)
@@ -37,10 +40,10 @@ class Logger:
         self._write(f"Armor: {self.world.get_component(unit_id, Armor).effective_value}")
         self._write(f"Magic Resistance: {self.world.get_component(unit_id, MagicResistance).effective_value}\n")
     
-    def log_combat(self, combat_id, teams):
-        for team_index in range(len(teams)):
+    def _log_combat(self, event: CombatEvent):
+        for team_index in range(len(event.teams)):
             self._write(f"\nTeam {team_index + 1}:")
-            for unit_id in teams[team_index]:
+            for unit_id in event.teams[team_index]:
                 self.log_unit(unit_id)
 
     def log_ability(self, ability_id):
@@ -72,6 +75,10 @@ class Logger:
         owner_name = self._format_name(event.entity_id)
         self._write(f"- {owner_name}'s stats changed")
 
+    def _log_resource_restore_event(self, event: ResourceRestoreEvent):
+        owner_name = self._format_name(event.entity_id)
+        self._write(f"- {owner_name} restores {self._fromat_resources(event.resource)}")
+
     def error(self, text):
         self._write(f"- [bold red]ERROR:[/bold red] {text} - {self._time()}")
 
@@ -99,5 +106,11 @@ class Logger:
     def _format_damage(self, value, damage_type):
         return f"[{damage_type.color}]{value}[/{damage_type.color}]"
     
+    def _fromat_resources(self, resources):
+        resource_strings = []
+        for resource_type in resources:
+            resource_strings.append(f"{resources[resource_type]} {resource_type.__name__}")
+        return ', '.join(resource_strings)
+
     def _time(self):
         return self.world.get_system(TimeSystem).now

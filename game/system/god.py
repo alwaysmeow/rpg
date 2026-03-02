@@ -1,7 +1,7 @@
 from engine.system.time import TimeSystem
 from engine.system.event.event import EventSystem
 
-from game.component.stats import AttackSpeed, AttackDelay
+from game.component.stats import Health
 from game.component.ability import Owner, Cooldown, CastTime
 from game.component.behaviour import CompositeBehaviour
 from game.component.effect import EffectTarget, EffectDuration, Effects
@@ -11,6 +11,7 @@ from game.core.command import *
 from game.core.formula import AttackDelayFormula
 
 from game.behaviour.abilities.attack import AttackBehaviour
+from game.behaviour.abilities.resource_restore import ResourceRestoreBehaviour
 from game.behaviour.effects.damage_over_time import DamageOverTimeBehaviour
 
 class God:
@@ -32,7 +33,14 @@ class God:
         return ability_id
     
     def create_autoattack(self, owner_id):
-        ability_id = self.create_ability(owner_id, [AttackBehaviour()], 0, 1, True)
+        ability_id = self.create_ability(
+            owner_id, 
+            [
+                AttackBehaviour(),
+                ResourceRestoreBehaviour({ Health: 10 })
+            ], 
+            0, 1, True
+        )
         self.world.add_tag(ability_id, Attack)
         self.world.add_tag(ability_id, TargetAbility)
         return ability_id

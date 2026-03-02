@@ -157,7 +157,18 @@ class StatsUpdateCommand(Command[StatsUpdateEvent]):
     def execute(self, world) -> StatsUpdateEvent:
         from game.system.stats.stats import StatsSystem
         return world.get_system(StatsSystem).update_stats(self.entity_id, self.statrefs)
-    
+
+class ResourceRestoreCommand(Command[ResourceRestoreEvent]):
+    priority = 10
+
+    def __init__(self, entity_id: int, resource: Set):
+        self.entity_id = entity_id
+        self.resource = resource
+
+    def execute(self, world) -> ResourceRestoreEvent:
+        from game.system.resource import ResourceSystem
+        return world.get_system(ResourceSystem).resource_restore(self.entity_id, self.resource)
+
 class UseResourceCommand(Command[UseResourceEvent]):
     priority = 10
 

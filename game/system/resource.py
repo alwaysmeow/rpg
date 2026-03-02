@@ -1,7 +1,7 @@
 from engine.system.system import System
 
 from game.component.stats import Health, Mana, Stamina
-from game.core.event import UseResourceEvent
+from game.core.event import UseResourceEvent, ResourceRestoreEvent
 
 class ResourceSystem(System):
     def __init__(self, world):
@@ -16,6 +16,18 @@ class ResourceSystem(System):
         for meter_type in self.regenerable:
             self._update_meters(meter_type, delta)
     
+    def resource_restore(self, entity_id, resource):
+        result = {}
+
+        for resource_type in resource:
+            resource_component = self.world.get_component(entity_id, resource_type)
+            if resource_component:
+                old_value = resource_component.value
+                resource_component.value += resource[resource_type]
+                result[resource_type] = int(resource_component.value - old_value)
+        
+        return ResourceRestoreEvent(entity_id, result)
+
     def use_resource(self, entity_id, resource):
         result = {}
 

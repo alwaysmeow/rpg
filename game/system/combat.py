@@ -34,12 +34,10 @@ class CombatSystem(System):
     
     def combat_start(self, combat_id):
         teams = self._get_teams(combat_id)
-        self.world.logger.log_combat(combat_id, teams)
         return CombatStartEvent(combat_id, teams)
 
     def combat_end(self, combat_id):
         teams = self._get_teams(combat_id)
-        self.world.logger.log_combat(combat_id, teams)
         self._unset_all_targets(combat_id)
         self._remove_all_effects(combat_id)
         return CombatEndEvent(combat_id, teams)
