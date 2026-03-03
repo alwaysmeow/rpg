@@ -12,7 +12,16 @@ class System:
             self.now() + delay,
             command
         )
-    
+
+    def schedule_at(self, command: Command, time: float = None):
+        if time is None:
+            time = self.now()
+
+        self.world.get_system(EventSystem).scheduler.schedule(
+            time,
+            command
+        )
+
     def cancel_unique_command(self, unique_key):
         self.world.get_system(EventSystem).scheduler.cancel_unique_command(unique_key)
     

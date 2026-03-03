@@ -55,6 +55,7 @@ class CommandScheduler:
                 return
 
             event = record.command.execute(self.world)
+            event.time = record.time
             self.event_bus.queue(event)
 
     def has_ready(self, now):

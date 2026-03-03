@@ -26,12 +26,11 @@ class StatsSystem(System):
             "base_regen": "effective_regen"
         }
 
-    def create_stats(self, entity_id, components) -> StatsCreateEvent:
-        statrefs = set()
-        for component in components:
-            statrefs |= self._create_stat(entity_id, component)
+        self.subscribe(StatsCreateEvent, self._on_stats_create)
 
-        self.schedule(StatsUpdateCommand(entity_id, statrefs))
+    def create_stats(self, entity_id, components) -> StatsCreateEvent:
+        for component in components:
+            self._create_stat(entity_id, component)
 
         return StatsCreateEvent(entity_id, components)
 
@@ -142,3 +141,10 @@ class StatsSystem(System):
 
         statrefs = self._get_statrefs_of_base_values(component)
         return statrefs
+    
+    def _on_stats_create(self, event: StatsCreateEvent):
+        statrefs = set()
+        for component in event.created:
+            statrefs |= self._get_statrefs_of_base_values(component)
+
+        self.schedule_at(StatsUpdateCommand(event.entity_id, statrefs), event.time)
