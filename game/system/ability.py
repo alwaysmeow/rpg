@@ -26,8 +26,16 @@ class AbilitySystem(System):
         if self._is_cast_possible(ability_id):
             caster_id = self._get_caster_id(ability_id)
             target_id = self._get_target_id(caster_id)
+
             self._invoke(ability_id, "on_cast")
+
+            if self.world.has_tag(ability_id, Attack):
+                self.schedule(AttackCommand(ability_id), self._get_cast_time(ability_id))
+            else:
+                self.schedule(CastEndCommand(ability_id), self._get_cast_time(ability_id))
+
             self.schedule(CooldownSetCommand(ability_id))
+
             return CastEvent(caster_id, target_id, ability_id)
         else:
             return NoneEvent()
@@ -63,6 +71,13 @@ class AbilitySystem(System):
             return cost.cost
         else:
             return {}
+
+    def _get_cast_time(self, ability_id):
+        cast_time_component = self.world.get_component(ability_id, CastTime)
+        if cast_time_component:
+            return cast_time_component.value
+        else:
+            return 0
 
     def _is_cast_possible(self, ability_id):
         caster_id = self._get_caster_id(ability_id)

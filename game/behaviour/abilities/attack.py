@@ -7,17 +7,6 @@ from game.component.ability import Owner, CastTime
 from game.component.target import Target
 
 class AttackBehaviour(Behaviour):
-    def on_cast(self, world, ability_id):
-        from game.system.ability import AbilitySystem
-        ability_system = world.get_system(AbilitySystem)
-
-        cast_time = 0
-        cast_time_component = world.get_component(ability_id, CastTime)
-        if cast_time_component:
-            cast_time = cast_time_component.value
-
-        ability_system.schedule(AttackCommand(ability_id), cast_time)
-
     def on_attack(self, world, ability_id):
         from game.system.ability import AbilitySystem
         ability_system = world.get_system(AbilitySystem)
