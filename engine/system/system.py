@@ -8,25 +8,13 @@ class System:
         self.world = world
     
     def schedule(self, command: Command, delay: float = 0):
-        self.world.get_system(EventSystem).scheduler.schedule(
-            self.now() + delay,
-            command
-        )
+        self.world.schedule(command, delay)
 
     def schedule_at(self, command: Command, time: float = None):
-        if time is None:
-            time = self.now()
-
-        self.world.get_system(EventSystem).scheduler.schedule(
-            time,
-            command
-        )
+        self.world.schedule_at(command, time)
 
     def cancel_unique_command(self, unique_key):
-        self.world.get_system(EventSystem).scheduler.cancel_unique_command(unique_key)
+        self.world.cancel_unique_command(unique_key)
     
     def subscribe(self, event_type: type, method):
         self.world.get_system(EventSystem).bus.subscribe(event_type, method)
-
-    def now(self):
-        return self.world.get_system(TimeSystem).now

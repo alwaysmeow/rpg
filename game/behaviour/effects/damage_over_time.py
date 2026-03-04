@@ -9,9 +9,7 @@ class DamageOverTimeBehaviour(Behaviour):
         self.delay = delay
 
     def on_apply(self, world, effect_id):
-        from game.system.effect import EffectSystem
-        effect_system = world.get_system(EffectSystem)
-        effect_system.schedule(EffectTickCommand(effect_id))
+        world.schedule(EffectTickCommand(effect_id))
     
     def on_tick(self, world, effect_id):
         from game.system.effect import EffectSystem
@@ -23,7 +21,7 @@ class DamageOverTimeBehaviour(Behaviour):
         if target:
             target_id = target.entity_id
 
-        effect_system.schedule(
+        world.schedule(
             DamageCommand(
                 effect_id, 
                 target_id, 
@@ -33,7 +31,7 @@ class DamageOverTimeBehaviour(Behaviour):
         )
 
         if effect_system.effect_still_active(effect_id):
-            effect_system.schedule(EffectTickCommand(effect_id), self.delay)
+            world.schedule(EffectTickCommand(effect_id), self.delay)
     
     def on_remove(self, world, effect_id):
         from game.system.effect import EffectSystem

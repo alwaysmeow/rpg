@@ -1,16 +1,13 @@
 from game.core.damage_type import DamageType
-from game.core.command import DamageCommand, AttackCommand
+from game.core.command import DamageCommand
 
 from game.component.stats import AttackDamage
 from game.component.behaviour import Behaviour
-from game.component.ability import Owner, CastTime
+from game.component.ability import Owner
 from game.component.target import Target
 
 class AttackBehaviour(Behaviour):
     def on_attack(self, world, ability_id):
-        from game.system.ability import AbilitySystem
-        ability_system = world.get_system(AbilitySystem)
-        
         attacker_id, target_id = None, None
         damage = 0
 
@@ -27,4 +24,4 @@ class AttackBehaviour(Behaviour):
             if damage_component:
                 damage = damage_component.effective_value
 
-        ability_system.schedule(DamageCommand(attacker_id, target_id, DamageType.Physical, damage))
+        world.schedule(DamageCommand(attacker_id, target_id, DamageType.Physical, damage))

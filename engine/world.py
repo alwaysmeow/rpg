@@ -3,7 +3,9 @@ from collections import defaultdict
 
 from engine.system.time import TimeSystem
 from engine.system.event.event import EventSystem
+
 from engine.core.snapshot import BaseSnapshot
+from engine.core.command import Command
 
 class World:
     def __init__(self, engine_config_path="config/engine.json"):
@@ -118,5 +120,26 @@ class World:
     def query_by_tag(self, tag: Type) -> Set[int]:
         return self.tags[tag].copy()
     
+    def schedule(self, command: Command, delay: float = 0):
+        self.get_system(EventSystem).scheduler.schedule(
+            self.now() + delay,
+            command
+        )
+
+    def schedule_at(self, command: Command, time: float = None):
+        if time is None:
+            time = self.now()
+
+        self.get_system(EventSystem).scheduler.schedule(
+            time,
+            command
+        )
+
+    def cancel_unique_command(self, unique_key):
+        self.get_system(EventSystem).scheduler.cancel_unique_command(unique_key)
+
+    def now(self):
+        return self.get_system(TimeSystem).now
+
     def build_snapshot(self) -> BaseSnapshot:
         return BaseSnapshot(time=self.get_system(TimeSystem).now)
