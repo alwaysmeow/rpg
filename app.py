@@ -11,10 +11,11 @@ from dev.test_scripts import *
 
 class GameApp(Application):
     def __init__(self, engine_config_path="config/engine.json", game_config_path="config/game.json"):
-        super().__init__(GameWorld(game_config_path), Renderer(), engine_config_path)
+        renderer = Renderer()
+        super().__init__(GameWorld(game_config_path), renderer, engine_config_path)
 
         self.test()
-        self.world.logger = Logger(self.world, Console().print)
+        self.world.logger = Logger(self.world, sink=renderer.get_sink(), markup=False)
 
     def run(self):
         super().run()
