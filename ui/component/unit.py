@@ -15,6 +15,6 @@ class Unit(Vertical):
 
     def compose(self) -> ComposeResult:
         yield Static(self.unit_name, classes="unit-name")
-        yield ResourceBar(80, 100, "health", "id1")
+        yield ResourceBar(80, self.max_hp, "health", "id1")
         yield ResourceBar(80, 100, "mana", "id2")
         yield ResourceBar(80, 100, "stamina", "id3")
