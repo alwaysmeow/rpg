@@ -3,6 +3,7 @@ from collections import defaultdict
 
 from engine.system.time import TimeSystem
 from engine.system.event.event import EventSystem
+from engine.core.snapshot import BaseSnapshot
 
 class World:
     def __init__(self, engine_config_path="config/engine.json"):
@@ -116,3 +117,6 @@ class World:
     
     def query_by_tag(self, tag: Type) -> Set[int]:
         return self.tags[tag].copy()
+    
+    def build_snapshot(self) -> BaseSnapshot:
+        return BaseSnapshot(time=self.get_system(TimeSystem).now)

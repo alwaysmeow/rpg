@@ -1,6 +1,5 @@
-from loop import Loop
+from app import GameApp
 
-game = Loop()
+game = GameApp()
 
 game.run()
-game.test()
