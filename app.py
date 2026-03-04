@@ -1,4 +1,6 @@
 from rich.console import Console
+import json
+from dataclasses import asdict
 
 from engine.app import Application
 
@@ -19,6 +21,9 @@ class GameApp(Application):
 
     def run(self):
         super().run()
+
+        # snapshot = self.world.build_snapshot()
+        # print(json.dumps(asdict(snapshot), indent=4, sort_keys=True))
 
     def test(self):
         test_script(self.world)

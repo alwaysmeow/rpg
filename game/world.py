@@ -11,6 +11,7 @@ from game.system.effect import EffectSystem
 from game.system.god import God
 
 from game.builder.unit import UnitBuilder
+from game.builder.snapshot import SnapshotBuilder
 
 class GameWorld(World):
     def __init__(self, game_config_path="config/game.json", logger=None):
@@ -37,3 +38,6 @@ class GameWorld(World):
         self.get_system(ResourceSystem).update(delta)
         self.get_system(EffectSystem).update(delta)
         super().update(delta)
+
+    def build_snapshot(self):
+        return SnapshotBuilder.build(self)

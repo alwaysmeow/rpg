@@ -37,7 +37,6 @@ class God:
             owner_id, 
             [
                 AttackBehaviour(),
-                ResourceRestoreBehaviour({ Health: 10 })
             ], 
             0, 1, True
         )
