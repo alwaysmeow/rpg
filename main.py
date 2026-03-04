@@ -1,20 +1,6 @@
-from engine.clock import Clock
-from engine.game import GameLoop
+from loop import Loop
 
-from game.world import GameWorld
+game = Loop()
 
-from ui.app import GameApp
-
-from dev.test_scripts import *
-
-# game_config_path="config/game.json"
-# world = GameWorld(game_config_path)
-
-# test_script(world)
-
-# clock = Clock()
-# loop = GameLoop(world, clock)
-
-# loop.run()
-
-GameApp().run()
+game.run()
+game.test()

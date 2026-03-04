@@ -1,5 +1,3 @@
-from rich.console import Console
-
 from engine.world import World
 
 from game.system.combat import CombatSystem
@@ -14,10 +12,8 @@ from game.system.god import God
 
 from game.builder.unit import UnitBuilder
 
-from ui.logger import Logger
-
 class GameWorld(World):
-    def __init__(self, game_config_path="config/game.json"):
+    def __init__(self, game_config_path="config/game.json", logger=None):
         super().__init__()
 
         self.registry_system(CombatSystem(self))
@@ -34,9 +30,7 @@ class GameWorld(World):
         # Temporary object
         self.god = God(self)
 
-        # TODO: move out
-        console = Console()
-        self.logger = Logger(self, console.print)
+        self.logger = logger
 
     def update(self, delta):
         self.get_system(CooldownSystem).update(delta)
