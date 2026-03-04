@@ -14,3 +14,7 @@ class Application:
         thread.start()
         self.renderer.run()
         self.simulation.stop()
+    
+    @property
+    def world(self):
+        return self.simulation.world
