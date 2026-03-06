@@ -1,13 +1,15 @@
 from enum import Enum
 
 class Color(Enum):
+    BACKGROUND = (252, 242, 240, 255)
+
     COMBAT_BG     = (20, 20, 30, 200)
     COMBAT_ACTIVE = (80, 200, 120, 255)
     COMBAT_DONE   = (180, 180, 60, 255)
     COMBAT_TEXT   = (220, 220, 220, 255)
     COMBAT_LABEL  = (140, 140, 160, 255)
 
-    UNIT_BG       = (25, 25, 35, 220)
+    UNIT_BG       = (212, 203, 203, 220)
     UNIT_BORDER   = (80, 80, 120, 255)
     UNIT_HP_BG    = (60, 20, 20, 255)
     UNIT_HP_FG    = (60, 200, 80, 255)
@@ -15,7 +17,7 @@ class Color(Enum):
     UNIT_CD_BG    = (20, 20, 60, 255)
     UNIT_CD_FG    = (80, 140, 240, 255)
     UNIT_DEAD     = (120, 40, 40, 180)
-    UNIT_TEXT     = (220, 220, 220, 255)
+    UNIT_TEXT     = (59, 49, 49, 255)
     UNIT_LABEL    = (150, 150, 170, 255)
     UNIT_TEAM_0   = (80, 160, 240, 255)
     UNIT_TEAM_1   = (240, 100, 80, 255)
@@ -27,6 +29,18 @@ class Color(Enum):
     @property
     def rgba(self):
         return self.value
+
+    @property
+    def red(self):
+        return self.value[0]
+    
+    @property
+    def green(self):
+        return self.value[1]
+    
+    @property
+    def blue(self):
+        return self.value[2]
 
     @property
     def alpha(self):
