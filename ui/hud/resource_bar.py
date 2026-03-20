@@ -63,7 +63,8 @@ class ResourceBar:
         self._label = pyglet.text.Label(
             label_text,
             font_name="Courier New", font_size=20,
-            x=x, y=y + height + 3,
+            x=x + width // 2, y=y + height // 2,
+            anchor_x="center", anchor_y="center",
             color=(50, 50, 90, 200),
             batch=batch, group=group_text,
         )
@@ -113,7 +114,7 @@ class ResourceBar:
         """Изменить максимальную ширину (при resize панели)."""
         self._max_w = width
         self._bg.width = width
-        # bar и ghost пересчитаются на следующем tick()
+        self._label.x = self._x + width // 2
 
     def delete(self) -> None:
         for obj in (self._bg, self._ghost_bar, self._bar, self._label):

@@ -9,9 +9,9 @@ DEFAULT_CARD_H = 300
 PADDING        = 12
 FONT_SIZE      = 20
 
-HP_H = 12
-MP_H = 12
-ST_H = 12
+HP_H = 30
+MP_H = 30
+ST_H = 30
 
 class UnitCard:
     def __init__(
@@ -26,6 +26,8 @@ class UnitCard:
         self.x = x
         self.y = y
         self.team_index = team_index
+        self._has_mp: bool | None = None
+        self._has_st: bool | None = None
         self._batch  = batch
         self._g_bg   = group_bg
         self._g_bar  = group_bar
@@ -82,30 +84,36 @@ class UnitCard:
     def update(self, unit_data: dict, ability_data: dict | None, dt: float) -> None:
         self._name_label.text = unit_data.get("Name", {}).get("name", "???")
 
+        mana    = unit_data.get("Mana", {})
+        stamina = unit_data.get("Stamina", {})
+        has_mp  = bool(mana)
+        has_st  = bool(stamina)
+
+        if has_mp != self._has_mp or has_st != self._has_st:
+            self._has_mp = has_mp
+            self._has_st = has_st
+            self._rebuild_bars()
+
         health   = unit_data.get("Health", {})
         hp_ratio = health.get("_value_ratio", 1.0)
         hp_max   = health.get("effective_max_value", 100)
-        self._hp_bar.set_target(hp_ratio, f"HP {round(hp_ratio * hp_max)}/{hp_max}")
+        self._hp_bar.set_target(hp_ratio, f"{round(hp_ratio * hp_max)}/{hp_max}")
 
-        mana = unit_data.get("Mana", {})
-        if mana:
+        if self._mp_bar and mana:
             mp_ratio = mana.get("_value_ratio", 1.0)
             mp_max   = mana.get("effective_max_value", 100)
-            self._mp_bar.set_target(mp_ratio, f"MP {round(mp_ratio * mp_max)}/{mp_max}")
-        else:
-            self._mp_bar.set_target(0.0, "MP —")
+            self._mp_bar.set_target(mp_ratio, f"{round(mp_ratio * mp_max)}/{mp_max}")
 
-        stamina = unit_data.get("Stamina", {})
-        if stamina:
+        if self._st_bar and stamina:
             st_ratio = stamina.get("_value_ratio", 1.0)
             st_max   = stamina.get("effective_max_value", 100)
-            self._st_bar.set_target(st_ratio, f"ST {round(st_ratio * st_max)}/{st_max}")
-        else:
-            self._st_bar.set_target(0.0, "ST —")
+            self._st_bar.set_target(st_ratio, f"{round(st_ratio * st_max)}/{st_max}")
 
         self._hp_bar.tick(dt)
-        self._mp_bar.tick(dt)
-        self._st_bar.tick(dt)
+        if self._mp_bar:
+            self._mp_bar.tick(dt)
+        if self._st_bar:
+            self._st_bar.tick(dt)
 
         tags  = unit_data.get("Tags", [])
         alpha = 160 if "Dead" in tags else 0
@@ -125,7 +133,8 @@ class UnitCard:
         self._dead_label.x += dx
         self._dead_label.y += dy
         for bar in (self._hp_bar, self._mp_bar, self._st_bar):
-            bar.move(bar._x + dx, bar._y + dy)
+            if bar:
+                bar.move(bar._x + dx, bar._y + dy)
 
     def resize(self, w: int, h: int) -> None:
         if w == self._w and h == self._h:
@@ -183,38 +192,48 @@ class UnitCard:
         for bar in (self._hp_bar, self._mp_bar, self._st_bar):
             if bar:
                 bar.delete()
+        self._hp_bar = self._mp_bar = self._st_bar = None
 
-        x, y    = self.x, self.y
-        bar_w   = self._w - PADDING * 2
-        ghost   = Color.UNIT_HP_GHOST.rgba
+        x, y   = self.x, self.y
+        bar_w  = self._w - PADDING * 2
+        ghost  = Color.UNIT_HP_GHOST.rgba
+
+        # Только активные бары участвуют в layout
+        active = ["hp"] + (["mp"] if self._has_mp else []) + (["st"] if self._has_st else [])
+        n = len(active)
 
         bar_area_h = self._h - PADDING * 2 - FONT_SIZE - 8
-        slot_h     = max(1, bar_area_h // 3)
+        slot_h     = max(1, bar_area_h // n)
 
-        self._hp_bar = ResourceBar(
-            x + PADDING, y + PADDING + slot_h * 2, bar_w, HP_H,
-            fg_color=Color.UNIT_HP_FG.rgba,
-            bg_color=Color.UNIT_HP_BG.rgba,
-            ghost_color=ghost, label_text="HP",
-            batch=self._batch,
-            group_bg=self._g_bg, group_bar=self._g_bar, group_text=self._g_text,
-        )
-        self._mp_bar = ResourceBar(
-            x + PADDING, y + PADDING + slot_h, bar_w, MP_H,
-            fg_color=Color.UNIT_CD_FG.rgba,
-            bg_color=Color.UNIT_CD_BG.rgba,
-            ghost_color=ghost, label_text="MP",
-            batch=self._batch,
-            group_bg=self._g_bg, group_bar=self._g_bar, group_text=self._g_text,
-        )
-        self._st_bar = ResourceBar(
-            x + PADDING, y + PADDING, bar_w, ST_H,
-            fg_color=Color.COMBAT_ACTIVE.rgba,
-            bg_color=Color.UNIT_CD_BG.rgba,
-            ghost_color=ghost, label_text="ST",
-            batch=self._batch,
-            group_bg=self._g_bg, group_bar=self._g_bar, group_text=self._g_text,
-        )
+        for i, name in enumerate(reversed(active)):
+            by = y + PADDING + i * slot_h
+            if name == "hp":
+                self._hp_bar = ResourceBar(
+                    x + PADDING, by, bar_w, HP_H,
+                    fg_color=Color.UNIT_HP_FG.rgba,
+                    bg_color=Color.UNIT_HP_BG.rgba,
+                    ghost_color=ghost, label_text="HP",
+                    batch=self._batch,
+                    group_bg=self._g_bg, group_bar=self._g_bar, group_text=self._g_text,
+                )
+            elif name == "mp":
+                self._mp_bar = ResourceBar(
+                    x + PADDING, by, bar_w, MP_H,
+                    fg_color=Color.UNIT_CD_FG.rgba,
+                    bg_color=Color.UNIT_CD_BG.rgba,
+                    ghost_color=ghost, label_text="MP",
+                    batch=self._batch,
+                    group_bg=self._g_bg, group_bar=self._g_bar, group_text=self._g_text,
+                )
+            elif name == "st":
+                self._st_bar = ResourceBar(
+                    x + PADDING, by, bar_w, ST_H,
+                    fg_color=Color.COMBAT_ACTIVE.rgba,
+                    bg_color=Color.UNIT_CD_BG.rgba,
+                    ghost_color=ghost, label_text="ST",
+                    batch=self._batch,
+                    group_bg=self._g_bg, group_bar=self._g_bar, group_text=self._g_text,
+                )
 
     def delete(self) -> None:
         for obj in (self._bg, self._border, self._team_bar,
