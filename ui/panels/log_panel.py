@@ -4,11 +4,11 @@ import pyglet
 
 from ui.panel import Panel
 
-FONT_SIZE   = 11
-LINE_HEIGHT = 15
-PADDING     = 8
+FONT_SIZE   = 20
+LINE_HEIGHT = 25
+PADDING     = 15
 MAX_LINES   = 500
-TEXT_COLOR  = (200, 200, 210, 220)
+TEXT_COLOR  = (0, 0, 0, 220)
 
 
 class LogPanel(Panel):

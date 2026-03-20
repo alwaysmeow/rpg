@@ -74,11 +74,17 @@ class HUDRenderer:
                 w.layout.add_panel(slot, panel)
 
     def get_sink(self):
+        buffer = []
         def sink(text):
-            print(f"[sink] window={self._window}, panel={self._window.layout.get_panel(Slot.LEFT) if self._window else None}")
             if self._window is None:
+                buffer.append(str(text))
                 return
-            log = self._window.layout.get_panel(Slot.BOTTOM)
-            if log is not None:
-                log.push_line(str(text))
+            log = self._window.layout.get_panel(Slot.LEFT)
+            if log is None:
+                return
+            # Сбрасываем буфер при первом живом вызове
+            for buffered in buffer:
+                log.push_line(buffered)
+            buffer.clear()
+            log.push_line(str(text))
         return sink
