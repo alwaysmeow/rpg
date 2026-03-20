@@ -11,8 +11,11 @@ class Color(Enum):
 
     UNIT_BG       = (212, 203, 203, 220)
     UNIT_BORDER   = (80, 80, 120, 255)
+
     UNIT_HP_BG    = (251, 187, 187, 255)
     UNIT_HP_FG    = (245, 66, 66, 255)
+    UNIT_HP_GHOST = (250, 100, 100, 255)
+
     UNIT_CD_BG    = (20, 20, 60, 255)
     UNIT_CD_FG    = (80, 140, 240, 255)
     UNIT_DEAD     = (120, 40, 40, 180)
