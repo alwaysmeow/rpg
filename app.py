@@ -20,7 +20,7 @@ class GameApp(Application):
 
         self.test()
         console = Console()
-        self.world.logger = Logger(self.world, sink=console.print)
+        self.world.logger = Logger(self.world, sink=renderer.get_sink())
 
     def run(self):
         super().run()

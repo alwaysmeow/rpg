@@ -15,26 +15,24 @@ class Slot(Enum):
     TOP    = auto()
 
 
+# Фиксированная ширина боковых колонок
+SIDE_W = 200
+
 # CENTER гарантированно получает не меньше этого
-CENTER_MIN_W = 400
+CENTER_MIN_W = 300
 
 # Фиксированные размеры для TOP/BOTTOM
 TOP_H    = 50
 BOTTOM_H = 120
-
-# Боковые колонки: если нет явного размера — берут остаток поровну
-SIDE_MIN_W = 160
 
 MARGIN = 12
 
 
 class Layout:
     """
-    Приоритет: CENTER получает CENTER_MIN_W или больше.
-    LEFT/RIGHT делят оставшееся пространство поровну.
+    Боковые колонки (LEFT/RIGHT) имеют фиксированную ширину SIDE_W.
+    CENTER получает всё оставшееся пространство (минимум CENTER_MIN_W).
     TOP/BOTTOM — полная ширина, фиксированная высота.
-
-    Добавление/удаление панели пересчитывает геометрию всех слотов.
     """
 
     def __init__(self, window_w: int, window_h: int):
@@ -89,23 +87,16 @@ class Layout:
         mid_h = H - mid_y - (bottom_h + M if has(Slot.BOTTOM) else 0) - M
 
         # Горизонтальное распределение:
-        # CENTER получает max(CENTER_MIN_W, остаток после боковых)
-        # Боковые делят то, что осталось после CENTER
-        total_side_w = W - 2 * M - CENTER_MIN_W - (
-            M if has(Slot.LEFT) else 0) - (M if has(Slot.RIGHT) else 0)
+        # LEFT и RIGHT — фиксированная ширина SIDE_W
+        # CENTER — всё оставшееся, но не меньше CENTER_MIN_W
+        left_w  = SIDE_W if has(Slot.LEFT)  else 0
+        right_w = SIDE_W if has(Slot.RIGHT) else 0
 
-        n_sides = (1 if has(Slot.LEFT) else 0) + (1 if has(Slot.RIGHT) else 0)
+        left_gap  = M if has(Slot.LEFT)  else 0
+        right_gap = M if has(Slot.RIGHT) else 0
 
-        if n_sides > 0:
-            side_w = max(SIDE_MIN_W, total_side_w // n_sides)
-        else:
-            side_w = 0
-
-        center_w = W - 2 * M \
-            - (side_w + M if has(Slot.LEFT) else 0) \
-            - (side_w + M if has(Slot.RIGHT) else 0)
-
-        center_x = M + (side_w + M if has(Slot.LEFT) else 0)
+        center_w = max(CENTER_MIN_W, W - 2 * M - left_w - left_gap - right_w - right_gap)
+        center_x = M + left_w + left_gap
 
         if slot == Slot.TOP:
             return M, H - M - top_h, W - 2 * M, top_h
@@ -114,10 +105,10 @@ class Layout:
             return M, M, W - 2 * M, bottom_h
 
         if slot == Slot.LEFT:
-            return M, mid_y, side_w, mid_h
+            return M, mid_y, left_w, mid_h
 
         if slot == Slot.RIGHT:
-            return W - M - side_w, mid_y, side_w, mid_h
+            return W - M - right_w, mid_y, right_w, mid_h
 
         if slot == Slot.CENTER:
             return center_x, mid_y, center_w, mid_h

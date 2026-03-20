@@ -76,7 +76,7 @@ class HUDWindow(pyglet.window.Window):
         self._batch.draw()
         # LogPanel использует отдельный батч (перестраивается по dirty-флагу)
         from ui.layout import Slot
-        log = self.layout.get_panel(Slot.BOTTOM)
+        log = self.layout.get_panel(Slot.LEFT)
         if log is not None:
             log.draw()
 
@@ -90,7 +90,7 @@ class HUDWindow(pyglet.window.Window):
 
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
         from ui.layout import Slot
-        log = self.layout.get_panel(Slot.BOTTOM)
+        log = self.layout.get_panel(Slot.LEFT)
         if log is not None and log.contains(x, y):
             log.on_scroll(int(scroll_y))
 
