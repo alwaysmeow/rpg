@@ -25,6 +25,13 @@ class ArenaPanel(Panel):
         # team_index -> {unit_id: UnitCard}
         self._cards: dict[int, dict[int, UnitCard]] = {0: {}, 1: {}}
 
+    def unit_at(self, px: int, py: int) -> int | None:
+        for team in (0, 1):
+            for unit_id, card in self._cards[team].items():
+                if card.contains(px, py):
+                    return unit_id
+        return None
+
     def resize(self, x: int, y: int, w: int, h: int) -> None:
         self._x, self._y, self._w, self._h = x, y, w, h
         self._rebuild_static()

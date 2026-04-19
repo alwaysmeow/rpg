@@ -136,6 +136,9 @@ class UnitCard:
             if bar:
                 bar.move(bar._x + dx, bar._y + dy)
 
+    def contains(self, px: int, py: int) -> bool:
+        return self.x <= px <= self.x + self._w and self.y <= py <= self.y + self._h
+
     def resize(self, w: int, h: int) -> None:
         if w == self._w and h == self._h:
             return

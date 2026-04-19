@@ -22,8 +22,7 @@ class StatsPanel(Panel):
     """
     Правая панель: подробные статы одного юнита.
 
-    Юнит выбирается автоматически — первый живой юнит команды 0,
-    либо вручную через select(unit_id).
+    Юнит выбирается вручную через select(unit_id).
 
     Показывает:
       - имя + тег команды
@@ -41,7 +40,6 @@ class StatsPanel(Panel):
 
         # Выбранный юнит
         self._selected_id: int | None = None
-        self._auto_select = True          # автовыбор пока не кликнули вручную
 
         # Заголовок
         self._header_bg:   shapes.RoundedRectangle | None = None
@@ -88,14 +86,14 @@ class StatsPanel(Panel):
             self._show_empty("No units")
             return
 
-        # Автовыбор: первый живой юнит команды 0
-        if self._auto_select or self._selected_id not in units:
-            alive = [
-                eid for eid, d in units.items()
-                if "Dead" not in d.get("Tags", [])
-                and d.get("CombatParticipation", {}).get("team_index") == 0
-            ]
-            self._selected_id = alive[0] if alive else next(iter(units))
+        if self._selected_id is None:
+            self._show_empty("Click a unit")
+            return
+
+        if self._selected_id not in units:
+            self._selected_id = None
+            self._show_empty("Unit not found")
+            return
 
         data = units[self._selected_id]
 
@@ -158,9 +156,15 @@ class StatsPanel(Panel):
     # ------------------------------------------------------------------
 
     def select(self, unit_id: int) -> None:
-        """Выбрать юнит вручную (вызывается из ArenaPanel по клику)."""
+        """Выбрать юнит вручную."""
         self._selected_id = unit_id
-        self._auto_select = False
+
+    def deselect(self) -> None:
+        self._selected_id = None
+
+    @property
+    def selected_id(self) -> int | None:
+        return self._selected_id
 
     # ------------------------------------------------------------------
     # Внутренние методы

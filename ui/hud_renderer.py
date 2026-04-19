@@ -19,7 +19,7 @@ class HUDRenderer:
     Доступные панели:
       "arena"  → ArenaPanel в CENTER  (юниты обеих команд + таймер)
       "log"    → LogPanel   в LEFT    (лог боя)
-      "stats"  → StatsPanel в RIGHT   (подробные статы первого юнита)
+      "stats"  → StatsPanel в RIGHT   (открывается по клику на юнита)
     """
 
     DEFAULT_CONFIG = {
@@ -64,8 +64,6 @@ class HUDRenderer:
                 w.batch, w.group_bg, w.group_bar, w.group_text)),
             "log":   lambda: (Slot.LEFT,   LogPanel(
                 w.batch, w.group_bg, w.group_text)),
-            "stats": lambda: (Slot.RIGHT,  StatsPanel(
-                w.batch, w.group_bg, w.group_bar, w.group_text)),
         }
 
         for name in panel_names:
