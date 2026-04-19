@@ -15,3 +15,15 @@ class Panel:
 
     def delete(self) -> None:
         """Удалить все pyglet-объекты панели."""
+
+    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int) -> bool:
+        """Обработать нажатие мыши. Вернуть True, если событие поглощено."""
+        return False
+
+    def on_mouse_drag(self, x: int, y: int, dx: int, dy: int, buttons: int, modifiers: int) -> bool:
+        """Обработать drag мыши. Вернуть True, если событие поглощено."""
+        return False
+
+    def on_mouse_release(self, x: int, y: int, button: int, modifiers: int) -> bool:
+        """Обработать отпускание мыши. Вернуть True, если событие поглощено."""
+        return False

@@ -6,8 +6,8 @@ from ui.hud.unit_card import UnitCard, DEFAULT_CARD_W, DEFAULT_CARD_H
 
 CARD_GAP  = 10
 TEAM_PAD  = 16
-VS_GAP    = 60
-VS_SIZE   = 24
+VS_GAP    = 72
+VS_SIZE   = 34
 
 
 class ArenaPanel(Panel):
@@ -106,7 +106,7 @@ class ArenaPanel(Panel):
 
     def _card_h(self) -> int:
         """Высота карточки — не больше трети высоты панели."""
-        return min(DEFAULT_CARD_H, max(80, self._h // 3))
+        return min(DEFAULT_CARD_H + 40, max(120, self._h // 2))
 
     def _rebuild_static(self) -> None:
         cx = self._x + self._w // 2
@@ -145,7 +145,7 @@ class ArenaPanel(Panel):
         cw  = self._card_w()
         ch  = self._card_h()
         cx  = self._x + self._w // 2
-        top = self._y + self._h - PANEL_H - 16
+        top = self._y + self._h - PANEL_H - 18
 
         col0_x = self._x + TEAM_PAD
         col1_x = cx + VS_GAP // 2

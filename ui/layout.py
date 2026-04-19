@@ -3,6 +3,20 @@ from __future__ import annotations
 from enum import Enum, auto
 from typing import TYPE_CHECKING
 
+from ui.hud_constants import (
+    CENTER_MAX_H,
+    CENTER_MAX_W,
+    CENTER_MIN_H,
+    CENTER_MIN_W,
+    LOG_MAX_H,
+    LOG_MIN_H,
+    SIDE_PANEL_MAX_W,
+    SIDE_PANEL_MIN_W,
+    STATS_MAX_H,
+    STATS_MIN_H,
+    WINDOW_MARGIN,
+)
+
 if TYPE_CHECKING:
     from ui.panel import Panel
 
@@ -15,24 +29,11 @@ class Slot(Enum):
     TOP    = auto()
 
 
-# Фиксированная ширина боковых колонок
-SIDE_W = 200
-
-# CENTER гарантированно получает не меньше этого
-CENTER_MIN_W = 300
-
-# Фиксированные размеры для TOP/BOTTOM
-TOP_H    = 50
-BOTTOM_H = 120
-
-MARGIN = 12
-
-
 class Layout:
     """
-    Боковые колонки (LEFT/RIGHT) имеют фиксированную ширину SIDE_W.
-    CENTER получает всё оставшееся пространство (минимум CENTER_MIN_W).
-    TOP/BOTTOM — полная ширина, фиксированная высота.
+    CENTER — статичная сцена боя по центру окна.
+    LEFT/RIGHT — плавающие HUD-окна поверх сцены; их размеры не влияют
+    на положение центральной панели.
     """
 
     def __init__(self, window_w: int, window_h: int):
@@ -76,41 +77,36 @@ class Layout:
             self._panels[slot].resize(x, y, w, h)
 
     def _rect_for(self, slot: Slot) -> tuple[int, int, int, int]:
-        W, H, M = self._w, self._h, MARGIN
-        has = self._panels.__contains__
-
-        top_h    = TOP_H    if has(Slot.TOP)    else 0
-        bottom_h = BOTTOM_H if has(Slot.BOTTOM) else 0
-
-        # Вертикальная зона для LEFT / CENTER / RIGHT
-        mid_y = M + (top_h + M if has(Slot.TOP) else 0)
-        mid_h = H - mid_y - (bottom_h + M if has(Slot.BOTTOM) else 0) - M
-
-        # Горизонтальное распределение:
-        # LEFT и RIGHT — фиксированная ширина SIDE_W
-        # CENTER — всё оставшееся, но не меньше CENTER_MIN_W
-        left_w  = SIDE_W if has(Slot.LEFT)  else 0
-        right_w = SIDE_W if has(Slot.RIGHT) else 0
-
-        left_gap  = M if has(Slot.LEFT)  else 0
-        right_gap = M if has(Slot.RIGHT) else 0
-
-        center_w = max(CENTER_MIN_W, W - 2 * M - left_w - left_gap - right_w - right_gap)
-        center_x = M + left_w + left_gap
-
-        if slot == Slot.TOP:
-            return M, H - M - top_h, W - 2 * M, top_h
-
-        if slot == Slot.BOTTOM:
-            return M, M, W - 2 * M, bottom_h
-
-        if slot == Slot.LEFT:
-            return M, mid_y, left_w, mid_h
-
-        if slot == Slot.RIGHT:
-            return W - M - right_w, mid_y, right_w, mid_h
+        W, H, M = self._w, self._h, WINDOW_MARGIN
+        top_y = H - M
 
         if slot == Slot.CENTER:
-            return center_x, mid_y, center_w, mid_h
+            center_w = _clamp(int(W * 0.60), CENTER_MIN_W, CENTER_MAX_W)
+            center_h = _clamp(int(H * 0.40), CENTER_MIN_H, CENTER_MAX_H)
+            center_x = (W - center_w) // 2
+            center_y = top_y - center_h
+            return center_x, center_y, center_w, center_h
+
+        if slot == Slot.LEFT:
+            width = _clamp(int(W * 0.24), SIDE_PANEL_MIN_W, SIDE_PANEL_MAX_W)
+            height = _clamp(int(H * 0.62), LOG_MIN_H, LOG_MAX_H)
+            return M, top_y - height, width, height
+
+        if slot == Slot.RIGHT:
+            width = _clamp(int(W * 0.24), SIDE_PANEL_MIN_W, SIDE_PANEL_MAX_W)
+            height = _clamp(int(H * 0.40), STATS_MIN_H, STATS_MAX_H)
+            x = W - M - width
+            y = top_y - height
+            return x, y, width, height
+
+        if slot == Slot.TOP:
+            return M, H - M - 50, W - 2 * M, 50
+
+        if slot == Slot.BOTTOM:
+            return M, M, W - 2 * M, 120
 
         raise ValueError(f"Unknown slot: {slot}")
+
+
+def _clamp(value: int, min_value: int, max_value: int) -> int:
+    return max(min_value, min(max_value, value))

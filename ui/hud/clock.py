@@ -2,11 +2,11 @@ import pyglet
 from pyglet import shapes
 
 from ui.color import Color
+from ui.hud_constants import CLOCK_FONT_SIZE, CLOCK_H, CLOCK_W, FONT_NAME
 
-PANEL_W = 300
-PANEL_H = 60
-
-FONT_SIZE = 30
+PANEL_W = CLOCK_W
+PANEL_H = CLOCK_H
+FONT_SIZE = CLOCK_FONT_SIZE
 
 class Clock:
     def __init__(self, x: int, y: int, batch: pyglet.graphics.Batch,
@@ -17,7 +17,7 @@ class Clock:
         )
         self._bg.opacity = Color.COMBAT_BG.alpha
 
-        label_kwargs = dict(font_name="Courier New", batch=batch, group=text_group)
+        label_kwargs = dict(font_name=FONT_NAME, batch=batch, group=text_group)
 
         self._time_label = pyglet.text.Label(
             "", font_size=FONT_SIZE,

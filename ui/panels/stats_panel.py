@@ -2,20 +2,27 @@ import pyglet
 from pyglet import shapes
 
 from ui.panel import Panel
+from ui.hud_constants import FONT_NAME, PANEL_BODY_FONT_SIZE, PANEL_STAT_FONT_SIZE, PANEL_TITLE_FONT_SIZE
 from ui.hud.resource_bar import ResourceBar
 from ui.color import Color
 
 PADDING   = 12
-FONT_NAME = "Courier New"
+WINDOW_TITLE_H = 34
+HEADER_H = 52
+
+WINDOW_BG   = (243, 235, 232)
+WINDOW_BAR  = (217, 208, 204)
+WINDOW_EDGE = (188, 174, 170)
+WINDOW_SHADOW = (65, 45, 40, 38)
 
 # Размеры баров
-BAR_H    = 22
-BAR_GAP  = 8
+BAR_H    = 28
+BAR_GAP  = 10
 
 # Строки статов
-STAT_FONT   = 11
-STAT_H      = 16
-STAT_GAP    = 4
+STAT_FONT   = PANEL_STAT_FONT_SIZE
+STAT_H      = 22
+STAT_GAP    = 6
 
 
 class StatsPanel(Panel):
@@ -42,6 +49,10 @@ class StatsPanel(Panel):
         self._selected_id: int | None = None
 
         # Заголовок
+        self._window_shadow: shapes.RoundedRectangle | None = None
+        self._window_bg: shapes.RoundedRectangle | None = None
+        self._window_title_bar: shapes.RoundedRectangle | None = None
+        self._window_title_label: pyglet.text.Label | None = None
         self._header_bg:   shapes.RoundedRectangle | None = None
         self._name_label:  pyglet.text.Label | None = None
         self._team_label:  pyglet.text.Label | None = None
@@ -178,31 +189,57 @@ class StatsPanel(Panel):
         x, y, w, h = self._x, self._y, self._w, self._h
         bw = w - PADDING * 2    # ширина баров
 
+        self._window_shadow = shapes.RoundedRectangle(
+            x + 4, y - 4, w, h, radius=12,
+            color=WINDOW_SHADOW[:3], batch=self._batch, group=self._g_bg,
+        )
+        self._window_shadow.opacity = WINDOW_SHADOW[3]
+
+        self._window_bg = shapes.RoundedRectangle(
+            x, y, w, h, radius=12,
+            color=WINDOW_BG, batch=self._batch, group=self._g_bg,
+        )
+        self._window_bg.opacity = 240
+
+        self._window_title_bar = shapes.RoundedRectangle(
+            x, y + h - WINDOW_TITLE_H, w, WINDOW_TITLE_H, radius=12,
+            color=WINDOW_BAR, batch=self._batch, group=self._g_bg,
+        )
+        self._window_title_bar.opacity = 248
+
+        self._window_title_label = pyglet.text.Label(
+            "Unit Details",
+            font_name=FONT_NAME, font_size=PANEL_TITLE_FONT_SIZE,
+            x=x + PADDING, y=y + h - WINDOW_TITLE_H // 2,
+            anchor_y="center",
+            color=(*WINDOW_EDGE, 255),
+            batch=self._batch, group=self._g_text,
+        )
+
         # --- Шапка ---
-        header_h = 44
         self._header_bg = shapes.RoundedRectangle(
-            x, y + h - header_h, w, header_h, radius=8,
+            x + PADDING, y + h - WINDOW_TITLE_H - PADDING - HEADER_H, w - PADDING * 2, HEADER_H, radius=8,
             color=Color.UNIT_BG.rgb, batch=self._batch, group=self._g_bg,
         )
         self._header_bg.opacity = Color.UNIT_BG.alpha
 
         self._name_label = pyglet.text.Label(
-            "", font_name=FONT_NAME, font_size=13,
-            x=x + PADDING, y=y + h - header_h // 2,
+            "", font_name=FONT_NAME, font_size=PANEL_BODY_FONT_SIZE,
+            x=x + PADDING * 2, y=y + h - WINDOW_TITLE_H - PADDING - HEADER_H // 2,
             anchor_y="center",
             color=Color.UNIT_TEXT.rgba,
             batch=self._batch, group=self._g_text,
         )
         self._team_label = pyglet.text.Label(
-            "", font_name=FONT_NAME, font_size=10,
-            x=x + w - PADDING, y=y + h - header_h // 2,
+            "", font_name=FONT_NAME, font_size=PANEL_TITLE_FONT_SIZE,
+            x=x + w - PADDING * 2, y=y + h - WINDOW_TITLE_H - PADDING - HEADER_H // 2,
             anchor_x="right", anchor_y="center",
             color=Color.UNIT_LABEL.rgba,
             batch=self._batch, group=self._g_text,
         )
 
         # --- Бары (снизу шапки вниз) ---
-        cursor_y = y + h - header_h - PADDING
+        cursor_y = y + h - WINDOW_TITLE_H - PADDING * 2 - HEADER_H
 
         active = ["hp"] + (["mp"] if self._has_mp else []) + (["st"] if self._has_st else [])
 
@@ -317,7 +354,9 @@ class StatsPanel(Panel):
             self._empty_label.text = ""
 
     def _clear_all(self) -> None:
-        for obj in (self._header_bg, self._name_label,
+        for obj in (self._window_shadow, self._window_bg,
+                    self._window_title_bar, self._window_title_label,
+                    self._header_bg, self._name_label,
                     self._team_label, self._empty_label):
             if obj:
                 obj.delete()
@@ -326,6 +365,10 @@ class StatsPanel(Panel):
                 bar.delete()
         for lbl in self._stat_labels.values():
             lbl.delete()
+        self._window_shadow = None
+        self._window_bg = None
+        self._window_title_bar = None
+        self._window_title_label = None
         self._header_bg  = None
         self._name_label = None
         self._team_label = None

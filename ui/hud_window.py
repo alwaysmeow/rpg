@@ -2,6 +2,8 @@ import pyglet
 
 from ui.color import Color
 from ui.layout import Layout, Slot
+from ui.panels.arena_panel import ArenaPanel
+from ui.panels.log_panel import LogPanel
 from ui.panels.stats_panel import StatsPanel
 
 
@@ -33,6 +35,7 @@ class HUDWindow(pyglet.window.Window):
         self._g_text = pyglet.graphics.Group(order=2)
 
         self.layout = Layout(self.width, self.height)
+        self._log_panel: LogPanel | None = None
         self._stats_panel: StatsPanel | None = None
 
         self._last_snapshot = None
@@ -77,7 +80,6 @@ class HUDWindow(pyglet.window.Window):
         self.clear()
         self._batch.draw()
         # LogPanel использует отдельный батч (перестраивается по dirty-флагу)
-        from ui.layout import Slot
         log = self.layout.get_panel(Slot.LEFT)
         if log is not None:
             log.draw()
@@ -89,6 +91,8 @@ class HUDWindow(pyglet.window.Window):
     def on_key_press(self, symbol, modifiers):
         if symbol == pyglet.window.key.ESCAPE:
             self.close()
+        elif symbol == pyglet.window.key.TAB:
+            self.toggle_log_panel()
 
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
         log = self.layout.get_panel(Slot.LEFT)
@@ -96,11 +100,15 @@ class HUDWindow(pyglet.window.Window):
             log.on_scroll(int(scroll_y))
 
     def on_mouse_press(self, x, y, button, modifiers):
+        log = self.layout.get_panel(Slot.LEFT)
+        if log is not None and log.on_mouse_press(x, y, button, modifiers):
+            return
+
         if button != pyglet.window.mouse.RIGHT:
             return
 
         arena = self.layout.get_panel(Slot.CENTER)
-        if arena is None or not hasattr(arena, "unit_at"):
+        if not isinstance(arena, ArenaPanel):
             return
 
         unit_id = arena.unit_at(x, y)
@@ -108,6 +116,16 @@ class HUDWindow(pyglet.window.Window):
             return
 
         self._toggle_stats_panel(unit_id)
+
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        log = self.layout.get_panel(Slot.LEFT)
+        if log is not None and log.on_mouse_drag(x, y, dx, dy, buttons, modifiers):
+            return
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        log = self.layout.get_panel(Slot.LEFT)
+        if log is not None and log.on_mouse_release(x, y, button, modifiers):
+            return
 
     # ------------------------------------------------------------------
     # Tick
@@ -123,10 +141,10 @@ class HUDWindow(pyglet.window.Window):
         self._fps_label.text = f"FPS {self._fps:.0f}"
 
         snapshot = self._bridge.latest_snapshot()
-        if snapshot is None or snapshot is self._last_snapshot:
-            return
-        self._last_snapshot = snapshot
-        self.layout.update(snapshot, dt)
+        if snapshot is not None:
+            self._last_snapshot = snapshot
+
+        self.layout.update(self._last_snapshot, dt)
 
     def _toggle_stats_panel(self, unit_id: int) -> None:
         stats = self._get_stats_panel()
@@ -158,3 +176,28 @@ class HUDWindow(pyglet.window.Window):
             self.group_text,
         )
         return self._stats_panel
+
+    def append_log_line(self, text: str) -> None:
+        self._get_log_panel().push_line(text)
+
+    def toggle_log_panel(self) -> None:
+        if self.layout.get_panel(Slot.LEFT) is None:
+            self.layout.add_panel(Slot.LEFT, self._get_log_panel())
+        else:
+            self.layout.remove_panel(Slot.LEFT)
+
+    def _get_log_panel(self) -> LogPanel:
+        if self._log_panel is not None:
+            return self._log_panel
+
+        existing = self.layout.get_panel(Slot.LEFT)
+        if isinstance(existing, LogPanel):
+            self._log_panel = existing
+            return existing
+
+        self._log_panel = LogPanel(
+            self.batch,
+            self.group_bg,
+            self.group_text,
+        )
+        return self._log_panel

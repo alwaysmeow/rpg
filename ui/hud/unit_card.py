@@ -2,16 +2,17 @@ import pyglet
 from pyglet import shapes
 
 from ui.color import Color
+from ui.hud_constants import CARD_BAR_H, CARD_FONT_SIZE, FONT_NAME
 from ui.hud.resource_bar import ResourceBar
 
 DEFAULT_CARD_W = 200
 DEFAULT_CARD_H = 300
 PADDING        = 12
-FONT_SIZE      = 20
+FONT_SIZE      = CARD_FONT_SIZE
 
-HP_H = 30
-MP_H = 30
-ST_H = 30
+HP_H = CARD_BAR_H
+MP_H = CARD_BAR_H
+ST_H = CARD_BAR_H
 
 class UnitCard:
     def __init__(
@@ -56,7 +57,7 @@ class UnitCard:
         self._team_bar.opacity = team_color.alpha
 
         self._name_label = pyglet.text.Label(
-            "", font_name="Courier New", font_size=FONT_SIZE,
+            "", font_name=FONT_NAME, font_size=FONT_SIZE,
             x=x + PADDING, y=y + card_h - PADDING - FONT_SIZE,
             color=Color.UNIT_TEXT.rgba,
             batch=batch, group=group_text,
@@ -74,7 +75,7 @@ class UnitCard:
         self._dead_overlay.opacity = 0
 
         self._dead_label = pyglet.text.Label(
-            "DEAD", font_name="Courier New", font_size=FONT_SIZE,
+            "DEAD", font_name=FONT_NAME, font_size=FONT_SIZE,
             x=x + card_w // 2, y=y + card_h // 2,
             anchor_x="center", anchor_y="center",
             color=(220, 60, 60, 0),
@@ -179,7 +180,7 @@ class UnitCard:
         self._dead_overlay.opacity = 0
 
         self._dead_label = pyglet.text.Label(
-            "DEAD", font_name="Courier New", font_size=FONT_SIZE,
+            "DEAD", font_name=FONT_NAME, font_size=FONT_SIZE,
             x=x + w // 2, y=y + h // 2,
             anchor_x="center", anchor_y="center",
             color=(220, 60, 60, 0),

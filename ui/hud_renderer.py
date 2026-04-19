@@ -13,19 +13,18 @@ class HUDRenderer:
     {
         "width": 1100,
         "height": 580,
-        "panels": ["log", "arena", "stats"]
+        "panels": ["arena"]
     }
 
     Доступные панели:
       "arena"  → ArenaPanel в CENTER  (юниты обеих команд + таймер)
-      "log"    → LogPanel   в LEFT    (лог боя)
-      "stats"  → StatsPanel в RIGHT   (открывается по клику на юнита)
+      "log"    → LogPanel   в LEFT    (скрыт по умолчанию, toggle по Tab)
     """
 
     DEFAULT_CONFIG = {
         "width":  1100,
         "height": 580,
-        "panels": ["log", "arena", "stats"],
+        "panels": ["arena"],
     }
 
     def __init__(self, bridge=None, config_path: str = "config/hud.json"):
@@ -54,16 +53,12 @@ class HUDRenderer:
 
     def _register_panels(self, panel_names: list[str]) -> None:
         from ui.panels.arena_panel import ArenaPanel
-        from ui.panels.log_panel   import LogPanel
-        from ui.panels.stats_panel import StatsPanel
 
         w = self._window
 
         builders = {
             "arena": lambda: (Slot.CENTER, ArenaPanel(
                 w.batch, w.group_bg, w.group_bar, w.group_text)),
-            "log":   lambda: (Slot.LEFT,   LogPanel(
-                w.batch, w.group_bg, w.group_text)),
         }
 
         for name in panel_names:
@@ -74,15 +69,13 @@ class HUDRenderer:
     def get_sink(self):
         buffer = []
         def sink(text):
+            line = str(text)
             if self._window is None:
-                buffer.append(str(text))
+                buffer.append(line)
                 return
-            log = self._window.layout.get_panel(Slot.LEFT)
-            if log is None:
-                return
-            # Сбрасываем буфер при первом живом вызове
+
             for buffered in buffer:
-                log.push_line(buffered)
+                self._window.append_log_line(buffered)
             buffer.clear()
-            log.push_line(str(text))
+            self._window.append_log_line(line)
         return sink
